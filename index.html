@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mudit Joshi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="Home_img/site-logo.png" type="image/png"> <!-- Site logo for the browser tab -->
+    <style>
+        /* Basic CSS Reset */
+        body, h1, h2, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #e2e0e0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav {
+            background-color: #716e6e;
+            padding: 10px;
+            position: relative;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 1.2em;
+            color: #fff;
+            transition: color 0.3s, font-weight 0.3s;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.current {
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 20px;
+            gap: 15px;
+            flex-direction: column;
+        }
+
+        .profile-photo {
+            border-radius: 50%;
+            width: 350px;
+            height: 350px;
+            object-fit: cover;
+        }
+
+        .intro-text {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .intro-text h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .intro-text p {
+            font-size: 1.2em;
+        }
+
+        section {
+            margin: 20px auto;
+            padding: 0 20px;
+            max-width: 1000px;
+            text-align: justify;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: auto;
+            padding: 20px 0;
+        }
+
+        #connect-me {
+            margin: 0;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-links a img {
+            width: 30px;
+            height: 30px;
+            transition: filter 0.3s;
+        }
+
+        .social-links a img:hover {
+            filter: brightness(0.8);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+            }
+
+            .intro-text h1 {
+                font-size: 2.5em;
+            }
+
+            .intro-text p {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                background-color: #716e6e;
+                position: absolute;
+                top: 50px;
+                left: 0;
+                z-index: 1000;
+            }
+
+            nav ul li {
+                display: block;
+                margin: 10px 0;
+            }
+
+            header {
+                padding: 30px 10px;
+            }
+
+            .profile-photo {
+                width: 350px;
+                height: 350px;
+            }
+
+            .intro-text h1 {
+                font-size: 2em;
+            }
+
+            .intro-text p {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html" class="current">Home</a></li>
+            <li><a href="education.html">Education</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="sec1.html">Sec1</a></li>
+            <li><a href="sec2.html">Sec2</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <img src="Home_img/your-photo.jpg" alt="Mudit Joshi" class="profile-photo">
+        <div class="intro-text">
+            <h1>Mudit Joshi</h1>
+            <p>Data Scientist | Eco-informatician | Ecologist</p>
+        </div>
+    </header>
+
+    <section id="connect-me">
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/yourprofile"><img src="Home_img/linkedin-icon.png" alt="LinkedIn"></a>
+            <a href="https://github.com/joshimudit"><img src="Home_img/github-icon.png" alt="GitHub"></a>
+            <a href="mailto:your.email@example.com"><img src="Home_img/email-icon.png" alt="Email"></a>
+            <a href="https://www.instagram.com/yourprofile"><img src="Home_img/instagram-icon.png" alt="Instagram"></a>
+            <a href="https://www.university.com"><img src="Home_img/university-icon.png" alt="University"></a>
+        </div>
+    </section>
+
+    <section>
+        <h2>About Me</h2>
+        <p>Hello! I'm Mudit Joshi, I'm a dynamic system scientist with a strong background in simulation modeling, statistical analysis, and data science. Skilled in developing and applying quantitative methods to complex problems in biological systems. Proven track record in leading impactful projects at Kiel University, ETH Zurich, SEA-EU, and in India. Adept in utilizing advanced statistical tools, Bayesian frameworks, and programming languages to inform scientific decisions. Passionate about leveraging previous expertise and international experience to now drive advancements in pharmaceutical modeling and contribute to global healthcare solutions.</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Mudit Joshi. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
