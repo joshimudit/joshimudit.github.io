@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education - Mudit Joshi</title>
+    <link rel="icon" href="Home_img/site-logo.png" type="image/png"> <!-- Site logo -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic CSS Reset */
+        body, h1, h2, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #e2e0e0;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav {
+            background-color: #716e6e;
+            padding: 10px;
+            position: relative;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 1.2em;
+            color: #fff;
+            transition: color 0.3s, font-weight 0.3s;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.current {
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        #theme-toggle {
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .dark-mode {
+            background-color: #333;
+            color: #f4f4f4;
+        }
+
+        .dark-mode nav {
+            background-color: #979797;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: auto;
+            padding: 20px 0;
+            background-color: #716e6e;
+            color: #fff;
+        }
+
+        .content {
+            margin: 50px auto;
+            padding: 0 20px;
+            max-width: 1000px;
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            display: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                display: none; /* Hide the navigation links by default */
+                flex-direction: column;
+                width: 100%;
+                background-color: #716e6e;
+                position: absolute;
+                top: 50px;
+                left: 0;
+                z-index: 1000;
+            }
+
+            nav ul.show {
+                display: flex; /* Show navigation links when menu is open */
+            }
+
+            .hamburger-menu {
+                display: block;
+                position: absolute;
+                top: 10px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="hamburger-menu" id="hamburger-menu">&#9776;</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="education.html" class="current">Education</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="#" id="theme-toggle"><span>&#x263C;</span></a></li> <!-- Sun symbol for light mode -->
+        </ul>
+    </nav>
+
+    <div class="content">
+        <!-- Content for the Education page goes here -->
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Mudit Joshi. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('theme-toggle');
+            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+            function setTheme(isDark) {
+                document.body.classList.toggle('dark-mode', isDark);
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            }
+
+            toggle.addEventListener('click', () => {
+                const isDark = document.body.classList.contains('dark-mode');
+                setTheme(!isDark);
+            });
+
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                setTheme(savedTheme === 'dark');
+            } else {
+                setTheme(prefersDarkScheme.matches);
+            }
+        });
+
+        document.getElementById('hamburger-menu').addEventListener('click', () => {
+            document.querySelector('nav ul').classList.toggle('show');
+        });
+    </script>
+</body>
+</html>
