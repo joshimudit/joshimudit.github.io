@@ -1,0 +1,228 @@
+/* Basic CSS Reset */
+body, h1, h2, p {
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f0f0f0; /* Lighter grey, closer to off-white */
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  nav {
+    background-color: #716e6e;
+    padding: 8px; /* Reduced padding */
+    position: relative;
+  }
+  
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  nav ul li {
+    display: inline;
+    margin: 0 10px; /* Reduced margin between items */
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    font-size: 1.2em;
+    color: #fff;
+    transition: color 0.3s, font-weight 0.3s;
+  }
+  
+  nav ul li a:hover,
+  nav ul li a.current {
+    color: #ff9800;
+    font-weight: bold;
+  }
+  
+  /* Hide the theme toggle since dark mode is removed */
+  #theme-toggle {
+    display: none;
+  }
+  
+  footer {
+    text-align: center;
+    font-size: 0.9em;
+    margin-top: auto;
+    padding: 15px 0; /* Reduced padding */
+    background-color: #716e6e;
+    color: #fff;
+  }
+  
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px 20px; /* Reduced padding */
+    margin-top: 20px; /* Reduced margin */
+    gap: 10px; /* Reduced gap */
+    flex-direction: column;
+  }
+  
+  .profile-photo {
+    border-radius: 50%;
+    width: 350px; /* Reduced size */
+    height: 350px;
+    object-fit: cover;
+    transition: border 0.3s;
+  }
+  
+  .intro-text {
+    max-width: 600px;
+    text-align: center;
+  }
+  
+  .intro-text h1 {
+    font-size: 2.2em; /* Slightly reduced font size */
+    margin-bottom: 6px; /* Reduced margin */
+  }
+  
+  .intro-text p {
+    font-size: 1.1em;
+  }
+  
+  section {
+    margin: 30px auto; /* Reduced margin */
+    padding: 0 20px;
+    max-width: 1000px;
+    text-align: justify;
+  }
+  
+  /* Social Links */
+  #connect-me {
+    text-align: center;
+    margin-top: 10px; /* Reduced margin */
+  }
+  
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Reduced gap */
+    align-items: center; /* Align CV button with social icons */
+  }
+  
+  .social-links a img {
+    width: 30px;
+    height: 30px;
+    transition: filter 0.3s;
+  }
+  
+  .social-links a img:hover {
+    filter: brightness(0.8);
+  }
+  
+  /* Download CV Button */
+  .download-cv-button {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 1.2em;
+    text-decoration: none;
+    color: #fff;
+    background-color: #333;
+    border: 1.5px solid #333;
+    border-radius: 35px; /* Elongated style */
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .download-cv-button:hover {
+    background-color: #fff;
+    color: #333;
+    border-color: #333;
+  }
+  
+  /* Hamburger Menu Styles */
+  .hamburger-menu {
+    display: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #fff;
+  }
+  
+  @media (max-width: 480px) {
+    nav ul {
+      display: none; /* Hide the navigation links by default */
+      flex-direction: column;
+      width: 100%;
+      background-color: #716e6e;
+      position: absolute;
+      top: 50px;
+      left: 0;
+      z-index: 1000;
+    }
+  
+    nav ul.show {
+      display: flex; /* Show navigation links when menu is open */
+    }
+  
+    .hamburger-menu {
+      display: block;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+    }
+  
+    header {
+      padding: 20px 10px; /* Reduced padding */
+    }
+  
+    .profile-photo {
+      width: 150px;
+      height: 150px;
+    }
+  
+    .intro-text h1 {
+      font-size: 2em;
+    }
+  
+    .intro-text p {
+      font-size: 0.9em;
+    }
+  }
+  
+  /* =============================
+     Education Page Specific Styles
+  ============================= */
+  
+  .education-details {
+    margin-top: 20px;
+  }
+  
+  .education-item {
+    margin-bottom: 30px;
+  }
+  
+  .edu-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+  }
+
+  /*  Supervisor Link Styles */
+  
+.supervisor-link {
+    text-decoration: none;
+    color: inherit; /* Keeps the same color as surrounding text */
+    transition: color 0.3s;
+  }
+  
+  .supervisor-link:hover {
+    color: #ff9800; /* Change to your desired hover color */
+  }
+  

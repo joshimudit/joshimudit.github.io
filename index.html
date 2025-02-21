@@ -1,289 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mudit Joshi</title>
-    <link rel="icon" href="Home_img/site-logo.png" type="image/png"> <!-- Site logo -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* Basic CSS Reset */
-        body, h1, h2, p {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #e2e0e0;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        nav {
-            background-color: #716e6e;
-            padding: 10px;
-            position: relative;
-        }
-
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            text-align: center;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-        }
-
-        nav ul li {
-            display: inline;
-            margin: 0 15px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            font-size: 1.2em;
-            color: #fff;
-            transition: color 0.3s, font-weight 0.3s;
-        }
-
-        nav ul li a:hover,
-        nav ul li a.current {
-            color: #ff9800;
-            font-weight: bold;
-        }
-
-        #theme-toggle {
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #fff;
-            background: none;
-            border: none;
-            outline: none;
-        }
-
-        .dark-mode {
-            background-color: #333;
-            color: #f4f4f4;
-        }
-
-        .dark-mode nav {
-            background-color: #979797;
-        }
-
-        .dark-mode .profile-photo {
-            border: 5px solid #fff;
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 50px 20px;
-            margin-top: 30px;
-            gap: 15px;
-            flex-direction: column;
-        }
-
-        .profile-photo {
-            border-radius: 50%;
-            width: 350px;
-            height: 350px;
-            object-fit: cover;
-        }
-
-        .intro-text {
-            max-width: 600px;
-            text-align: center;
-        }
-
-        .intro-text h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .intro-text p {
-            font-size: 1.2em;
-        }
-
-        section {
-            margin: 50px auto;
-            padding: 0 20px;
-            max-width: 1000px;
-            text-align: justify;
-        }
-
-        footer {
-            text-align: center;
-            font-size: 0.9em;
-            margin-top: auto;
-            padding: 20px 0;
-        }
-
-        /* Social Links */
-        #connect-me {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .social-links a img {
-            width: 30px;
-            height: 30px;
-            transition: filter 0.3s;
-        }
-
-        .social-links a img:hover {
-            filter: brightness(0.8);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-            }
-
-            .profile-photo {
-                width: 250px;
-                height: 250px;
-            }
-
-            .intro-text h1 {
-                font-size: 2.5em;
-            }
-
-            .intro-text p {
-                font-size: 1em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            nav ul {
-                display: none; /* Hide the navigation links by default */
-                flex-direction: column;
-                width: 100%;
-                background-color: #716e6e;
-                position: absolute;
-                top: 50px;
-                left: 0;
-                z-index: 1000;
-            }
-
-            nav ul.show {
-                display: flex; /* Show navigation links when menu is open */
-            }
-
-            .hamburger-menu {
-                display: block;
-                font-size: 1.5em;
-                color: #fff;
-                cursor: pointer;
-                position: absolute;
-                top: 10px;
-                right: 20px;
-            }
-
-            header {
-                padding: 30px 10px;
-            }
-
-            .profile-photo {
-                width: 150px;
-                height: 150px;
-            }
-
-            .intro-text h1 {
-                font-size: 2em;
-            }
-
-            .intro-text p {
-                font-size: 0.9em;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mudit Joshi</title>
+  <link rel="icon" href="Home_img/site-logo.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Link to the external CSS file -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav>
-        <div class="hamburger-menu" id="hamburger-menu">&#9776;</div> <!-- Hamburger menu icon -->
-        <ul id="nav-links">
-            <li><a href="index.html" class="current">Home</a></li>
-            <li><a href="education.html">Education</a></li>
-            <li><a href="projects.html">Projects</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li><button id="theme-toggle"><span>&#9790;</span></button></li> <!-- Moon symbol for dark mode -->
-        </ul>
-    </nav>
+  <nav>
+    <div class="hamburger-menu" id="hamburger-menu">&#9776;</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="current">Home</a></li>
+      <li><a href="education.html">Education</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
 
-    <header>
-        <img src="Home_img/your-photo.jpg" alt="Mudit Joshi" class="profile-photo">
-        <div class="intro-text">
-            <h1>Mudit Joshi</h1>
-            <p>Data Scientist | Eco-informatician | Ecologist</p>
-        </div>
-    </header>
+  <header>
+    <img src="Home_img/your-photo.jpg" alt="Mudit Joshi" class="profile-photo">
+    <div class="intro-text">
+      <h1>Mudit Joshi</h1>
+      <p>Researcher | Climate-Resilient Ecosystems | Data & Modelling Enthusiast</p>
+    </div>
+  </header>
 
-    <section id="connect-me">
-        <div class="social-links">
-            <a href="https://www.linkedin.com/in/yourprofile"><img src="Home_img/linkedin-icon.png" alt="LinkedIn"></a>
-            <a href="https://github.com/joshimudit"><img src="Home_img/github-icon.png" alt="GitHub"></a>
-            <a href="mailto:your.email@example.com"><img src="Home_img/email-icon.png" alt="Email"></a>
-            <a href="https://www.instagram.com/yourprofile"><img src="Home_img/instagram-icon.png" alt="Instagram"></a>
-            <a href="https://www.university.com"><img src="Home_img/university-icon.png" alt="University"></a>
-        </div>
-    </section>
+  <section id="connect-me">
+    <div class="social-links">
+      <a href="https://www.linkedin.com/in/yourprofile"><img src="Home_img/linkedin-icon.png" alt="LinkedIn"></a>
+      <a href="https://github.com/joshimudit"><img src="Home_img/github-icon.png" alt="GitHub"></a>
+      <a href="mailto:your.email@example.com"><img src="Home_img/email-icon.png" alt="Email"></a>
+      <a href="https://www.instagram.com/yourprofile"><img src="Home_img/instagram-icon.png" alt="Instagram"></a>
+      <a href="https://www.university.com"><img src="Home_img/university-icon.png" alt="University"></a>
+      <a href="CV_joshi.pdf" target="_blank" class="download-cv-button">Download CV</a>
+    </div>
+  </section>
 
-    <section>
-        <h2>About Me</h2>
-        <p>Hello! I'm Mudit Joshi, I'm a dynamic system scientist with a strong background in simulation modeling, statistical analysis, and data science. Skilled in developing and applying quantitative methods to complex problems in biological systems. Proven track record in leading impactful projects at Kiel University, ETH Zurich, SEA-EU, and in India. Adept in utilizing advanced statistical tools, Bayesian frameworks, and programming languages to inform scientific decisions. Passionate about leveraging previous expertise and international experience to now drive advancements in pharmaceutical modeling and contribute to global healthcare solutions.</p>
-    </section>
+  <section>
+    <h2>About Me</h2>
+    <p>
+      Hello! I’m Mudit Joshi, a PhD fellow at Aarhus University, Denmark, funded by the Marie Curie Doctoral Network AGRI-DRY. My work explores how climate change is reshaping agriculture, ecosystems, and food security in an era of unprecedented environmental shifts. Using mathematical simulations, climate reconstructions, and crop growth models, I uncover how past agricultural systems adapted and what that means for future resilience. As we navigate the Anthropocene—where climatic extremes redefine agriculture—my research transforms uncertainty into data-driven strategies for climate adaptation and sustainability.
+    </p>
+    <p>
+      Beyond agriculture, I am deeply interested in Earth system science, climate change, and biodiversity, seeking to uncover how biological and ecological systems function, adapt and evolve under environmental pressures. My expertise lies in simulation modeling and data science methodologies, leveraging computational tools, machine learning techniques, and statistical models to analyze complex systems. I work at the intersection of science, technology, and sustainability, and have contributed to projects at Kiel University, ETH Zurich, and GBPUA&T India, working across disciplines to translate data into actionable insights.
+    </p>
+    <p>
+      If you’re working on climate change mitigation, AgriTech, or sustainability, or simply want to exchange ideas on how to navigate the future of our planet, let’s connect! 🚀
+    </p>
+  </section>
 
-    <footer>
-        <p>&copy; 2024 Mudit Joshi. All Rights Reserved.</p>
-    </footer>
+  <footer>
+    <p>&copy; 2025 Mudit Joshi. All Rights Reserved.</p>
+  </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('theme-toggle');
-            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-
-            function setTheme(isDark) {
-                document.body.classList.toggle('dark-mode', isDark);
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            }
-
-            toggle.addEventListener('click', () => {
-                const isDark = document.body.classList.contains('dark-mode');
-                setTheme(!isDark);
-            });
-
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                setTheme(savedTheme === 'dark');
-            } else {
-                setTheme(prefersDarkScheme.matches);
-            }
-
-            const hamburgerMenu = document.getElementById('hamburger-menu');
-            const navLinks = document.getElementById('nav-links');
-
-            hamburgerMenu.addEventListener('click', () => {
-                navLinks.classList.toggle('show');
-            });
-        });
-    </script>
+  <!-- Link to the external JavaScript file -->
+  <script src="script.js"></script>
 </body>
 </html>

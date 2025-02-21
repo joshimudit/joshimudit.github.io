@@ -1,175 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Education - Mudit Joshi</title>
-    <link rel="icon" href="Home_img/site-logo.png" type="image/png"> <!-- Site logo -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* Basic CSS Reset */
-        body, h1, h2, p {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #e2e0e0;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        nav {
-            background-color: #716e6e;
-            padding: 10px;
-            position: relative;
-        }
-
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            text-align: center;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-        }
-
-        nav ul li {
-            display: inline;
-            margin: 0 15px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            font-size: 1.2em;
-            color: #fff;
-            transition: color 0.3s, font-weight 0.3s;
-        }
-
-        nav ul li a:hover,
-        nav ul li a.current {
-            color: #ff9800;
-            font-weight: bold;
-        }
-
-        #theme-toggle {
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #fff;
-        }
-
-        .dark-mode {
-            background-color: #333;
-            color: #f4f4f4;
-        }
-
-        .dark-mode nav {
-            background-color: #979797;
-        }
-
-        footer {
-            text-align: center;
-            font-size: 0.9em;
-            margin-top: auto;
-            padding: 20px 0;
-            background-color: #716e6e;
-            color: #fff;
-        }
-
-        .content {
-            margin: 50px auto;
-            padding: 0 20px;
-            max-width: 1000px;
-        }
-
-        /* Hamburger Menu Styles */
-        .hamburger-menu {
-            display: none;
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #fff;
-        }
-
-        @media (max-width: 480px) {
-            nav ul {
-                display: none; /* Hide the navigation links by default */
-                flex-direction: column;
-                width: 100%;
-                background-color: #716e6e;
-                position: absolute;
-                top: 50px;
-                left: 0;
-                z-index: 1000;
-            }
-
-            nav ul.show {
-                display: flex; /* Show navigation links when menu is open */
-            }
-
-            .hamburger-menu {
-                display: block;
-                position: absolute;
-                top: 10px;
-                right: 20px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Education - Mudit Joshi</title>
+  <link rel="icon" href="Home_img/site-logo.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Link to external CSS file -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav>
-        <div class="hamburger-menu" id="hamburger-menu">&#9776;</div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="education.html" class="current">Education</a></li>
-            <li><a href="projects.html">Projects</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li><a href="#" id="theme-toggle"><span>&#x263C;</span></a></li> <!-- Sun symbol for light mode -->
-        </ul>
-    </nav>
+  <nav>
+    <div class="hamburger-menu" id="hamburger-menu">&#9776;</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="education.html" class="current">Education</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
 
-    <div class="content">
-        <!-- Content for the Education page goes here -->
+  <!-- Cover Photo Section -->
+  <header>
+    <!-- This is a placeholder cover photo.
+         Replace "Education_img/cover-photo-placeholder.jpg" with your actual image path when available. -->
+    <img src="Education_img/cover-photo-placeholder.jpg" alt="Cover Photo" class="cover-photo">
+  </header>
+
+  <!-- Main Content: Educational Qualifications -->
+  <section>
+    <h2>Educational Qualifications:</h2>
+    <div class="education-details">
+      
+      <!-- Education Item 1 -->
+      <div class="education-item">
+        <p class="edu-title">PhD. - Section of Ecoinformatics &amp; Biodiversity, Aarhus University (Denmark)</p>
+        <p><strong><em>Dec. 2024 - PRESENT</em></strong>.</p>
+        <p>Topic: Modelling key crop environmental niches and productivity over the Holocene.</p>
+        <p>
+            Supervisors: 
+            <a href="https://www.au.dk/en/alejandro.ordonez@bio.au.dk/" target="_blank" class="supervisor-link">Alejandro Ordonez</a>, 
+            <a href="https://www.gla.ac.uk/schools/humanities/staff/nickiwhitehouse/" target="_blank" class="supervisor-link">Nicki Whitehouse</a>, 
+            <a href="https://www.upf.edu/en/web/humanitats/docents-i-investigadors/-/asset_publisher/AwHWXL9uZXHH/content/madella-marco/maximized" target="_blank" class="supervisor-link">Marco Madella</a>
+          </p>
+      </div>
+      
+      <!-- Education Item 2 -->
+      <div class="education-item">
+        <p class="edu-title">Masters research project - Dept. of Environmental System Science, ETH Zurich (Switzerland)</p>
+        <p><strong><em>Apr. 2023 - Apr. 2024</em></strong>.</p>
+        <p>Topic: Simulating eco-evolution of plant biodiversity with climate over the last 400 million years.</p>
+        <p>
+            Supervisors: 
+            <a href="https://ele.ethz.ch/the-group/people/person-detail/loic-pellissier.html" target="_blank" class="supervisor-link">Loïc Pellissier</a>, 
+            <a href="https://www.landscape-ecology.uni-kiel.de/de/team-1/tim-diekoetter" target="_blank" class="supervisor-link">Tim Diekötter</a>, 
+          </p>
+      </div>
+      
+      <!-- Education Item 3 -->
+      <div class="education-item">
+        <p class="edu-title">M.Sc. Environmental Management - University of Kiel (Germany)</p>
+        <p><strong><em>2021 - 2024</em></strong>.</p>
+        <p>
+            Supervisors: 
+            <a href="https://www.landscape-ecology.uni-kiel.de/de/team-1/tobias-w-donath" target="_blank" class="supervisor-link">Tobias W. Donath</a>, 
+            <a href="https://www.researchgate.net/profile/Uta-Ulrich" target="_blank" class="supervisor-link">Uta Ulrich</a>, 
+          </p>        
+          <p>Subjects: spatial data handling, conservation biology, GIS &amp; remote sensing, statistical modeling, Python &amp; R programming, theoretical ecology, soil biogeochemistry.</p>
+      </div>
+      
+      <!-- Education Item 4 -->
+      <div class="education-item">
+        <p class="edu-title">ERASMUS Double degree (Env. Protection) - Adam Mickiewicz University (Poland)</p>
+        <p><strong><em>Feb. 2021 - Sept. 2021</em></strong>.</p>
+        <p>Subjects: climate change &amp; SDGs, natural resource management, invertebrate monitoring methods, aquatic ecology, financing of environmental projects.</p>
+      </div>
+      
+      <!-- Education Item 5 -->
+      <div class="education-item">
+        <p class="edu-title">B.Sc. Agriculture Sciences - GB. Pant University of Agriculture &amp; Technology (India)</p>
+        <p><strong><em>2016 - 2020</em></strong>.</p>
+        <p>Subjects: agronomy, soil science, meteorology, genetics &amp; biotechnology, plant physiology, entomology, plant pathology, horticulture, economics, and extension education.</p>
+      </div>
+      
     </div>
+  </section>
 
-    <footer>
-        <p>&copy; 2024 Mudit Joshi. All Rights Reserved.</p>
-    </footer>
+  <footer>
+    <p>&copy; 2025 Mudit Joshi. All Rights Reserved.</p>
+  </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('theme-toggle');
-            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-
-            function setTheme(isDark) {
-                document.body.classList.toggle('dark-mode', isDark);
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            }
-
-            toggle.addEventListener('click', () => {
-                const isDark = document.body.classList.contains('dark-mode');
-                setTheme(!isDark);
-            });
-
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                setTheme(savedTheme === 'dark');
-            } else {
-                setTheme(prefersDarkScheme.matches);
-            }
-        });
-
-        document.getElementById('hamburger-menu').addEventListener('click', () => {
-            document.querySelector('nav ul').classList.toggle('show');
-        });
-    </script>
+  <!-- Link to external JavaScript file -->
+  <script src="script.js"></script>
 </body>
 </html>
