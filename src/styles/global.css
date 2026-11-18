@@ -27,19 +27,20 @@
 }
 
 [data-theme='night'] {
-  --bg: #0c1c22;
-  --surface: #12292f;
-  --ink: #e4ecec;
-  --muted: #9fb4b8;
-  --line: #23404a;
-  --blue: #5cc3cf;
-  --blue-soft: #163a42;
-  --ochre: #f0a54a;
-  --ochre-fill: #f0a54a;
-  --ochre-soft: #4a3418;
-  --moss: #9fc08a;
-  --on-accent: #0c1c22;
-  --focus: #f0a54a;
+  /* Forest at night */
+  --bg: #121a15;
+  --surface: #18231c;
+  --ink: #e6ece4;
+  --muted: #a9b6aa;
+  --line: #2a3a2f;
+  --blue: #9fd0a8;
+  --blue-soft: #1f3326;
+  --ochre: #e8b25c;
+  --ochre-fill: #e8b25c;
+  --ochre-soft: #46371b;
+  --moss: #b9c98f;
+  --on-accent: #121a15;
+  --focus: #e8b25c;
   color-scheme: dark;
 }
 

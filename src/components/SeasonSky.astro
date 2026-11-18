@@ -30,7 +30,7 @@
 
   const palette = () => {
     const night = document.documentElement.dataset.theme === 'night';
-    if (night) return { a: 'rgba(92,195,207,', b: 'rgba(240,165,74,', alpha: 0.2 };
+    if (night) return { a: 'rgba(159,208,168,', b: 'rgba(232,178,92,', alpha: 0.18 };
     if (season === 'autumn') return { a: 'rgba(200,110,20,', b: 'rgba(78,107,58,', alpha: 0.3 };
     if (season === 'winter') return { a: 'rgba(11,107,122,', b: 'rgba(75,93,99,', alpha: 0.2 };
     if (season === 'spring') return { a: 'rgba(200,150,30,', b: 'rgba(78,107,58,', alpha: 0.28 };
