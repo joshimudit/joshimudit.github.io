@@ -1,5 +1,5 @@
 // Conferences, talks and posters. Shown on Publications and the CV.
-// kind: 'Poster' | 'Talk' | 'Poster and pitch'
+// kind: 'Poster' | 'Presentation' | 'Presentation and poster'
 
 export type Conference = { date: string; when: string; event: string; place: string; kind: string; title: string; note?: string; href?: string };
 
@@ -9,7 +9,7 @@ export const conferences: Conference[] = [
     when: 'February 2026',
     event: 'iCROPM 2026, 3rd International Crop Modelling Symposium',
     place: 'Florence, Italy',
-    kind: 'Poster and pitch',
+    kind: 'Presentation and poster',
     title: 'Modelling dryland crops through the Holocene: the framework of my PhD',
     note: 'Best poster award',
   },
