@@ -1,0 +1,88 @@
+---
+// The signature element: Mudit's work laid on one log-scaled time axis,
+// from 400 million years ago to after 2030.
+import { projects } from '../data/projects';
+
+const eras = [
+  { id: 'deep', name: 'Deep time', span: '400 million years ago', x: 3.8 },
+  { id: 'holocene', name: 'The Holocene', span: 'The last 10,000 years', x: 47 },
+  { id: 'now', name: 'Today', span: 'Farming now', x: 85 },
+  { id: 'next', name: 'What comes next', span: 'After 2030', x: 94 },
+];
+
+const extra: Record<string, { label: string; href: string }[]> = {
+  deep: [{ label: 'How plant biodiversity evolved with climate (master’s thesis)', href: '/cv#education' }],
+  next: [{ label: 'AI agents doing real research, in the open', href: '/lab' }],
+};
+
+// log ticks: years ago from 10^9 to 10^0
+const ticks = Array.from({ length: 10 }, (_, i) => ({ x: ((9 - (9 - i)) / 9) * 85, major: true, p: 9 - i }));
+---
+<div class="ruler">
+  <div class="track">
+  <svg viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true" class="axis">
+    <rect x="47" y="5" width="38" height="4" class="holo" />
+    <line x1="0" y1="7" x2="85" y2="7" class="line" />
+    <line x1="85" y1="7" x2="100" y2="7" class="line future" />
+    {ticks.map((t) => <line x1={t.x} x2={t.x} y1="4" y2="10" class="tick" />)}
+  </svg>
+  <div class="dots" aria-hidden="true">
+    {eras.map((e) => <span class={`dot dot-${e.id}`} style={`left:${e.x}%`}></span>)}
+  </div>
+  </div>
+  <div class="scale data" aria-hidden="true">
+    <span style="left:0">1 billion yrs ago</span>
+    <span style="left:47%">10,000</span>
+    <span style="left:85%">Now</span>
+  </div>
+
+  <ol class="eras">
+    {eras.map((e) => (
+      <li class={`era era-${e.id}`}>
+        <h3>{e.name}</h3>
+        <p class="span">{e.span}</p>
+        <ul>
+          {projects.filter((p) => p.era === e.id).map((p) => (
+            <li><a href={`/work#${p.slug}`}>{p.title}</a></li>
+          ))}
+          {(extra[e.id] || []).map((x) => <li><a href={x.href}>{x.label}</a></li>)}
+        </ul>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .ruler { margin-top: 2rem; }
+  .axis { width: 100%; height: 3.25rem; overflow: visible; display: block; }
+  .track { position: relative; }
+  .line { stroke: var(--ink); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+  .future { stroke-dasharray: 4 4; }
+  .tick { stroke: var(--muted); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+  .holo { fill: var(--ochre-soft); }
+  .dots { position: absolute; inset: 0; }
+  .dot { position: absolute; top: 50%; width: 0.8rem; height: 0.8rem; border-radius: 50%; transform: translate(-50%, -50%); background: var(--bg); border: 1.5px solid var(--ink); }
+  .dot-holocene, .dot-now { background: var(--ochre); border-color: var(--ochre); }
+  .dot-next { background: var(--blue); border-color: var(--blue); }
+
+  .scale { position: relative; height: 1.4rem; }
+  .scale span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+  .scale span:first-child { transform: none; }
+
+  .eras { list-style: none; padding: 0; margin: 1.75rem 0 0; display: grid; grid-template-columns: 0.8fr 1.3fr 1fr 1fr; gap: 0; }
+  .era { padding: 0 1.25rem 0 1rem; border-left: 1px solid var(--line); }
+  .era-holocene { border-left: 3px solid var(--ochre); }
+  .era-now { border-left: 3px solid var(--ochre); }
+  .era-next { border-left: 3px dashed var(--blue); }
+  .era h3 { margin-bottom: 0.15rem; font-size: 1.2rem; }
+  .span { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.75rem; }
+  .era ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+  .era a { color: var(--ink); text-decoration-color: var(--line); }
+  .era a:hover { text-decoration-color: currentColor; }
+
+  @media (max-width: 760px) {
+    .track, .scale { display: none; }
+    .eras { grid-template-columns: 1fr; gap: 1.5rem; }
+    .era { padding-left: 1rem; }
+  }
+</style>

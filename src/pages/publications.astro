@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Add entries to each list as they happen.
+const sections = [
+  {
+    id: 'papers',
+    title: 'Papers',
+    items: [] as { title: string; detail: string; href?: string }[],
+    empty: 'My first papers are in review and preparation. You can follow them on the Work page until they’re out.',
+    emptyLink: { label: 'See the papers in progress', href: '/work' },
+  },
+  {
+    id: 'data-code',
+    title: 'Data and code',
+    items: [
+      {
+        title: 'Simulating plant biodiversity over 400 million years with gen3sis',
+        detail: 'Code for my master’s thesis, ETH Zurich and Kiel University, 2024.',
+        href: 'https://github.com/joshimudit/Masters-thesis-gen3sis',
+      },
+    ],
+  },
+  {
+    id: 'conferences',
+    title: 'Conferences',
+    items: [],
+    empty: 'Talks and posters will be listed here.',
+  },
+  {
+    id: 'science-comm',
+    title: 'Science communication',
+    items: [],
+    empty: 'Articles, interviews and outreach will be listed here.',
+  },
+];
+---
+<Base title="Publications" description="Papers, data and code, conference contributions and science communication by Mudit Joshi.">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Publications</h1>
+      <p>Papers, data and code, conference talks and posters, and writing for everyone else.</p>
+      <nav class="jump" aria-label="Sections">
+        {sections.map((s) => <a href={`#${s.id}`}>{s.title}</a>)}
+      </nav>
+    </header>
+
+    {sections.map((s) => (
+      <section class="pub" id={s.id} aria-labelledby={`${s.id}-h`}>
+        <h2 id={`${s.id}-h`}>{s.title}</h2>
+        {s.items.length ? (
+          <ul class="items">
+            {s.items.map((i) => (
+              <li>
+                {i.href ? <a href={i.href}>{i.title}</a> : <span>{i.title}</span>}
+                <p>{i.detail}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="empty">
+            <p>{s.empty} {s.emptyLink && <a href={s.emptyLink.href}>{s.emptyLink.label}</a>}</p>
+          </div>
+        )}
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .jump { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 1rem; }
+  .pub { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem 3rem; padding-block: 2rem; border-top: 1px solid var(--line); scroll-margin-top: 5rem; }
+  .pub h2 { font-size: 1.6rem; margin: 0; }
+  .items { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.25rem; }
+  .items a, .items span { font-size: 1.1rem; }
+  .items p { margin: 0.2rem 0 0; color: var(--muted); }
+  @media (max-width: 760px) { .pub { grid-template-columns: 1fr; } }
+</style>

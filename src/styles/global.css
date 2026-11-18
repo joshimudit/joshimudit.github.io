@@ -1,0 +1,103 @@
+/* Day = field notebook on lichen paper. Night = the planet from orbit.
+   Blue and ochre carry meaning; they stay distinct for all common colour-vision types. */
+:root {
+  --bg: #ebeae0;
+  --surface: #f5f4ec;
+  --ink: #1f2a30;
+  --muted: #4f5c5c;
+  --line: #c4c6b8;
+  --blue: #1d6580;
+  --ochre: #9a5d14;
+  --ochre-soft: #e3c48f;
+  --moss: #56663f;
+  --focus: #1d6580;
+
+  --serif: 'Young Serif', Georgia, serif;
+  --sans: 'Geologica Variable', 'Segoe UI', sans-serif;
+  --mono: 'Martian Mono', ui-monospace, monospace;
+
+  --measure: 66ch;
+  --wide: 76rem;
+  color-scheme: light;
+}
+
+[data-theme='night'] {
+  --bg: #0f2a3a;
+  --surface: #133447;
+  --ink: #ebe7dc;
+  --muted: #a9bcc4;
+  --line: #2c4c60;
+  --blue: #7cc4dd;
+  --ochre: #e7a957;
+  --ochre-soft: #5c4523;
+  --moss: #a8b98e;
+  --focus: #e7a957;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-weight: 350;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.12;
+  margin: 0 0 0.6em;
+  text-wrap: balance;
+}
+h1 { font-size: clamp(3rem, 9vw, 6.75rem); letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.75rem, 3.5vw, 2.5rem); }
+h3 { font-size: 1.3rem; }
+p { margin: 0 0 1em; max-width: var(--measure); text-wrap: pretty; }
+
+a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+
+.wrap { width: min(100% - 2.5rem, var(--wide)); margin-inline: auto; }
+.page { padding-block: clamp(2.5rem, 6vw, 5rem) 4rem; }
+.page-head { margin-bottom: 3rem; }
+.page-head p { color: var(--muted); font-size: 1.15rem; }
+
+.section { padding-block: clamp(2.5rem, 6vw, 4.5rem); border-top: 1px solid var(--line); }
+
+.data { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.01em; color: var(--muted); }
+
+.badge {
+  display: inline-block;
+  font-size: 0.82rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+.badge.ongoing { color: var(--blue); }
+.badge.completed { color: var(--moss); }
+
+.empty {
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+  color: var(--muted);
+}
+.empty p { margin: 0; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

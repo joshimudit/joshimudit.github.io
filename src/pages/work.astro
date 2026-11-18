@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import { projects } from '../data/projects';
+const ongoing = projects.filter((p) => p.status === 'ongoing');
+const completed = projects.filter((p) => p.status === 'completed');
+---
+<Base title="Work" description="Research projects by Mudit Joshi: crop niches, Holocene crop productivity, agricultural novelty and the TRACE adaptation framework.">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Work</h1>
+      <p>Four papers that make up my PhD. Each one asks a single question; together they run from the first farmers to farming after 2030.</p>
+    </header>
+
+    {[{ label: 'Ongoing', list: ongoing }, { label: 'Completed', list: completed }].filter((g) => g.list.length).map((g) => (
+      <section aria-label={g.label}>
+        {g.list.map((p) => (
+          <article class="project" id={p.slug}>
+            <div class="meta">
+              <span class={`badge ${p.status}`}>{p.status === 'ongoing' ? 'Ongoing' : 'Completed'}</span>
+              <p class="output">
+                {p.outputLink ? <a href={p.outputLink}>{p.output}</a> : p.output}
+              </p>
+              <p class="role">{p.role}</p>
+            </div>
+            <div class="body">
+              <p class="short">{p.short}</p>
+              <h2>{p.title}</h2>
+              {p.summary.map((s) => <p>{s}</p>)}
+              <ul class="methods" aria-label="Methods">
+                {p.methods.map((m) => <li>{m}</li>)}
+              </ul>
+              {p.people && (
+                <p class="people">With {p.people.map((x, i) => (
+                  <>{x.href ? <a href={x.href}>{x.name}</a> : x.name}{i < p.people!.length - 2 ? ', ' : i === p.people!.length - 2 ? ' ' : ''}</>
+                ))}.</p>
+              )}
+            </div>
+          </article>
+        ))}
+      </section>
+    ))}
+
+    <section class="site-note">
+      <h2>This website</h2>
+      <p>The site is a project too. It is built with Astro and kept up to date by AI agents working through pull requests that I review, so every change is logged on GitHub. A full write-up of how it works is coming.</p>
+      <p><a href="https://github.com/joshimudit/joshimudit.github.io">See the source on GitHub</a></p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .project { display: grid; grid-template-columns: 11rem 1fr; gap: 1rem 3rem; padding-block: 2.5rem; border-top: 1px solid var(--line); scroll-margin-top: 5rem; }
+  .meta { display: grid; gap: 0.5rem; align-content: start; justify-items: start; }
+  .meta p { margin: 0; }
+  .output { font-weight: 500; }
+  .role { color: var(--muted); font-size: 0.92rem; }
+  .short { color: var(--ochre); margin-bottom: 0.4rem; font-size: 0.95rem; }
+  .body h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  .methods { list-style: none; padding: 0; margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .methods li { font-size: 0.85rem; padding: 0.15rem 0.65rem; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; }
+  .people { color: var(--muted); margin-top: 1rem; }
+  .site-note { margin-top: 2rem; padding: 2rem; background: var(--surface); border-radius: 6px; border: 1px solid var(--line); }
+  .site-note h2 { font-size: 1.5rem; }
+  @media (max-width: 760px) {
+    .project { grid-template-columns: 1fr; }
+    .meta { grid-auto-flow: column; justify-content: start; align-items: center; gap: 0.75rem; }
+  }
+</style>

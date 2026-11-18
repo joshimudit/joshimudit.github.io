@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import { sortedLog, formatMonth } from '../data/log';
+---
+<Base title="Blog" description="Writing by Mudit Joshi, and an archive of everything that has happened so far.">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Blog</h1>
+      <p>Longer thoughts, when there is something worth saying.</p>
+    </header>
+    <div class="empty"><p>No posts yet.</p></div>
+
+    <section id="archive" class="archive" aria-labelledby="archive-h">
+      <h2 id="archive-h">Archive</h2>
+      <p class="muted">Everything that has happened, newest first.</p>
+      <ol>
+        {sortedLog.map((i) => (
+          <li>
+            <time class="data" datetime={i.date}>{formatMonth(i.date)}</time>
+            <span>{i.href ? <a href={i.href}>{i.text}</a> : i.text}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .archive { margin-top: 4rem; padding-top: 2.5rem; border-top: 1px solid var(--line); scroll-margin-top: 5rem; }
+  .muted { color: var(--muted); }
+  ol { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 0.9rem; }
+  li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: baseline; }
+  @media (max-width: 760px) { li { grid-template-columns: 1fr; gap: 0.1rem; } }
+</style>

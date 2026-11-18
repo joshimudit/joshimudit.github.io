@@ -1,0 +1,104 @@
+---
+import Base from '../layouts/Base.astro';
+import { profile, links } from '../data/profile';
+import { education, experience, skills, languages, honours } from '../data/cv';
+---
+<Base title="CV" description="Curriculum vitae of Mudit Joshi, systems scientist: education, experience, skills and honours.">
+  <div class="wrap page cv">
+    <header class="page-head head">
+      <div>
+        <h1>CV</h1>
+        <p class="print-only">{profile.name}, {profile.role}. {profile.email} · joshimudit.github.io</p>
+        <p>{profile.lede}</p>
+      </div>
+      <button class="save" type="button" onclick="window.print()">Save as PDF</button>
+    </header>
+
+    <section aria-labelledby="exp-h">
+      <h2 id="exp-h">Experience</h2>
+      {experience.map((e) => (
+        <article class="entry">
+          <p class="when">{e.when}</p>
+          <div>
+            <h3>{e.what}</h3>
+            <p class="where">{e.where}</p>
+            <ul>{e.points.map((pt) => <li>{pt}</li>)}</ul>
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <section id="education" aria-labelledby="edu-h">
+      <h2 id="edu-h">Education</h2>
+      {education.map((e) => (
+        <article class="entry">
+          <p class="when">{e.when}</p>
+          <div>
+            <h3>{e.what}</h3>
+            <p class="where">{e.where}</p>
+            {e.detail && <p>{e.detail}</p>}
+            {e.link && <p><a href={e.link.href}>{e.link.label}</a></p>}
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <section aria-labelledby="skills-h">
+      <h2 id="skills-h">Skills</h2>
+      <div class="skills">
+        {skills.map((s) => (
+          <div>
+            <h3>{s.group}</h3>
+            <ul>{s.items.map((i) => <li>{i}</li>)}</ul>
+          </div>
+        ))}
+        <div>
+          <h3>Languages</h3>
+          <ul>{languages.map((l) => <li>{l}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="hon-h">
+      <h2 id="hon-h">Honours</h2>
+      <ul class="honours">{honours.map((h) => <li>{h}</li>)}</ul>
+    </section>
+
+    <section class="screen-only" aria-labelledby="links-h">
+      <h2 id="links-h">Profiles</h2>
+      <ul class="honours">{links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .head { display: flex; justify-content: space-between; align-items: end; gap: 2rem; flex-wrap: wrap; }
+  .save { font: inherit; background: var(--ink); color: var(--bg); border: 0; border-radius: 999px; padding: 0.6rem 1.4rem; cursor: pointer; }
+  .cv section { padding-block: 2rem; border-top: 1px solid var(--line); }
+  .cv section > h2 { font-size: 1.6rem; }
+  .entry { display: grid; grid-template-columns: 9rem 1fr; gap: 0.5rem 2rem; padding-block: 1rem; }
+  .entry h3 { font-family: var(--sans); font-weight: 500; font-size: 1.1rem; margin: 0; line-height: 1.35; }
+  .entry p { margin: 0.2rem 0 0; }
+  .when { color: var(--ochre); margin: 0; }
+  .where { color: var(--muted); }
+  .entry ul { margin: 0.6rem 0 0; padding-left: 1.1rem; max-width: var(--measure); }
+  .entry li { margin-bottom: 0.3rem; }
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1.5rem 2rem; }
+  .skills h3 { font-family: var(--sans); font-weight: 500; font-size: 1rem; }
+  .skills ul, .honours { padding-left: 1.1rem; margin: 0; }
+  .skills li, .honours li { margin-bottom: 0.3rem; }
+  .print-only { display: none; }
+  @media (max-width: 760px) { .entry { grid-template-columns: 1fr; } }
+
+  @media print {
+    :global(.site-head), :global(.site-foot), :global(#season-sky), :global(.skip), .save, .screen-only { display: none !important; }
+    :global(body) { background: #fff !important; color: #000 !important; font-size: 10.5pt; }
+    :global(:root) { --ink: #000; --muted: #333; --ochre: #000; --line: #bbb; --blue: #000; }
+    .print-only { display: block; }
+    .cv { padding: 0 !important; }
+    .cv h1 { font-size: 22pt; }
+    .cv section { padding-block: 0.6rem; break-inside: auto; }
+    .entry { grid-template-columns: 6rem 1fr; padding-block: 0.3rem; break-inside: avoid; }
+    a { color: #000; text-decoration: none; }
+  }
+</style>

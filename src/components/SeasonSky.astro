@@ -1,0 +1,105 @@
+---
+// A quiet layer of drifting things behind the page. What drifts depends on the
+// visitor's real month (northern-hemisphere seasons) and the day/night theme.
+// Static when reduced motion is on; paused when the tab is hidden.
+---
+<canvas id="season-sky" aria-hidden="true"></canvas>
+
+<style>
+  #season-sky {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('season-sky') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const month = new Date().getMonth();
+  const season =
+    month <= 1 || month === 11 ? 'winter' : month <= 4 ? 'spring' : month <= 7 ? 'summer' : 'autumn';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  type Mote = { x: number; y: number; r: number; vx: number; vy: number; a: number; va: number; hue: number };
+  let motes: Mote[] = [];
+  let w = 0, h = 0, dpr = 1, running = true;
+
+  const palette = () => {
+    const night = document.documentElement.dataset.theme === 'night';
+    if (night) return { a: 'rgba(124,196,221,', b: 'rgba(231,169,87,', alpha: 0.2 };
+    if (season === 'autumn') return { a: 'rgba(154,93,20,', b: 'rgba(86,102,63,', alpha: 0.32 };
+    if (season === 'winter') return { a: 'rgba(29,101,128,', b: 'rgba(79,92,92,', alpha: 0.22 };
+    if (season === 'spring') return { a: 'rgba(181,140,40,', b: 'rgba(86,102,63,', alpha: 0.3 };
+    return { a: 'rgba(86,102,63,', b: 'rgba(154,93,20,', alpha: 0.28 };
+  };
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(Math.min(26, (w * h) / 52000));
+    motes = Array.from({ length: n }, () => spawn(true));
+  }
+
+  function spawn(anywhere: boolean): Mote {
+    const fall = season === 'autumn' || season === 'winter';
+    return {
+      x: Math.random() * w,
+      y: anywhere ? Math.random() * h : fall ? -20 : h + 20,
+      r: season === 'autumn' ? 5 + Math.random() * 5 : 1.5 + Math.random() * 2.5,
+      vx: (Math.random() - 0.4) * 0.25,
+      vy: fall ? 0.15 + Math.random() * 0.25 : -(0.08 + Math.random() * 0.18),
+      a: Math.random() * Math.PI * 2,
+      va: (Math.random() - 0.5) * 0.01,
+      hue: Math.random(),
+    };
+  }
+
+  function drawLeaf(m: Mote, color: string) {
+    ctx.save();
+    ctx.translate(m.x, m.y);
+    ctx.rotate(m.a);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, m.r, m.r * 0.45, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function frame() {
+    ctx.clearRect(0, 0, w, h);
+    const p = palette();
+    const night = document.documentElement.dataset.theme === 'night';
+    for (const m of motes) {
+      const color = (m.hue > 0.5 ? p.a : p.b) + p.alpha + ')';
+      if (season === 'autumn' && !night) drawLeaf(m, color);
+      else {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (!reduce) {
+        m.a += m.va;
+        m.x += m.vx + Math.sin(m.a) * 0.2;
+        m.y += m.vy;
+        if (m.y > h + 30 || m.y < -30 || m.x < -30 || m.x > w + 30) Object.assign(m, spawn(false));
+      }
+    }
+    if (running && !reduce) requestAnimationFrame(frame);
+  }
+
+  resize();
+  frame();
+  window.addEventListener('resize', () => { resize(); if (reduce) frame(); });
+  document.addEventListener('visibilitychange', () => {
+    running = !document.hidden;
+    if (running && !reduce) requestAnimationFrame(frame);
+  });
+  document.addEventListener('themechange', () => { if (reduce) frame(); });
+</script>

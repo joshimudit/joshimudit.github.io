@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import TimeRuler from '../components/TimeRuler.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { profile, links, places } from '../data/profile';
+import { sortedLog, formatMonth } from '../data/log';
+
+const latest = sortedLog.slice(0, 5);
+---
+<Base>
+  <section class="hero wrap">
+    <div class="intro">
+      <p class="hello">Hello, I’m</p>
+      <h1>{profile.name}</h1>
+      <p class="lede">{profile.lede}</p>
+      <p class="pos">PhD researcher at Aarhus University, part of the {profile.network}.</p>
+      <ul class="links">
+        {links.map((l) => <li><a href={l.href} rel="me">{l.label}</a></li>)}
+        <li><a href="#contact">Write to me</a></li>
+      </ul>
+    </div>
+    <figure class="plate">
+      <img src={profile.photo} alt={profile.photoAlt} width="1000" height="750" fetchpriority="high" />
+    </figure>
+  </section>
+
+  <section class="section wrap" aria-labelledby="time-h">
+    <h2 id="time-h">From 400 million years ago to after 2030</h2>
+    <p class="muted">My work moves across very different timescales. Pick one to see what I’m working on there.</p>
+    <TimeRuler />
+  </section>
+
+  <section class="section wrap two" aria-labelledby="about-h">
+    <h2 id="about-h">About</h2>
+    <div>
+      {profile.about.map((p) => <p>{p}</p>)}
+      <p><a href="/cv">Read my CV</a> or <a href="/work">see the projects</a>.</p>
+    </div>
+  </section>
+
+  <section class="section wrap two" aria-labelledby="latest-h">
+    <h2 id="latest-h">Latest</h2>
+    <div>
+      <ol class="log">
+        {latest.map((i) => (
+          <li>
+            <time class="data" datetime={i.date}>{formatMonth(i.date)}</time>
+            <span>{i.href ? <a href={i.href}>{i.text}</a> : i.text}</span>
+          </li>
+        ))}
+      </ol>
+      <p><a href="/blog#archive">Everything, back to the start</a></p>
+    </div>
+  </section>
+
+  <section class="section wrap two" aria-labelledby="places-h">
+    <h2 id="places-h">Where I’ve worked</h2>
+    <ul class="places">
+      {places.map((p) => (
+        <li>
+          <strong>{p.name}</strong>
+          <span>{p.what}, {p.country}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section wrap two" id="contact" aria-labelledby="contact-h">
+    <div>
+      <h2 id="contact-h">Let’s talk</h2>
+      <p class="muted">Collaborations, questions about the research, roles in climate, food or AI, or just a good paper you think I should read. I read every message.</p>
+    </div>
+    <ContactForm />
+  </section>
+</Base>
+
+<style>
+  .hero { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: end; padding-block: clamp(2.5rem, 7vw, 6rem) clamp(2.5rem, 5vw, 4rem); }
+  .hello { font-family: var(--serif); font-size: 1.35rem; color: var(--ochre); margin: 0 0 0.25rem; }
+  h1 { margin-bottom: 0.35em; }
+  .lede { font-size: clamp(1.2rem, 2.2vw, 1.5rem); line-height: 1.45; max-width: 34ch; }
+  .pos { color: var(--muted); max-width: 52ch; }
+  .links { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .links a { display: inline-block; padding: 0.35rem 0.85rem; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); text-decoration: none; font-size: 0.92rem; background: var(--surface); }
+  .links a:hover { border-color: var(--ink); }
+  .links li:last-child a { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  .plate { margin: 0; justify-self: end; width: 100%; max-width: 30rem; }
+  .plate img { width: 100%; height: auto; display: block; border-radius: 4px; border: 1px solid var(--line); aspect-ratio: 4 / 3; object-fit: cover; }
+
+  .muted { color: var(--muted); }
+  .two { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem 3rem; }
+  .two > h2 { margin: 0; }
+
+  .log { list-style: none; padding: 0; margin: 0 0 1.25rem; display: grid; gap: 0.9rem; }
+  .log li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: baseline; }
+
+  .places { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem 2rem; }
+  .places li { display: grid; gap: 0.1rem; padding-top: 0.75rem; border-top: 2px solid var(--moss); }
+  .places strong { font-weight: 500; }
+  .places span { color: var(--muted); font-size: 0.92rem; }
+
+  @media (max-width: 760px) {
+    .hero, .two { grid-template-columns: 1fr; }
+    .plate { justify-self: stretch; order: -1; max-width: none; }
+    .log li { grid-template-columns: 1fr; gap: 0.1rem; }
+    .places { grid-template-columns: 1fr; }
+  }
+</style>
