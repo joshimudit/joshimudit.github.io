@@ -26,14 +26,22 @@ const groups = [
               <div class="txt">
                 <div class="meta">
                   <span class={`badge ${p.status}`}>{p.status === 'ongoing' ? 'Ongoing' : 'Completed'}</span>
+                  <span class={`role-tag ${p.role === 'Lead author' ? 'lead' : 'co'}`}>{p.role}</span>
                   <span class="output">{p.outputLink ? <a href={p.outputLink}>{p.output}</a> : p.output}</span>
                 </div>
                 <h3>{p.title}</h3>
                 <p>{p.summary}</p>
                 <ul class="methods" aria-label="Methods">{p.methods.map((m) => <li>{m}</li>)}</ul>
-                <p class="role">{p.role}{p.people && <>, with {p.people.map((x, i) => (
-                  <>{x.href ? <a href={x.href}>{x.name}</a> : x.name}{i < p.people!.length - 2 ? ', ' : i === p.people!.length - 2 ? ' and ' : ''}</>
-                ))}</>}</p>
+                {p.note && <p class="note">{p.note}</p>}
+                {p.team && (
+                  <details class="team">
+                    <summary>Team ({p.team.length + 1})</summary>
+                    <ul>
+                      <li>Mudit Joshi</li>
+                      {p.team.map((x) => <li>{x.href ? <a href={x.href}>{x.name}</a> : x.name}</li>)}
+                    </ul>
+                  </details>
+                )}
               </div>
             </article>
           ))}
@@ -63,7 +71,13 @@ const groups = [
   .card p { margin: 0; }
   .methods { list-style: none; padding: 0; margin: 0.2rem 0 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
   .methods li { font-size: 0.8rem; padding: 0.1rem 0.55rem; border-radius: 3px; background: var(--bg); color: var(--muted); }
-  .role { color: var(--muted); font-size: 0.88rem; }
+  .role-tag { font-size: 0.78rem; padding: 0.05rem 0.5rem; border-radius: 3px; }
+  .role-tag.lead { background: var(--ochre-soft); color: var(--ochre); }
+  .role-tag.co { background: var(--blue-soft); color: var(--blue); }
+  .note { color: var(--muted); font-size: 0.88rem; }
+  .team { font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 0.6rem; margin-top: 0.2rem; }
+  .team summary { cursor: pointer; color: var(--muted); }
+  .team ul { list-style: none; padding: 0; margin: 0.6rem 0 0; display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; }
   .site-note { padding: 2rem; border: 1px dashed var(--line); border-radius: 6px; }
   .site-note h2 { font-size: 1.4rem; }
 </style>

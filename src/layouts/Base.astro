@@ -68,12 +68,11 @@ const nav = [
 
     <footer class="site-foot">
       <div class="wrap foot-row">
-        <div>
-          <p class="sig">© {new Date().getFullYear()} {profile.name}</p>
-          <p>Designed and run by me, built with Claude as co-pilot. Every change is a reviewed commit, <a href="https://github.com/joshimudit/joshimudit.github.io">open on GitHub</a>. Hosted on GitHub Pages.</p>
-        </div>
+        <p class="sig">© {new Date().getFullYear()} {profile.name}</p>
+        <p class="credit">Ideas and taste by Mudit, code by Claude. Font disputes settled by Mudit.</p>
         <ul>
           {links.map((l) => <li><a href={l.href} rel="me">{l.label}</a></li>)}
+          <li><a href="https://github.com/joshimudit/joshimudit.github.io">Source</a></li>
         </ul>
       </div>
     </footer>
@@ -124,9 +123,10 @@ const nav = [
   }
 
   .site-foot { border-top: 1px solid var(--line); padding-block: 2.5rem 3rem; margin-top: 2rem; }
-  .foot-row { display: grid; grid-template-columns: 1fr auto; gap: 1.5rem 3rem; align-items: start; }
-  .foot-row p { margin: 0 0 0.4rem; color: var(--muted); max-width: 52ch; font-size: 0.92rem; }
-  .foot-row .sig { font-family: var(--serif); color: var(--ink); font-size: 1.1rem; }
-  .foot-row ul { display: flex; flex-wrap: wrap; gap: 1.25rem; list-style: none; margin: 0; padding: 0; }
-  @media (max-width: 760px) { .foot-row { grid-template-columns: 1fr; } }
+  .foot-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1.5rem; }
+  .foot-row p { margin: 0; }
+  .sig { font-family: var(--serif); font-size: 1.05rem; }
+  .credit { color: var(--muted); font-size: 0.92rem; }
+  .foot-row ul { display: flex; flex-wrap: wrap; gap: 1.25rem; list-style: none; margin: 0 0 0 auto; padding: 0; font-size: 0.92rem; }
+  @media (max-width: 760px) { .foot-row ul { margin-left: 0; width: 100%; } }
 </style>

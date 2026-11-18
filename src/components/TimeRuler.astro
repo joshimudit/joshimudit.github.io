@@ -12,9 +12,8 @@ const eras = [
   { id: 'now', name: 'Today', span: 'Farming now', x: 85 },
   { id: 'next', name: 'What comes next', span: 'After 2030', x: 94 },
 ];
-const extra: Record<string, { label: string; href: string }[]> = {
-  next: [{ label: 'AI agents doing real research', href: '/lab' }],
-};
+// Extra links per era (e.g. the Agentic Lab once it has a first case study).
+const extra: Record<string, { label: string; href: string }[]> = {};
 const ticks = [1e8, 1e7, 1e6, 1e5, 1e4, 1e3, 1e2, 1e1].map(X);
 ---
 <div class="ruler">
@@ -39,7 +38,7 @@ const ticks = [1e8, 1e7, 1e6, 1e5, 1e4, 1e3, 1e2, 1e1].map(X);
   <ol class="eras">
     {eras.map((e) => (
       <li class={`era era-${e.id}`}>
-        <h3>{e.name}</h3>
+        <h3><span class={`swatch sw-${e.id}`} aria-hidden="true"></span>{e.name}</h3>
         <p class="span">{e.span}</p>
         <ul>
           {projects.filter((p) => p.era === e.id).map((p) => (
@@ -69,18 +68,23 @@ const ticks = [1e8, 1e7, 1e6, 1e5, 1e4, 1e3, 1e2, 1e1].map(X);
   .scale span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
   .scale span:first-child { transform: none; }
 
-  .eras { list-style: none; padding: 0; margin: 1.75rem 0 0; display: grid; grid-template-columns: 1fr 1.3fr 1fr 1fr; gap: 1rem; }
-  .era { padding: 1rem 1.1rem 1.2rem; background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--ink); border-radius: 0 0 6px 6px; }
-  .era-holocene, .era-now { border-top-color: var(--ochre-fill); }
-  .era-next { border-top: 3px dashed var(--blue); }
-  .era h3 { margin-bottom: 0.15rem; font-size: 1.2rem; }
-  .span { color: var(--muted); font-size: 0.88rem; margin-bottom: 0.75rem; }
-  .era ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.55rem; }
-  .era a { color: var(--ink); text-decoration-color: var(--line); }
-  .era a:hover { text-decoration-color: currentColor; }
+  .eras { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: 0.75fr 1.2fr 1.2fr 1.2fr; }
+  .era { padding: 0.25rem 1.5rem 0.5rem; border-left: 1px solid var(--line); }
+  .era:first-child { padding-left: 0; border-left: 0; }
+  .era h3 { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.1rem; font-size: 1.2rem; }
+  .swatch { width: 0.7rem; height: 0.7rem; border-radius: 50%; flex: none; border: 2px solid var(--ink); }
+  .sw-holocene, .sw-now { background: var(--ochre-fill); border-color: var(--ochre-fill); }
+  .sw-next { background: var(--blue); border-color: var(--blue); }
+  .span { color: var(--muted); font-size: 0.88rem; margin-bottom: 0.9rem; padding-left: 1.25rem; }
+  .era ul { list-style: none; padding: 0 0 0 1.25rem; margin: 0; display: grid; gap: 0.1rem; }
+  .era li { padding: 0.4rem 0; border-bottom: 1px dotted var(--line); }
+  .era li:last-child { border-bottom: 0; }
+  .era a { color: var(--ink); text-decoration: none; }
+  .era a:hover { color: var(--blue); text-decoration: underline; }
 
   @media (max-width: 860px) {
     .track, .scale { display: none; }
-    .eras { grid-template-columns: 1fr; }
+    .eras { grid-template-columns: 1fr; gap: 1.25rem; }
+    .era { padding-left: 0; border-left: 0; }
   }
 </style>

@@ -10,13 +10,16 @@ export type Project = {
   status: 'ongoing' | 'completed';
   output: string;
   outputLink?: string;
-  role: string;
+  role: 'Lead author' | 'Co-author';
+  note?: string;
   era: 'deep' | 'holocene' | 'now' | 'next';
   summary: string;
   methods: string[];
   art: { kind: 'niches' | 'productivity' | 'context' | 'strata' } | { src: string; alt: string };
-  people?: { name: string; href?: string }[];
+  team?: { name: string; href?: string }[];
 };
+
+const AD = 'https://agri-dry.org';
 
 export const projects: Project[] = [
   {
@@ -62,7 +65,22 @@ export const projects: Project[] = [
     summary: 'A framework for turning long-term evidence of how people adapted to climate into options for the decades ahead.',
     methods: ['Framework design', 'Evidence synthesis', 'Mapping'],
     art: { kind: 'strata' },
-    people: [{ name: 'colleagues across the AGRI-DRY network', href: 'https://agri-dry.org/team/' }],
+    team: [
+      { name: 'Sara Scaglia', href: `${AD}/our-team/doctoral-candidates/sara-scaglia/` },
+      { name: 'Sara Krubeck', href: `${AD}/our-team/doctoral-candidates/sara-krubeck/` },
+      { name: 'Mncedisi Taala', href: `${AD}/our-team/doctoral-candidates/mncedisi-taala/` },
+      { name: 'Wudu Abiye', href: `${AD}/our-team/doctoral-candidates/wudu-abiye/` },
+      { name: 'Thamary Mukuya', href: `${AD}/our-team/doctoral-candidates/thamary-mukuya/` },
+      { name: 'Paidamoyo Chingono', href: `${AD}/our-team/doctoral-candidates/paidamoyo-hazel-chingono/` },
+      { name: 'Tawanda Mushweshwe', href: `${AD}/our-team/doctoral-candidates/tawanda-mushweshwe/` },
+      { name: 'Kayla Mac Conachie', href: `${AD}/our-team/doctoral-candidates/kayla-storm-mac-conachie/` },
+      { name: 'Alexandra Vasilyeva', href: `${AD}/our-team/doctoral-candidates/alexandra-vasilyeva/` },
+      { name: 'Alex Schoeman', href: `${AD}/our-team/pis-and-supervisors/alex-schoeman/` },
+      { name: 'Nicki Whitehouse', href: `${AD}/our-team/pis-and-supervisors/nicki-whitehouse/` },
+      { name: 'Marco Madella', href: `${AD}/our-team/pis-and-supervisors/marco-madella/` },
+      { name: 'Stefano Biagetti', href: `${AD}/team/pi/stefano-biagetti/` },
+      { name: 'Alejandro Ordonez', href: `${AD}/our-team/pis-and-supervisors/alejandro-ordonez-gloria/` },
+    ],
   },
   {
     slug: 'plant-biodiversity-400-million-years',
@@ -70,15 +88,17 @@ export const projects: Project[] = [
     status: 'completed',
     output: 'Master’s thesis (PDF)',
     outputLink: '/files/Mudit-Joshi-MSc-thesis-2024.pdf',
-    role: 'ETH Zurich and Kiel University, 2024',
+    role: 'Lead author',
+    note: 'ETH Zurich and Kiel University, 2024',
     era: 'deep',
     summary: 'I simulated how plant diversity evolved with climate since the Devonian, running the mechanistic model gen3sis under three palaeoclimate scenarios and tracking 36 biodiversity metrics through time.',
     methods: ['gen3sis', 'R', 'Palaeoclimate scenarios', 'Biodiversity metrics'],
     art: { src: '/img/thesis-richness.webp', alt: 'Simulated plant species richness on today’s continents, from my master’s thesis' },
-    people: [
-      { name: 'Loïc Pellissier' },
-      { name: 'Wilhelmine Bach' },
-      { name: 'Julian Rogger' },
+    team: [
+      { name: 'Loïc Pellissier', href: 'https://ethz.ch' },
+      { name: 'Wilhelmine Bach', href: 'https://ethz.ch' },
+      { name: 'Julian Rogger', href: 'https://ethz.ch' },
+      { name: 'Tim Diekötter', href: 'https://www.uni-kiel.de' },
     ],
   },
 ];

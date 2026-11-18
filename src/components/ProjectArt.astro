@@ -28,7 +28,7 @@ if (kind === 'niches') {
 }
 
 // productivity: ridgeline of smooth series through time
-const ridges: string[] = [];
+const ridges: { area: string; line: string }[] = [];
 if (kind === 'productivity') {
   for (let r = 0; r < 7; r++) {
     const base = 60 + r * 24, ph = rnd() * 6, amp = 10 + rnd() * 14;
@@ -37,7 +37,7 @@ if (kind === 'productivity') {
       const y = base - amp * Math.exp(-(((i - 20 - r * 1.5) / 9) ** 2)) - 4 * Math.sin(i / 3 + ph);
       return `${f(x)},${f(y)}`;
     });
-    ridges.push(`M20,${base}L${pts.join('L')}L380,${base}Z`);
+    ridges.push({ area: `M${pts.join('L')}L380,${base + 30}L20,${base + 30}Z`, line: `M${pts.join('L')}` });
   }
 }
 
@@ -62,7 +62,7 @@ if (kind === 'strata') {
 <svg class={`art ${kind}`} viewBox={`0 0 ${W} ${H}`} aria-hidden="true" preserveAspectRatio="xMidYMid slice">
   <rect width={W} height={H} class="bg" />
   {contours.map((c) => <path d={c.d} class={c.hi ? 'c hi' : 'c'} />)}
-  {ridges.map((d, i) => <path d={d} class={i === 3 ? 'ridge hi' : 'ridge'} />)}
+  {ridges.map((r, i) => <g class={i === 3 ? 'ridge hi' : 'ridge'}><path d={r.area} class="area" /><path d={r.line} class="ln" /></g>)}
   {past.map(([x, y]) => <circle cx={f(x)} cy={f(y)} r="2.4" class="p" />)}
   {present.map(([x, y]) => <circle cx={f(x)} cy={f(y)} r="2.8" class="q" />)}
   {layers.map((d, i) => <path d={d} class={`layer l${i}`} />)}
@@ -80,8 +80,9 @@ if (kind === 'strata') {
   .bg { fill: var(--surface); }
   .c { fill: none; stroke: var(--muted); stroke-width: 1; opacity: 0.45; }
   .c.hi { stroke: var(--blue); stroke-width: 1.6; opacity: 1; }
-  .ridge { fill: var(--surface); stroke: var(--muted); stroke-width: 1.1; }
-  .ridge.hi { stroke: var(--ochre); stroke-width: 1.8; }
+  .ridge .area { fill: var(--surface); }
+  .ridge .ln { fill: none; stroke: var(--muted); stroke-width: 1.2; }
+  .ridge.hi .ln { stroke: var(--ochre); stroke-width: 2; }
   .p { fill: var(--muted); opacity: 0.35; }
   .q { fill: var(--ochre-fill); }
   .layer { stroke: var(--surface); stroke-width: 1.5; }
