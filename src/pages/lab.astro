@@ -1,14 +1,80 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base title="Agentic Lab" description="Mudit Joshi’s experiments with AI agents doing real research, evaluated in the open.">
+<Base title="Agentic Lab" description="Playable models, outreach tools and live experiments with AI agents, built by Mudit Joshi.">
   <div class="wrap page">
     <header class="page-head">
       <h1>Agentic Lab</h1>
-      <p>What happens when AI agents do real research? This is where I run that experiment in the open: the setup, the runs, the mistakes and the results, written up for publication.</p>
+      <p>Things to play with and learn from: small models of how living systems work, outreach tools for teaching, and, soon, experiments with AI agents doing real research. Everything here is free to use in classes and at events.</p>
     </header>
-    <div class="empty">
-      <p>The first case study is in design. When it starts, every run will be logged here.</p>
-    </div>
+
+    <article class="feature">
+      <a class="preview" href="/lab/patch" aria-label="Open Patch">
+        <svg viewBox="0 0 400 230" aria-hidden="true">
+          <rect class="p-sky" width="400" height="130" />
+          <circle class="p-sun" cx="330" cy="44" r="20" />
+          <text class="p-co2" x="60" y="52">CO₂</text><text class="p-co2" x="150" y="78">CO₂</text><text class="p-co2" x="245" y="40">CO₂</text>
+          <rect class="p-soil" y="130" width="400" height="100" />
+          <rect class="p-soilc" y="134" width="400" height="22" />
+          <rect class="p-water" y="192" width="400" height="38" />
+          {Array.from({ length: 13 }, (_, i) => {
+            const x = 18 + i * 29;
+            const h = 34 + ((i * 37) % 26);
+            return (
+              <g>
+                <path class="p-blade" d={`M${x},130 Q${x - 4},${130 - h * 0.6} ${x - 9},${130 - h}`} />
+                <path class="p-blade" d={`M${x + 3},130 Q${x + 4},${130 - h * 0.7} ${x + 6},${130 - h * 1.1}`} />
+                <path class="p-blade" d={`M${x + 6},130 Q${x + 10},${130 - h * 0.5} ${x + 16},${130 - h * 0.85}`} />
+                <path class="p-root" d={`M${x + 3},132 q-4,24 -1,48 M${x + 3},132 q8,18 10,36`} />
+              </g>
+            );
+          })}
+        </svg>
+      </a>
+      <div class="txt">
+        <p class="kind">Playable model</p>
+        <h2><a href="/lab/patch">Patch</a></h2>
+        <p>A pocket-sized vegetation model. Set the temperature, rain, CO₂ and soil, then watch one square metre of grassland capture carbon, drink water, grow and decay, day by day. Tap any part of the scene to see how the process works, in plain words and in a real research model.</p>
+        <p class="for">For curious visitors, classrooms and science fairs.</p>
+        <a class="btn" href="/lab/patch">Open Patch</a>
+      </div>
+    </article>
+
+    <section class="workshop" aria-labelledby="ws-h">
+      <h2 id="ws-h">In the workshop</h2>
+      <ul>
+        <li><strong>Overshoot</strong><span>A one-button game about harvesting faster than nature regrows.</span></li>
+        <li><strong>Tipping Point</strong><span>A lake that flips from clear to green, and the long way back.</span></li>
+        <li><strong>Dryland Runner</strong><span>Ten thousand years of farming in Africa’s drylands, as a game for the AGRI-DRY project.</span></li>
+        <li><strong>A live agent experiment</strong><span>AI agents carrying out a real study, with every run logged here.</span></li>
+      </ul>
+    </section>
   </div>
 </Base>
+
+<style>
+  .feature { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2rem 2.5rem; align-items: center; padding-bottom: 3rem; border-bottom: 1px solid var(--line); }
+  .preview { display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+  .preview svg { display: block; width: 100%; height: auto; }
+  .p-sky { fill: #d6e7ea; } .p-sun { fill: #f2b84b; } .p-soil { fill: #8b6c4c; } .p-soilc { fill: #3e2d1f; opacity: 0.75; }
+  .p-water { fill: #6fa6c4; } .p-blade { fill: none; stroke: #4c8a3a; stroke-width: 2.5; stroke-linecap: round; }
+  .p-root { fill: none; stroke: #e8dcc4; stroke-width: 1.2; opacity: 0.8; } .p-co2 { font-family: var(--mono); font-size: 10px; fill: #4b5d63; }
+  :global([data-theme='night']) .p-sky { fill: #1b2b33; }
+  :global([data-theme='night']) .p-soil { fill: #5a4632; }
+  :global([data-theme='night']) .p-blade { stroke: #7fbf72; }
+  :global([data-theme='night']) .p-co2 { fill: #a9b6aa; }
+  .kind { color: var(--ochre); font-size: 0.92rem; margin-bottom: 0.3rem; }
+  .txt h2 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.4em; }
+  .txt h2 a { color: inherit; text-decoration: none; }
+  .for { color: var(--muted); font-size: 0.95rem; }
+  .workshop { padding-top: 2.5rem; }
+  .workshop h2 { font-size: 1.4rem; }
+  .workshop ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+  .workshop li { display: grid; grid-template-columns: 14rem 1fr; gap: 0.5rem 2rem; padding: 0.85rem 0; border-bottom: 1px dotted var(--line); }
+  .workshop strong { font-weight: 500; }
+  .workshop span { color: var(--muted); }
+  @media (max-width: 800px) {
+    .feature { grid-template-columns: 1fr; }
+    .workshop li { grid-template-columns: 1fr; gap: 0.1rem; }
+  }
+</style>
