@@ -1,14 +1,142 @@
 ---
 import Base from '../layouts/Base.astro';
+import { issues, formatDay } from '../data/digest';
+
+const sorted = [...issues].sort((a, b) => b.number - a.number);
+const [latest, ...past] = sorted;
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
-<Base title="This Week" description="A weekly digest of research and news in climate, ecology and food systems.">
+<Base title="This Week" description="Five things worth knowing each week from climate, ecosystems, food systems and the people living with them.">
   <div class="wrap page">
     <header class="page-head">
       <h1>This Week</h1>
-      <p>A weekly read on climate, ecosystems and food systems: the papers and news worth your time, picked by an AI agent and checked by me.</p>
+      <p>Five things from climate, ecosystems, food and the people in between that caught my attention this week. Found by an AI agent, chosen and checked by me.</p>
     </header>
-    <div class="empty">
-      <p>The first issue is being prepared. It will appear here, with every past issue kept in an archive below it.</p>
-    </div>
+
+    {latest ? (
+      <article class="issue" aria-labelledby="issue-h">
+        <p id="issue-h" class="issue-line data">
+          Issue {pad(latest.number)} <span aria-hidden="true">·</span> <time datetime={latest.date}>{formatDay(latest.date)}</time>
+        </p>
+
+        <ol class="items">
+          {latest.items.map((it, i) => (
+            <li class="item">
+              <span class="num" aria-hidden="true">{pad(i + 1)}</span>
+              <div class="body">
+                {it.home && <p class="home data">From home</p>}
+                <h2>{it.title}</h2>
+                <p>{it.summary}</p>
+                <p class="why"><span class="label data">Why it matters</span> {it.why}</p>
+                {it.take && (
+                  <p class="take"><span class="label data">My take</span> {it.take}</p>
+                )}
+                <p class="src data">
+                  <span>{it.source}</span> <span aria-hidden="true">·</span> <time class="nowrap" datetime={it.date}>{formatDay(it.date)}</time> <span aria-hidden="true">·</span>
+                  <a class="nowrap" href={it.url} target="_blank" rel="noopener">Read the original<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <p class="note">Every item links to its source, and every fact on this page was checked against something I could read. Summaries are in my own words. If it could not be checked, it is not here.</p>
+      </article>
+    ) : (
+      <div class="empty"><p>The first issue is being prepared.</p></div>
+    )}
+
+    {past.length > 0 && (
+      <section class="archive" aria-labelledby="archive-h">
+        <h2 id="archive-h">Past issues</h2>
+        {past.map((iss) => (
+          <details>
+            <summary>
+              <span class="data">Issue {pad(iss.number)}</span>
+              <time datetime={iss.date}>{formatDay(iss.date)}</time>
+            </summary>
+            <ol>
+              {iss.items.map((it) => (
+                <li>
+                  {it.home && <span class="home data">From home</span>}
+                  <a href={it.url} target="_blank" rel="noopener">{it.title}</a>
+                  <span class="data"> · {it.source}</span>
+                </li>
+              ))}
+            </ol>
+          </details>
+        ))}
+      </section>
+    )}
   </div>
 </Base>
+
+<style>
+  .issue-line { margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .items { list-style: none; padding: 0; margin: 0; }
+  .item {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: 1.5rem;
+    padding-block: 2.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .item:last-child { border-bottom: 1px solid var(--line); }
+
+  .num {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 5vw, 3.75rem);
+    line-height: 1;
+    color: var(--ochre);
+  }
+
+  .body h2 { font-size: clamp(1.45rem, 2.6vw, 1.95rem); margin-bottom: 0.5em; max-width: 30ch; }
+  .body p { max-width: var(--measure); }
+
+  .label {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.15rem;
+  }
+  .why { color: var(--ink); }
+  .take { border-left: 2px solid var(--blue); padding-left: 1rem; font-style: italic; }
+  .take .label { font-style: normal; }
+
+  .src { margin: 1.25rem 0 0; line-height: 1.9; }
+  .nowrap { white-space: nowrap; }
+  .src a { color: var(--blue); }
+
+  /* India items: small mono tag with a diamond marker (shape, not only colour). */
+  .home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0 0 0.5rem;
+    color: var(--ochre);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .home::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+
+  .note { margin-top: 2rem; color: var(--muted); font-size: 0.95rem; }
+
+  .archive { margin-top: 4rem; padding-top: 2.5rem; border-top: 1px solid var(--line); }
+  .archive h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+  details { border-bottom: 1px solid var(--line); padding-block: 0.9rem; }
+  summary { cursor: pointer; display: flex; gap: 1rem; align-items: baseline; }
+  details ol { margin: 0.9rem 0 0.4rem; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
+  details .home { margin: 0 0.5rem 0 0; }
+
+  @media (max-width: 760px) {
+    .item { grid-template-columns: 1fr; gap: 0.5rem; padding-block: 1.75rem; }
+    .num { font-size: 2.25rem; }
+  }
+</style>
