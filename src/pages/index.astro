@@ -70,7 +70,7 @@ const latest = sortedLog.slice(0, 5);
   <section class="section wrap two" id="contact" aria-labelledby="contact-h">
     <div>
       <h2 id="contact-h">Let’s talk</h2>
-      <p class="muted">Collaborations, questions about the research, roles in climate, food or AI, or just a good paper you think I should read.</p>
+      <p class="muted">Collaborations, questions about the research, roles in climate, ecosystems, food or AI, or just a good paper you think I should read.</p>
     </div>
     <ContactForm />
   </section>
@@ -94,8 +94,16 @@ const latest = sortedLog.slice(0, 5);
   .links a:hover { border-bottom-color: currentColor; }
   .links svg { color: var(--blue); }
 
-  .plate { margin: 0; justify-self: end; width: 100%; max-width: 30rem; }
-  .plate img { width: 100%; height: auto; display: block; border-radius: 4px; border: 1px solid var(--line); aspect-ratio: 4 / 3; object-fit: cover; }
+  .plate { margin: 0; justify-self: end; width: 100%; max-width: 31rem; }
+  .plate img {
+    width: 100%; height: auto; display: block; aspect-ratio: 4 / 3; object-fit: cover;
+    border-radius: 14px;
+    /* a light feather on the edges only, so the photo sits softly on the page */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent), linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent), linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
+    mask-composite: intersect;
+  }
 
   .muted { color: var(--muted); }
   .two { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem 3rem; }

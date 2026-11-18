@@ -31,7 +31,9 @@ const past = collaborations.filter((c) => c.group === 'past');
       <path d={land} class="land" />
       {pins.map((p) => (
         <a href={p.href} aria-label={`${p.name}, ${p.place}`}>
-          <circle cx={p.x} cy={p.y} r="7" class={`pin ${p.group}`} />
+          {p.group === 'agridry'
+            ? <circle cx={p.x} cy={p.y} r="7" class="pin agridry" />
+            : <rect x={p.x - 6} y={p.y - 6} width="12" height="12" transform={`rotate(45 ${p.x} ${p.y})`} class="pin past" />}
           <title>{p.name}, {p.place}</title>
         </a>
       ))}
@@ -71,12 +73,12 @@ const past = collaborations.filter((c) => c.group === 'past');
   .pin { stroke: var(--bg); stroke-width: 2.5; transition: r 0.15s ease; }
   .pin.agridry { fill: var(--blue); }
   .pin.past { fill: var(--ochre-fill); }
-  a:hover .pin, a:focus .pin { r: 10; }
+  a:hover .pin, a:focus .pin { stroke: var(--ink); }
   figcaption { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 0.75rem; font-size: 0.88rem; color: var(--muted); }
   .key { display: inline-flex; align-items: center; gap: 0.45rem; }
   .k { width: 0.7rem; height: 0.7rem; border-radius: 50%; }
   .k.agridry { background: var(--blue); }
-  .k.past { background: var(--ochre-fill); }
+  .k.past { background: var(--ochre-fill); border-radius: 1px; transform: rotate(45deg) scale(0.85); }
 
   .lists { display: grid; gap: 1.75rem; }
   .lists h3 { font-family: var(--sans); font-weight: 500; font-size: 1rem; margin-bottom: 0.75rem; color: var(--muted); }
