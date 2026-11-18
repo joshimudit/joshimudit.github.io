@@ -1,0 +1,132 @@
+---
+import '@fontsource/young-serif';
+import '@fontsource-variable/geologica';
+import '@fontsource/martian-mono/400.css';
+import '../styles/global.css';
+import SeasonSky from '../components/SeasonSky.astro';
+import { profile, links } from '../data/profile';
+
+interface Props { title?: string; description?: string }
+const { title, description = `${profile.name}, ${profile.role.toLowerCase()}. ${profile.lede}` } = Astro.props;
+const fullTitle = title ? `${title} | ${profile.name}` : `${profile.name}, ${profile.role.toLowerCase()}`;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const nav = [
+  { href: '/work', label: 'Work' },
+  { href: '/publications', label: 'Publications' },
+  { href: '/cv', label: 'CV' },
+  { href: '/this-week', label: 'This Week' },
+  { href: '/lab', label: 'Agentic Lab' },
+  { href: '/blog', label: 'Blog' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(profile.photo, Astro.site)} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          var night = saved ? saved === 'night' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = night ? 'night' : 'day';
+        } catch (e) { document.documentElement.dataset.theme = 'day'; }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <SeasonSky />
+    <header class="site-head">
+      <div class="wrap head-row">
+        <a class="home" href="/" aria-current={path === '/' ? 'page' : undefined}>{profile.name}</a>
+        <nav aria-label="Main">
+          <ul>
+            {nav.map((n) => (
+              <li><a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+        <button class="theme" type="button" aria-label="Switch between day and night theme">
+          <svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg>
+          <svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span class="theme-label"></span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main"><slot /></main>
+
+    <footer class="site-foot">
+      <div class="wrap foot-row">
+        <p class="sig">© {new Date().getFullYear()} {profile.name}</p>
+        <p class="credit">Ideas and taste by Mudit, code by Claude. Font disputes settled by Mudit.</p>
+        <ul>
+          {links.map((l) => <li><a href={l.href} rel="me">{l.label}</a></li>)}
+          <li><a href="https://github.com/joshimudit/joshimudit.github.io">Source</a></li>
+        </ul>
+      </div>
+    </footer>
+
+    <script>
+      const btn = document.querySelector('.theme') as HTMLButtonElement;
+      const label = btn.querySelector('.theme-label') as HTMLSpanElement;
+      const sync = () => {
+        const night = document.documentElement.dataset.theme === 'night';
+        label.textContent = night ? 'Night' : 'Day';
+        btn.setAttribute('aria-pressed', String(night));
+      };
+      sync();
+      btn.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'night' ? 'day' : 'night';
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem('theme', next); } catch (e) {}
+        sync();
+        document.dispatchEvent(new Event('themechange'));
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip { position: absolute; left: -999px; top: 0.5rem; background: var(--surface); padding: 0.5rem 1rem; z-index: 10; }
+  .skip:focus { left: 0.5rem; }
+
+  .site-head { border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(6px); position: sticky; top: 0; z-index: 5; }
+  .head-row { display: flex; align-items: center; gap: 1.5rem; min-height: 4rem; }
+  .home { font-family: var(--serif); font-size: 1.25rem; color: var(--ink); text-decoration: none; white-space: nowrap; }
+  nav { margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+  nav ul { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; white-space: nowrap; }
+  nav a { color: var(--ink); text-decoration: none; font-size: 0.95rem; padding-block: 0.4rem; border-bottom: 2px solid transparent; }
+  nav a:hover { border-bottom-color: var(--line); }
+  nav a[aria-current='page'] { border-bottom-color: var(--ochre); }
+
+  .theme { display: inline-flex; align-items: center; gap: 0.4rem; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 3px; padding: 0.35rem 0.7rem; font: inherit; font-size: 0.85rem; cursor: pointer; }
+  .theme:hover { border-color: var(--ink); }
+  :global([data-theme='day']) .moon, :global([data-theme='night']) .sun { display: none; }
+
+  @media (max-width: 760px) {
+    .head-row { flex-wrap: wrap; gap: 0.25rem 1rem; padding-block: 0.6rem; }
+    nav { order: 3; width: 100%; margin-left: 0; }
+    nav ul { flex-wrap: wrap; gap: 0.2rem 1rem; }
+    .theme { margin-left: auto; }
+    .theme-label { display: none; }
+  }
+
+  .site-foot { border-top: 1px solid var(--line); padding-block: 2.5rem 3rem; margin-top: 2rem; }
+  .foot-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1.5rem; }
+  .foot-row p { margin: 0; }
+  .sig { font-family: var(--serif); font-size: 1.05rem; }
+  .credit { color: var(--muted); font-size: 0.92rem; }
+  .foot-row ul { display: flex; flex-wrap: wrap; gap: 1.25rem; list-style: none; margin: 0 0 0 auto; padding: 0; font-size: 0.92rem; }
+  @media (max-width: 760px) { .foot-row ul { margin-left: 0; width: 100%; } }
+</style>

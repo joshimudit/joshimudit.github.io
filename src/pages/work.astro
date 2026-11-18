@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectArt from '../components/ProjectArt.astro';
+import { projects } from '../data/projects';
+const groups = [
+  { label: 'Ongoing', list: projects.filter((p) => p.status === 'ongoing') },
+  { label: 'Completed', list: projects.filter((p) => p.status === 'completed') },
+];
+---
+<Base title="Work" description="Research projects by Mudit Joshi on crops, climate and farming across the Holocene, and plant biodiversity over 400 million years.">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Work</h1>
+      <p>Four papers in progress for my PhD, and the thesis that came before them. Details and results appear here as each one is published.</p>
+    </header>
+
+    {groups.filter((g) => g.list.length).map((g) => (
+      <section class="group" aria-labelledby={`g-${g.label}`}>
+        <h2 id={`g-${g.label}`}>{g.label}</h2>
+        <div class="cards">
+          {g.list.map((p) => (
+            <article class="card" id={p.slug}>
+              <div class="pic">
+                {'src' in p.art ? <img src={p.art.src} alt={p.art.alt} loading="lazy" /> : <ProjectArt kind={p.art.kind} />}
+              </div>
+              <div class="txt">
+                <div class="meta">
+                  <span class={`badge ${p.status}`}>{p.status === 'ongoing' ? 'Ongoing' : 'Completed'}</span>
+                  <span class={`role-tag ${p.role === 'Lead author' ? 'lead' : 'co'}`}>{p.role}</span>
+                  <span class="output">{p.outputLink ? <a href={p.outputLink}>{p.output}</a> : p.output}</span>
+                </div>
+                <h3>{p.title}</h3>
+                <p>{p.summary}</p>
+                <ul class="methods" aria-label="Methods">{p.methods.map((m) => <li>{m}</li>)}</ul>
+                {p.note && <p class="note">{p.note}</p>}
+                {p.team && (
+                  <details class="team">
+                    <summary>Team ({p.team.length + 1})</summary>
+                    <ul>
+                      <li>Mudit Joshi</li>
+                      {p.team.map((x) => <li>{x.href ? <a href={x.href}>{x.name}</a> : x.name}</li>)}
+                    </ul>
+                  </details>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <section class="site-note">
+      <h2>This website</h2>
+      <p>The site is a project too. I designed it and run it with Claude as a co-builder: every change arrives as a pull request that I review, so the whole history is public on GitHub. A proper write-up is coming.</p>
+      <p><a href="https://github.com/joshimudit/joshimudit.github.io">See the source on GitHub</a></p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .group { margin-bottom: 3.5rem; }
+  .group > h2 { font-size: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--line); margin-bottom: 1.5rem; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr)); gap: 1.5rem; }
+  .card { display: grid; grid-template-rows: auto 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; scroll-margin-top: 5rem; }
+  .pic { aspect-ratio: 5 / 3; border-bottom: 1px solid var(--line); background: var(--surface); }
+  .pic img { width: 100%; height: 100%; object-fit: cover; display: block; background: #fff; }
+  .txt { padding: 1.25rem 1.4rem 1.4rem; display: grid; align-content: start; gap: 0.6rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; font-size: 0.85rem; }
+  .output { color: var(--muted); }
+  .card h3 { margin: 0.2rem 0 0; font-size: 1.35rem; }
+  .card p { margin: 0; }
+  .methods { list-style: none; padding: 0; margin: 0.2rem 0 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .methods li { font-size: 0.8rem; padding: 0.1rem 0.55rem; border-radius: 3px; background: var(--bg); color: var(--muted); }
+  .role-tag { font-size: 0.78rem; padding: 0.05rem 0.5rem; border-radius: 3px; }
+  .role-tag.lead { background: var(--ochre-soft); color: var(--ochre); }
+  .role-tag.co { background: var(--blue-soft); color: var(--blue); }
+  .note { color: var(--muted); font-size: 0.88rem; }
+  .team { font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 0.6rem; margin-top: 0.2rem; }
+  .team summary { cursor: pointer; color: var(--muted); }
+  .team ul { list-style: none; padding: 0; margin: 0.6rem 0 0; display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; }
+  .site-note { padding: 2rem; border: 1px dashed var(--line); border-radius: 6px; }
+  .site-note h2 { font-size: 1.4rem; }
+</style>
