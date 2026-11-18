@@ -94,8 +94,13 @@ const latest = sortedLog.slice(0, 5);
   .links a:hover { border-bottom-color: currentColor; }
   .links svg { color: var(--blue); }
 
-  .plate { margin: 0; justify-self: end; width: 100%; max-width: 30rem; }
-  .plate img { width: 100%; height: auto; display: block; border-radius: 4px; border: 1px solid var(--line); aspect-ratio: 4 / 3; object-fit: cover; }
+  .plate { margin: 0 -1.5rem 0 0; justify-self: end; width: 100%; max-width: 34rem; }
+  .plate img {
+    width: 100%; height: auto; display: block; aspect-ratio: 4 / 3; object-fit: cover;
+    /* dissolve the edges into the page so the photo sits in it, not on it */
+    -webkit-mask-image: radial-gradient(ellipse 46% 50% at 54% 48%, #000 42%, rgba(0,0,0,0.5) 74%, transparent 100%);
+    mask-image: radial-gradient(ellipse 46% 50% at 54% 48%, #000 42%, rgba(0,0,0,0.5) 74%, transparent 100%);
+  }
 
   .muted { color: var(--muted); }
   .two { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem 3rem; }
