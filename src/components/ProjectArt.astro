@@ -1,0 +1,93 @@
+---
+// Quiet, drawn concept graphics for projects without figures yet.
+// Deterministic (seeded) so they never change between builds; coloured by theme variables.
+interface Props { kind: 'niches' | 'productivity' | 'context' | 'strata' }
+const { kind } = Astro.props;
+
+let seed = { niches: 7, productivity: 11, context: 23, strata: 31 }[kind];
+const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+const W = 400, H = 240;
+const f = (n: number) => n.toFixed(1);
+
+// niches: nested, wobbly contours around two centres, like a suitability surface
+const contours: { d: string; hi: boolean }[] = [];
+if (kind === 'niches') {
+  const centres = [[150, 125], [275, 105]];
+  centres.forEach(([cx, cy], ci) => {
+    const ph = rnd() * 6;
+    for (let k = 1; k <= 6; k++) {
+      const r = 14 + k * 17 + ci * 4;
+      const pts = Array.from({ length: 49 }, (_, i) => {
+        const a = (i / 48) * Math.PI * 2;
+        const wob = 1 + 0.12 * Math.sin(3 * a + ph) + 0.07 * Math.sin(5 * a + k);
+        return `${f(cx + Math.cos(a) * r * wob * 1.25)},${f(cy + Math.sin(a) * r * wob * 0.8)}`;
+      });
+      contours.push({ d: `M${pts.join('L')}Z`, hi: k <= 2 });
+    }
+  });
+}
+
+// productivity: ridgeline of smooth series through time
+const ridges: string[] = [];
+if (kind === 'productivity') {
+  for (let r = 0; r < 7; r++) {
+    const base = 60 + r * 24, ph = rnd() * 6, amp = 10 + rnd() * 14;
+    const pts = Array.from({ length: 41 }, (_, i) => {
+      const x = 20 + i * 9;
+      const y = base - amp * Math.exp(-(((i - 20 - r * 1.5) / 9) ** 2)) - 4 * Math.sin(i / 3 + ph);
+      return `${f(x)},${f(y)}`;
+    });
+    ridges.push(`M20,${base}L${pts.join('L')}L380,${base}Z`);
+  }
+}
+
+// context: a broad cloud of past conditions and a smaller present-day cloud drifting off its edge
+const past: [number, number][] = [], present: [number, number][] = [];
+if (kind === 'context') {
+  const g = () => (rnd() + rnd() + rnd() - 1.5) * 1.4;
+  for (let i = 0; i < 170; i++) past.push([170 + g() * 70, 125 + g() * 42]);
+  for (let i = 0; i < 40; i++) present.push([285 + g() * 26, 82 + g() * 18]);
+}
+
+// strata: layered bands of time with a line drawn up through them into a dashed future
+const layers: string[] = [];
+if (kind === 'strata') {
+  for (let l = 0; l < 6; l++) {
+    const y0 = 210 - l * 30, ph = rnd() * 6;
+    const top = Array.from({ length: 41 }, (_, i) => `${f(i * 10)},${f(y0 - 22 - 5 * Math.sin(i / 5 + ph))}`);
+    layers.push(`M0,${y0}L${top.join('L')}L400,${y0}Z`);
+  }
+}
+---
+<svg class={`art ${kind}`} viewBox={`0 0 ${W} ${H}`} aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+  <rect width={W} height={H} class="bg" />
+  {contours.map((c) => <path d={c.d} class={c.hi ? 'c hi' : 'c'} />)}
+  {ridges.map((d, i) => <path d={d} class={i === 3 ? 'ridge hi' : 'ridge'} />)}
+  {past.map(([x, y]) => <circle cx={f(x)} cy={f(y)} r="2.4" class="p" />)}
+  {present.map(([x, y]) => <circle cx={f(x)} cy={f(y)} r="2.8" class="q" />)}
+  {layers.map((d, i) => <path d={d} class={`layer l${i}`} />)}
+  {kind === 'strata' && (
+    <g class="thread">
+      <path d="M200,232 L200,60" />
+      <path d="M200,60 L200,14" class="future" />
+      <circle cx="200" cy="60" r="5" />
+    </g>
+  )}
+</svg>
+
+<style>
+  .art { display: block; width: 100%; height: 100%; }
+  .bg { fill: var(--surface); }
+  .c { fill: none; stroke: var(--muted); stroke-width: 1; opacity: 0.45; }
+  .c.hi { stroke: var(--blue); stroke-width: 1.6; opacity: 1; }
+  .ridge { fill: var(--surface); stroke: var(--muted); stroke-width: 1.1; }
+  .ridge.hi { stroke: var(--ochre); stroke-width: 1.8; }
+  .p { fill: var(--muted); opacity: 0.35; }
+  .q { fill: var(--ochre-fill); }
+  .layer { stroke: var(--surface); stroke-width: 1.5; }
+  .l0 { fill: var(--line); } .l1 { fill: var(--blue-soft); } .l2 { fill: var(--line); }
+  .l3 { fill: var(--blue-soft); } .l4 { fill: var(--line); } .l5 { fill: var(--blue-soft); }
+  .thread path { stroke: var(--ochre); stroke-width: 2.5; fill: none; }
+  .thread .future { stroke-dasharray: 5 5; }
+  .thread circle { fill: var(--ochre-fill); }
+</style>

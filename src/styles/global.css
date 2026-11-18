@@ -1,16 +1,21 @@
 /* Day = field notebook on lichen paper. Night = the planet from orbit.
    Blue and ochre carry meaning; they stay distinct for all common colour-vision types. */
 :root {
-  --bg: #ebeae0;
-  --surface: #f5f4ec;
-  --ink: #1f2a30;
-  --muted: #4f5c5c;
-  --line: #c4c6b8;
-  --blue: #1d6580;
-  --ochre: #9a5d14;
-  --ochre-soft: #e3c48f;
-  --moss: #56663f;
-  --focus: #1d6580;
+  /* Day: alpine mist. Night: deep glacier water.
+     Teal and saffron carry meaning; they stay distinct for all common colour-vision types. */
+  --bg: #f1f4f3;
+  --surface: #ffffff;
+  --ink: #11252b;
+  --muted: #4b5d63;
+  --line: #d2dcdc;
+  --blue: #0b6b7a;
+  --blue-soft: #d7ecee;
+  --ochre: #a85a06;
+  --ochre-fill: #e89a3c;
+  --ochre-soft: #f5dfbd;
+  --moss: #4e6b3a;
+  --on-accent: #ffffff;
+  --focus: #0b6b7a;
 
   --serif: 'Young Serif', Georgia, serif;
   --sans: 'Geologica Variable', 'Segoe UI', sans-serif;
@@ -22,16 +27,19 @@
 }
 
 [data-theme='night'] {
-  --bg: #0f2a3a;
-  --surface: #133447;
-  --ink: #ebe7dc;
-  --muted: #a9bcc4;
-  --line: #2c4c60;
-  --blue: #7cc4dd;
-  --ochre: #e7a957;
-  --ochre-soft: #5c4523;
-  --moss: #a8b98e;
-  --focus: #e7a957;
+  --bg: #0c1c22;
+  --surface: #12292f;
+  --ink: #e4ecec;
+  --muted: #9fb4b8;
+  --line: #23404a;
+  --blue: #5cc3cf;
+  --blue-soft: #163a42;
+  --ochre: #f0a54a;
+  --ochre-fill: #f0a54a;
+  --ochre-soft: #4a3418;
+  --moss: #9fc08a;
+  --on-accent: #0c1c22;
+  --focus: #f0a54a;
   color-scheme: dark;
 }
 
@@ -76,14 +84,25 @@ a:hover { text-decoration-thickness: 2px; }
 .data { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.01em; color: var(--muted); }
 
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: 0.82rem;
-  padding: 0.1rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid currentColor;
+  font-weight: 500;
 }
+.badge::before { content: ''; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: currentColor; }
 .badge.ongoing { color: var(--blue); }
+.badge.ongoing::before { background: none; border: 2px solid currentColor; width: 0.6rem; height: 0.6rem; }
 .badge.completed { color: var(--moss); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font: inherit; font-size: 0.95rem; font-weight: 500;
+  background: var(--blue); color: var(--on-accent);
+  border: 0; border-radius: 3px; padding: 0.6rem 1.1rem;
+  text-decoration: none; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
 
 .empty {
   border: 1px dashed var(--line);

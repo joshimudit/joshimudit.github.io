@@ -2,6 +2,12 @@
 
 export const education = [
   {
+    when: 'Dec 2024 – Nov 2027',
+    what: 'PhD, Section of Ecoinformatics and Biodiversity, Aarhus University',
+    where: 'Denmark',
+    detail: 'Modelling key crop environmental niches and productivity over the Holocene. Marie Skłodowska-Curie doctoral network AGRI-DRY.',
+  },
+  {
     when: '2023 – 2024',
     what: 'Master’s thesis, ETH Zurich',
     where: 'Switzerland',
@@ -28,12 +34,12 @@ export const education = [
 
 export const experience = [
   {
-    when: 'Current',
+    when: 'Dec 2024 – present',
     what: 'PhD researcher, Section of Ecoinformatics and Biodiversity, Aarhus University',
     where: 'Denmark',
     points: [
       'Modelling crop environmental niches and productivity over the Holocene in the Marie Skłodowska-Curie doctoral network AGRI-DRY.',
-      'Lead author of four papers: crop niches, LPJmL productivity, agricultural novelty and the TRACE adaptation framework.',
+      'Lead author of four papers, in preparation or under review.',
       'Research stays in South Africa and at the University of Glasgow.',
     ],
   },

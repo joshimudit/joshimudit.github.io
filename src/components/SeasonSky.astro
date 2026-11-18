@@ -30,11 +30,11 @@
 
   const palette = () => {
     const night = document.documentElement.dataset.theme === 'night';
-    if (night) return { a: 'rgba(124,196,221,', b: 'rgba(231,169,87,', alpha: 0.2 };
-    if (season === 'autumn') return { a: 'rgba(154,93,20,', b: 'rgba(86,102,63,', alpha: 0.32 };
-    if (season === 'winter') return { a: 'rgba(29,101,128,', b: 'rgba(79,92,92,', alpha: 0.22 };
-    if (season === 'spring') return { a: 'rgba(181,140,40,', b: 'rgba(86,102,63,', alpha: 0.3 };
-    return { a: 'rgba(86,102,63,', b: 'rgba(154,93,20,', alpha: 0.28 };
+    if (night) return { a: 'rgba(92,195,207,', b: 'rgba(240,165,74,', alpha: 0.2 };
+    if (season === 'autumn') return { a: 'rgba(200,110,20,', b: 'rgba(78,107,58,', alpha: 0.3 };
+    if (season === 'winter') return { a: 'rgba(11,107,122,', b: 'rgba(75,93,99,', alpha: 0.2 };
+    if (season === 'spring') return { a: 'rgba(200,150,30,', b: 'rgba(78,107,58,', alpha: 0.28 };
+    return { a: 'rgba(78,107,58,', b: 'rgba(200,110,20,', alpha: 0.26 };
   };
 
   function resize() {

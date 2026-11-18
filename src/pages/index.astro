@@ -2,7 +2,17 @@
 import Base from '../layouts/Base.astro';
 import TimeRuler from '../components/TimeRuler.astro';
 import ContactForm from '../components/ContactForm.astro';
-import { profile, links, places } from '../data/profile';
+import CollabMap from '../components/CollabMap.astro';
+import { profile, links } from '../data/profile';
+import { siGithub, siOrcid } from 'simple-icons';
+
+// 24x24 icon paths for the profile links
+const icons: Record<string, string> = {
+  LinkedIn: 'M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z',
+  ORCID: siOrcid.path,
+  GitHub: siGithub.path,
+  'AGRI-DRY profile': 'M12 2C7 7 5 11 5 14a7 7 0 0 0 14 0c0-3-2-7-7-12Zm0 18.5a5.5 5.5 0 0 1-5.5-5.5c0-1.6.8-3.9 3-6.9V20a5.4 5.4 0 0 0 2.5.5Z',
+};
 import { sortedLog, formatMonth } from '../data/log';
 
 const latest = sortedLog.slice(0, 5);
@@ -14,10 +24,14 @@ const latest = sortedLog.slice(0, 5);
       <h1>{profile.name}</h1>
       <p class="lede">{profile.lede}</p>
       <p class="pos">PhD researcher at Aarhus University, part of the {profile.network}.</p>
-      <ul class="links">
-        {links.map((l) => <li><a href={l.href} rel="me">{l.label}</a></li>)}
-        <li><a href="#contact">Write to me</a></li>
-      </ul>
+      <div class="actions">
+        <a class="btn" href="#contact">Get in touch</a>
+        <ul class="links">
+          {links.map((l) => (
+            <li><a href={l.href} rel="me"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d={icons[l.label]} fill="currentColor" /></svg>{l.label}</a></li>
+          ))}
+        </ul>
+      </div>
     </div>
     <figure class="plate">
       <img src={profile.photo} alt={profile.photoAlt} width="1000" height="750" fetchpriority="high" />
@@ -53,24 +67,18 @@ const latest = sortedLog.slice(0, 5);
     </div>
   </section>
 
-  <section class="section wrap two" aria-labelledby="places-h">
-    <h2 id="places-h">Where I’ve worked</h2>
-    <ul class="places">
-      {places.map((p) => (
-        <li>
-          <strong>{p.name}</strong>
-          <span>{p.what}, {p.country}</span>
-        </li>
-      ))}
-    </ul>
-  </section>
-
   <section class="section wrap two" id="contact" aria-labelledby="contact-h">
     <div>
       <h2 id="contact-h">Let’s talk</h2>
-      <p class="muted">Collaborations, questions about the research, roles in climate, food or AI, or just a good paper you think I should read. I read every message.</p>
+      <p class="muted">Collaborations, questions about the research, roles in climate, food or AI, or just a good paper you think I should read.</p>
     </div>
     <ContactForm />
+  </section>
+
+  <section class="section wrap" aria-labelledby="collab-h">
+    <h2 id="collab-h">Current and past collaborations</h2>
+    <p class="muted">The universities and organisations I work with now, and the ones that shaped me before.</p>
+    <CollabMap />
   </section>
 </Base>
 
@@ -80,10 +88,11 @@ const latest = sortedLog.slice(0, 5);
   h1 { margin-bottom: 0.35em; }
   .lede { font-size: clamp(1.2rem, 2.2vw, 1.5rem); line-height: 1.45; max-width: 34ch; }
   .pos { color: var(--muted); max-width: 52ch; }
-  .links { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .links a { display: inline-block; padding: 0.35rem 0.85rem; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); text-decoration: none; font-size: 0.92rem; background: var(--surface); }
-  .links a:hover { border-color: var(--ink); }
-  .links li:last-child a { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: 1.75rem; }
+  .links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+  .links a { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--ink); text-decoration: none; font-size: 0.95rem; border-bottom: 1px solid transparent; }
+  .links a:hover { border-bottom-color: currentColor; }
+  .links svg { color: var(--blue); }
 
   .plate { margin: 0; justify-self: end; width: 100%; max-width: 30rem; }
   .plate img { width: 100%; height: auto; display: block; border-radius: 4px; border: 1px solid var(--line); aspect-ratio: 4 / 3; object-fit: cover; }
@@ -95,15 +104,10 @@ const latest = sortedLog.slice(0, 5);
   .log { list-style: none; padding: 0; margin: 0 0 1.25rem; display: grid; gap: 0.9rem; }
   .log li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: baseline; }
 
-  .places { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem 2rem; }
-  .places li { display: grid; gap: 0.1rem; padding-top: 0.75rem; border-top: 2px solid var(--moss); }
-  .places strong { font-weight: 500; }
-  .places span { color: var(--muted); font-size: 0.92rem; }
 
   @media (max-width: 760px) {
     .hero, .two { grid-template-columns: 1fr; }
     .plate { justify-self: stretch; order: -1; max-width: none; }
     .log li { grid-template-columns: 1fr; gap: 0.1rem; }
-    .places { grid-template-columns: 1fr; }
   }
 </style>

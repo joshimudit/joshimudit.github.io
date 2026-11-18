@@ -24,14 +24,22 @@ export const links = [
   { label: 'AGRI-DRY profile', href: 'https://agri-dry.org/team/dc/mudit-joshi/' },
 ];
 
-// Places Mudit has studied, worked or collaborated. Shown on Home.
-export const places = [
-  { name: 'Aarhus University', country: 'Denmark', what: 'PhD' },
-  { name: 'University of Glasgow', country: 'United Kingdom', what: 'Research secondment' },
-  { name: 'ETH Zurich', country: 'Switzerland', what: 'Master’s thesis' },
-  { name: 'Kiel University', country: 'Germany', what: 'MSc' },
-  { name: 'Adam Mickiewicz University', country: 'Poland', what: 'Erasmus semester' },
-  { name: 'G.B. Pant University of Agriculture and Technology', country: 'India', what: 'BSc' },
+// Current and past collaborations, shown on the map at the end of Home.
+// href: main sites for now; swap in lab or professor pages later.
+export type Collab = { name: string; short: string; place: string; country: string; role: string; group: 'agridry' | 'past'; lat: number; lon: number; href: string };
+
+export const collaborations: Collab[] = [
+  { name: 'Aarhus University', short: 'Aarhus', place: 'Aarhus', country: 'Denmark', role: 'PhD host, AGRI-DRY', group: 'agridry', lat: 56.17, lon: 10.2, href: 'https://international.au.dk' },
+  { name: 'University of Glasgow', short: 'Glasgow', place: 'Glasgow', country: 'United Kingdom', role: 'AGRI-DRY coordinator', group: 'agridry', lat: 55.87, lon: -4.29, href: 'https://www.gla.ac.uk' },
+  { name: 'Universitat Pompeu Fabra', short: 'UPF', place: 'Barcelona', country: 'Spain', role: 'AGRI-DRY coordinator', group: 'agridry', lat: 41.39, lon: 2.18, href: 'https://www.upf.edu' },
+  { name: 'Università del Salento', short: 'Salento', place: 'Lecce', country: 'Italy', role: 'AGRI-DRY partner', group: 'agridry', lat: 40.35, lon: 18.17, href: 'https://www.unisalento.it' },
+  { name: 'University of Botswana', short: 'Botswana', place: 'Gaborone', country: 'Botswana', role: 'AGRI-DRY partner', group: 'agridry', lat: -24.66, lon: 25.93, href: 'https://www.ub.bw' },
+  { name: 'University of the Witwatersrand', short: 'Wits', place: 'Johannesburg', country: 'South Africa', role: 'AGRI-DRY partner', group: 'agridry', lat: -26.19, lon: 28.03, href: 'https://www.wits.ac.za' },
+  { name: 'ETH Zurich', short: 'ETH', place: 'Zurich', country: 'Switzerland', role: 'Master’s thesis', group: 'past', lat: 47.38, lon: 8.55, href: 'https://ethz.ch' },
+  { name: 'Kiel University', short: 'Kiel', place: 'Kiel', country: 'Germany', role: 'MSc', group: 'past', lat: 54.34, lon: 10.12, href: 'https://www.uni-kiel.de' },
+  { name: 'Adam Mickiewicz University', short: 'AMU', place: 'Poznań', country: 'Poland', role: 'Erasmus semester', group: 'past', lat: 52.41, lon: 16.93, href: 'https://amu.edu.pl' },
+  { name: 'G.B. Pant University of Agriculture and Technology', short: 'Pantnagar', place: 'Pantnagar', country: 'India', role: 'BSc', group: 'past', lat: 29.02, lon: 79.48, href: 'https://www.gbpuat.ac.in' },
+  { name: 'INHERE', short: 'INHERE', place: 'Masi, Almora', country: 'India', role: 'Internship, Himalayan villages', group: 'past', lat: 29.82, lon: 79.37, href: 'https://www.inhereindia.in' },
 ];
 
 // Contact form. Get a free access key at https://web3forms.com (enter the inbox

@@ -6,6 +6,7 @@ export type LogItem = { date: string; kind: string; text: string; href?: string 
 
 export const log: LogItem[] = [
   { date: '2026-11', kind: 'visit', text: 'Research secondment at the University of Glasgow.' },
+  { date: '2024-12', kind: 'news', text: 'Started my PhD at Aarhus University as a Marie Skłodowska-Curie doctoral candidate in AGRI-DRY.' },
   { date: '2024-06', kind: 'award', text: 'Graduated MSc Environmental Management, Kiel University, with a final grade of 1.4.' },
   {
     date: '2024-04',
