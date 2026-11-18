@@ -97,6 +97,7 @@ export const skills = [
 export const languages = ['English', 'Hindi', 'German'];
 
 export const honours = [
+  'Best poster award, iCROPM 2026 crop modelling symposium, Florence, 2026',
   'Marie Skłodowska-Curie doctoral fellowship, AGRI-DRY',
   'Erasmus scholarship, Adam Mickiewicz University',
   'NSS Best Volunteer Award, National Service Scheme, India',

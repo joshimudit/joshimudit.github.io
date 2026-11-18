@@ -7,6 +7,8 @@ export type LogItem = { date: string; kind: string; text: string; href?: string 
 export const log: LogItem[] = [
   { date: '2026-10', kind: 'news', text: 'New AGRI-DRY blog post: Farming began in a carbon-starved world.', href: 'https://agri-dry.org/2026/10/29/farming-began-in-a-carbon-starved-world/' },
   { date: '2025-06', kind: 'news', text: 'New AGRI-DRY blog post: The ancient genius of drylands.', href: 'https://agri-dry.org/2025/06/15/the-ancient-genius-of-drylands/' },
+  { date: '2026-02', kind: 'award', text: 'Won the best poster award at iCROPM 2026, the international crop modelling symposium in Florence.', href: '/publications#conferences' },
+  { date: '2026-01', kind: 'poster', text: 'Presented a poster at the International Biogeography Society conference in Aarhus.', href: '/publications#conferences' },
   { date: '2026-11', kind: 'visit', text: 'Research secondment at the University of Glasgow.' },
   { date: '2024-12', kind: 'news', text: 'Started my PhD at Aarhus University as a Marie Skłodowska-Curie doctoral candidate in AGRI-DRY.' },
   { date: '2024-06', kind: 'award', text: 'Graduated MSc Environmental Management, Kiel University, with a final grade of 1.4.' },

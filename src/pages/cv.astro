@@ -2,8 +2,9 @@
 import Base from '../layouts/Base.astro';
 import { profile, links } from '../data/profile';
 import { education, experience, skills, languages, honours } from '../data/cv';
+import { conferences } from '../data/conferences';
 ---
-<Base title="CV" description="Curriculum vitae of Mudit Joshi, systems scientist: education, experience, skills and honours.">
+<Base title="CV" description="Curriculum vitae of Mudit Joshi, systems scientist: education, experience, conferences, skills and recognition.">
   <div class="wrap page cv">
     <header class="page-head head">
       <div>
@@ -43,6 +44,20 @@ import { education, experience, skills, languages, honours } from '../data/cv';
       ))}
     </section>
 
+    <section aria-labelledby="conf-h">
+      <h2 id="conf-h">Conferences</h2>
+      {conferences.map((c) => (
+        <article class="entry">
+          <p class="when">{c.when}</p>
+          <div>
+            <h3>{c.event}</h3>
+            <p class="where">{c.place}</p>
+            <p>{c.kind}: {c.title}.{c.note && <> <strong>{c.note}.</strong></>}</p>
+          </div>
+        </article>
+      ))}
+    </section>
+
     <section aria-labelledby="skills-h">
       <h2 id="skills-h">Skills</h2>
       <div class="skills">
@@ -60,7 +75,7 @@ import { education, experience, skills, languages, honours } from '../data/cv';
     </section>
 
     <section aria-labelledby="hon-h">
-      <h2 id="hon-h">Honours</h2>
+      <h2 id="hon-h">Recognition</h2>
       <ul class="honours">{honours.map((h) => <li>{h}</li>)}</ul>
     </section>
 

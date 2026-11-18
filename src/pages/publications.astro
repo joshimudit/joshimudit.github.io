@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { conferences } from '../data/conferences';
 
 // Add entries to each list as they happen.
 const sections = [
@@ -29,7 +30,11 @@ const sections = [
   {
     id: 'conferences',
     title: 'Conferences',
-    items: [],
+    items: conferences.map((c) => ({
+      title: c.title,
+      detail: `${c.kind}, ${c.event}, ${c.place}, ${c.when}.${c.note ? ` ${c.note}.` : ''}`,
+      href: c.href,
+    })),
     empty: 'Talks and posters will be listed here.',
   },
   {
