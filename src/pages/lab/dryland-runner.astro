@@ -70,7 +70,7 @@ import Base from '../../layouts/Base.astro';
       </div>
 
       <p class="turn">On a phone, turn it sideways for a bigger view.</p>
-      <p class="chosen-line"><span class="lab">Your way of life:</span> <span id="h-chosen">not chosen yet</span></p>
+      <ul id="ways" class="ways" aria-label="Your choices and how they are doing"></ul>
     </section>
 
     <section id="end" class="end" hidden aria-live="polite">
@@ -81,8 +81,8 @@ import Base from '../../layouts/Base.astro';
         <figcaption><span class="k k-rain"></span>Rain <span class="k k-water"></span>Your water <span class="k k-food"></span>Your food <span class="k k-spell"></span>Dry spells</figcaption>
       </figure>
       <div class="real">
-        <h3>The real story behind your choices</h3>
-        <ul id="e-real"></ul>
+        <h3>Your choices: what they gave you, and what really happened</h3>
+        <ul id="e-real" class="e-real"></ul>
         <h3>The bigger picture</h3>
         <ul>
           <li>The Sahara was green because of a slow wobble in Earth’s orbit that made the African monsoon stronger. As it weakened, the rains moved south.</li>
@@ -249,6 +249,12 @@ import Base from '../../layouts/Base.astro';
     ctx.globalAlpha = 1;
   }
 
+  function badge(cx: number, cy: number, colr: string) {
+    ctx.font = '700 12px Geologica Variable, sans-serif'; ctx.textAlign = 'center';
+    ctx.lineWidth = 3; ctx.strokeStyle = night() ? '#121a15' : '#ffffff';
+    ctx.strokeText('×2', cx, cy); ctx.fillStyle = colr; ctx.fillText('×2', cx, cy);
+  }
+
   function tree(x: number, y: number, sc: number, dry: number) {
     ctx.fillStyle = col('trunk', dry);
     ctx.fillRect(x - 2 * sc, y - 34 * sc, 4 * sc, 34 * sc);
@@ -264,18 +270,24 @@ import Base from '../../layouts/Base.astro';
     ctx.save();
     switch (th.kind) {
       case 'water': {
+        if (th.bonus === 'wells') {
+          ctx.strokeStyle = K.rock; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.ellipse(x + w / 2, y + h - 4, w / 2 + 5, 9, 0, 0, Math.PI * 2); ctx.stroke();
+        }
         ctx.fillStyle = K.water;
         ctx.beginPath(); ctx.ellipse(x + w / 2, y + h - 4, w / 2, 6, 0, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.moveTo(x + w / 2, y - 14); ctx.bezierCurveTo(x + w / 2 + 9, y - 2, x + w / 2 + 8, y + 6, x + w / 2, y + 6); ctx.bezierCurveTo(x + w / 2 - 8, y + 6, x + w / 2 - 9, y - 2, x + w / 2, y - 14); ctx.fill();
         break;
       }
       case 'fish': {
+        if (M.has(s, 'harpoons') && !iconMode) badge(x + 15, y - 8, K.food);
         ctx.fillStyle = K.fish;
         ctx.beginPath(); ctx.ellipse(x + 12, y + 9, 12, 6, 0, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.moveTo(x + 22, y + 9); ctx.lineTo(x + 30, y + 2); ctx.lineTo(x + 30, y + 16); ctx.fill();
         break;
       }
       case 'grain': {
+        if (M.has(s, 'wildgrain') && !iconMode) badge(x + 11, y - 8, K.food);
         ctx.strokeStyle = K.stalk; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(x + 11, y + h); ctx.lineTo(x + 11, y + 8); ctx.stroke();
         ctx.fillStyle = K.grain;
@@ -396,7 +408,7 @@ import Base from '../../layouts/Base.astro';
       $('n-' + k).textContent = v < 20 ? 'low!' : `${Math.round(v)}`;
       $('b-' + k).parentElement!.parentElement!.classList.toggle('low', v < 20);
     }
-    $('h-chosen').textContent = s.chosen.length ? s.chosen.map((id) => M.byId(id).name).join(', ') : 'not chosen yet';
+    ways();
     for (const [y, text] of MILESTONES) if (s.bce <= y && s.bce > y - M.YEARS_PER_SEC * 0.1) say(text, 3.5);
     const ban = $('banner');
     const text = s.spellLeft > 0 ? 'Dry spell: the rains fail for years' : s.t < msgUntil ? msg : '';
@@ -410,6 +422,52 @@ import Base from '../../layouts/Base.astro';
     if (s.bce >= 5000) return 'The rains are becoming less reliable.';
     if (r > 0.3) return 'The lakes are drying up and the grass is thinning.';
     return 'The desert is spreading. Only rivers, oases and the south stay green.';
+  }
+
+  const WARN: Partial<Record<M.StrategyId, Record<string, string>>> = {
+    harpoons: { weak: 'The lakes are shrinking: your fishing is failing', off: 'The lakes are gone: no more fishing' },
+    wildgrain: { weak: 'Wild grain is thinning out', off: 'Too dry for wild grain now' },
+    cattle: { weak: 'Not enough grass: your herd is shrinking' },
+    sow: { weak: 'Dry spell: your fields are failing' },
+  };
+  const lastLevel: Record<string, string> = {};
+  const lastTotal: Record<string, number> = {};
+
+  const amount = (l?: M.Ledger) => {
+    if (!l) return 'nothing yet';
+    const items = [['food', l.food], ['water', l.water]] as const;
+    const parts = items.filter(([, v]) => v >= 1).map(([k, v]) => `+${fmt(v)} ${k}`)
+      .concat(items.filter(([, v]) => v <= -1).map(([k, v]) => `−${fmt(-v)} ${k}`));
+    return parts.length ? parts.join(', ') : 'nothing yet';
+  };
+  const gaveText = (l?: M.Ledger) => {
+    const items = l ? ([['food', l.food], ['water', l.water]] as const) : [];
+    const gave = items.filter(([, v]) => v >= 1).map(([k, v]) => `${fmt(v)} ${k}`).join(' and ');
+    const cost = items.filter(([, v]) => v <= -1).map(([k, v]) => `${fmt(-v)} ${k}`).join(' and ');
+    if (gave && cost) return `It gave you ${gave} and cost you ${cost}`;
+    if (gave) return `It gave you ${gave}`;
+    if (cost) return `It cost you ${cost}`;
+    return 'It made little difference';
+  };
+
+  function ways() {
+    const ul = $('ways');
+    if (ul.children.length !== s.chosen.length) {
+      ul.innerHTML = s.chosen.map((id) => `<li data-id="${id}"><strong>${M.byId(id).name}</strong><span class="w-st"></span><span class="w-amt"></span></li>`).join('');
+    }
+    for (const li of Array.from(ul.children) as HTMLElement[]) {
+      const id = li.dataset.id as M.StrategyId;
+      const st = M.status(s, id), l = s.ledger[id];
+      li.dataset.level = st.level;
+      (li.children[1] as HTMLElement).textContent = st.text;
+      (li.children[2] as HTMLElement).textContent = amount(l);
+      const total = l ? l.food + l.water : 0;
+      if (mode === 'run' && total - (lastTotal[id] ?? total) > 2) { li.classList.remove('pulse'); void li.offsetWidth; li.classList.add('pulse'); }
+      if (mode === 'run' && Math.abs(total - (lastTotal[id] ?? total)) > 2 || lastTotal[id] === undefined) lastTotal[id] = total;
+      const prev = lastLevel[id];
+      if (prev && prev !== st.level && WARN[id]?.[st.level]) say(WARN[id]![st.level], 4);
+      lastLevel[id] = st.level;
+    }
   }
 
   function openGate() {
@@ -512,11 +570,17 @@ import Base from '../../layouts/Base.astro';
     lines.push(`Your choices look most like ${pth.who}.`);
     const moments = [];
     if (spells) moments.push(`went through ${spells} dry spell${spells > 1 ? 's' : ''}`);
-    if (helped) moments.push(`were rescued by neighbours ${helped} time${helped > 1 ? 's' : ''}`);
+    if (helped) moments.push(`were rescued by neighbours ${helped === 1 ? 'once' : helped === 2 ? 'twice' : `${helped} times`}`);
     if (M.has(s, 'cattle') && s.herd < 0.5) moments.push('watched your herd shrink');
     if (moments.length) lines.push(`Along the way you ${moments.join(', ').replace(/, ([^,]*)$/, ' and $1')}.`);
     $('e-text').innerHTML = lines.map((l) => `<p>${l}</p>`).join('');
-    $('e-real').innerHTML = s.chosen.map((id) => `<li><strong>${M.byId(id).name}.</strong> ${M.byId(id).real}</li>`).join('');
+    $('e-real').innerHTML = s.chosen.map((id) => {
+      const l = s.ledger[id];
+      const when = s.events.find((e) => e.text === M.byId(id).name)!.bce;
+      const stopped = l && l.last > end + 500 && (l.food > 1 || l.water > 1) && id !== 'share'
+        ? `, then stopped paying off around ${fmt(Math.round(l.last / 100) * 100)} BCE` : '';
+      return `<li><strong>${M.byId(id).name}</strong>, chosen ${fmt(Math.round((when + NOW) / 100) * 100)} years ago. ${gaveText(l)}${stopped}.<span class="fact">${M.byId(id).real}</span></li>`;
+    }).join('');
     chart();
     $('end').hidden = false;
     $('end').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
@@ -570,8 +634,9 @@ import Base from '../../layouts/Base.astro';
   document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
   document.addEventListener('themechange', () => draw());
 
+  let iconMode = false;
   function icons() {
-    const saved = ctx;
+    const saved = ctx; iconMode = true;
     document.querySelectorAll<HTMLCanvasElement>('canvas[data-icon]').forEach((c) => {
       const kind = c.dataset.icon as M.Kind;
       const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -585,7 +650,7 @@ import Base from '../../layouts/Base.astro';
       ctx.translate(bw / 2 - (w * k) / 2, 0); ctx.scale(k, k);
       thing({ kind, x: 0, y: (bh / k) - h - 4, w, h }, ink());
     });
-    ctx = saved;
+    ctx = saved; iconMode = false;
   }
 
   fit(); draw(); hud(); icons();
@@ -653,8 +718,19 @@ import Base from '../../layouts/Base.astro';
 
   .turn { display: none; margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--muted); }
   @media (max-width: 600px) and (orientation: portrait) { .turn { display: block; } }
-  .chosen-line { margin: 0.6rem 0 0; font-size: 0.9rem; }
-  .chosen-line .lab { color: var(--muted); }
+  .ways { list-style: none; padding: 0; margin: 0.7rem 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr)); gap: 0.5rem; }
+  .ways :global(li) { display: flex; flex-direction: column; gap: 0.1rem; padding: 0.5rem 0.7rem; border: 1px solid var(--line); border-left: 4px solid var(--moss); border-radius: 3px; background: var(--surface); font-size: 0.85rem; transition: background-color 0.4s; }
+  .ways :global(li strong) { font-weight: 500; font-size: 0.92rem; }
+  .ways :global(.w-st) { color: var(--ink); }
+  .ways :global(.w-amt) { color: var(--muted); font-family: var(--mono); font-size: 0.72rem; }
+  .ways :global(li[data-level='weak']) { border-left-color: var(--ochre-fill); }
+  .ways :global(li[data-level='weak'] .w-st) { color: var(--ochre); }
+  .ways :global(li[data-level='off']) { border-left-style: dashed; border-left-color: var(--muted); opacity: 0.75; }
+  .ways :global(li.pulse) { animation: pulse 0.6s ease-out; }
+  @keyframes pulse { from { background: var(--blue-soft); } to { background: var(--surface); } }
+  @media (prefers-reduced-motion: reduce) { .ways :global(li.pulse) { animation: none; } }
+  .e-real :global(.fact) { display: block; color: var(--muted); font-size: 0.9rem; margin-top: 0.15rem; }
+  .e-real :global(li) { margin-bottom: 0.7rem; }
 
   .end { scroll-margin-top: 5rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
   .end h2 { margin-bottom: 0.4rem; }

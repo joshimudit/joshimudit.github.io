@@ -100,7 +100,9 @@ export type Kind =
   | 'water' | 'fish' | 'grain' | 'game' | 'field'
   | 'rock' | 'thorn' | 'dune';
 
-export interface Thing { kind: Kind; x: number; y: number; w: number; h: number; taken?: boolean; dead?: boolean; }
+export interface Thing { kind: Kind; x: number; y: number; w: number; h: number; taken?: boolean; bonus?: StrategyId; }
+
+export interface Ledger { water: number; food: number; last: number; }
 
 export interface State {
   t: number; bce: number; water: number; food: number;
@@ -116,6 +118,8 @@ export interface State {
   log: { bce: number; water: number; food: number; rain: number }[];
   events: { bce: number; text: string }[];
   fx: { x: number; y: number; text: string; age: number; kind: 'water' | 'food' | 'hurt' }[];
+  ledger: Partial<Record<StrategyId, Ledger>>; // what each choice has given (+) or cost (−)
+  milkClock: number;
   rng: () => number;
 }
 
@@ -135,18 +139,44 @@ export function newState(seed = Date.now()): State {
     things: [], spawnClock: 0.6, lastHazardX: 0,
     spellLeft: 0, nextSpell: 8500 - 700,
     shareReady: START_BCE, gate: 0, lastCouncil: START_BCE + 1,
-    over: false, log: [], events: [], fx: [], rng: mulberry(seed),
+    over: false, log: [], events: [], fx: [], ledger: {}, milkClock: 0, rng: mulberry(seed),
   };
 }
 
 export const has = (s: State, id: StrategyId) => s.chosen.includes(id);
+/** `has`, pretending one choice (x) was never made: used to work out what each choice is worth. */
+const hx = (s: State, id: StrategyId, x?: StrategyId) => id !== x && has(s, id);
 
 /** Moisture the group actually lives with: regional rain, dry spells, and moving south. */
-export function localRain(s: State): number {
+export function localRain(s: State, x?: StrategyId): number {
   let r = rainfall(s.bce);
   if (s.spellLeft > 0) r *= 0.45;
-  if (has(s, 'move')) r = Math.min(1, r + 0.22);
+  if (hx(s, 'move', x)) r = Math.min(1, r + 0.22);
   return r;
+}
+
+export const lakeLevel = (r: number) => Math.max(0, Math.min(1, (r - 0.45) / 0.4));
+
+function credit(s: State, id: StrategyId, w: number, f: number) {
+  const l = (s.ledger[id] ??= { water: 0, food: 0, last: START_BCE });
+  l.water += w; l.food += f;
+  if (w > 0.01 || f > 0.01) l.last = s.bce;
+}
+
+/** How each choice is doing right now, in a few plain words. */
+export function status(s: State, id: StrategyId): { level: 'good' | 'weak' | 'off'; text: string } {
+  const r = localRain(s);
+  switch (id) {
+    case 'harpoons': { const l = lakeLevel(r); return l > 0.4 ? { level: 'good', text: 'Plenty of fish' } : l > 0 ? { level: 'weak', text: 'Lakes shrinking: fewer fish' } : { level: 'off', text: 'Lakes gone: no fish' }; }
+    case 'wildgrain': return r > 0.6 ? { level: 'good', text: 'Good wild harvests' } : r > 0.3 ? { level: 'weak', text: 'Thin wild grain' } : { level: 'off', text: 'Too dry for wild grain' };
+    case 'pottery': return { level: 'good', text: 'Food lasts longer' };
+    case 'cattle': return r > 0.32 ? { level: 'good', text: 'Herd giving milk' } : { level: 'weak', text: 'Not enough grass: herd shrinking' };
+    case 'move': return { level: 'good', text: 'Living further south, where it is wetter' };
+    case 'wells': return { level: 'good', text: 'Extra water from wells' };
+    case 'sow': return s.spellLeft > 0 ? { level: 'weak', text: 'Dry spell: fields failing' } : { level: 'good', text: 'Fields growing' };
+    case 'share': return s.bce <= s.shareReady ? { level: 'good', text: 'Neighbours ready to help' } : { level: 'weak', text: 'Neighbours helped recently' };
+    case 'trade': return { level: 'good', text: 'Swapping what you have spare' };
+  }
 }
 
 /** Three options for a council, drawn from what people could plausibly do at that time. */
@@ -184,7 +214,7 @@ export const isHazard = (k: Kind) => HAZARD.includes(k);
 function spawn(s: State, worldX: number) {
   const r = localRain(s), R = s.rng;
   const aridity = 1 - rainfall(s.bce);
-  const lake = Math.max(0, Math.min(1, (r - 0.45) / 0.4));
+  const lake = lakeLevel(r);
   // hazards
   const pHaz = (0.2 + 0.18 * aridity) * (has(s, 'move') ? 1.3 : 1) * (s.bce > 8000 ? 0.4 : 1);
   if (R() < pHaz && worldX - s.lastHazardX > 260) {
@@ -194,8 +224,10 @@ function spawn(s: State, worldX: number) {
     s.lastHazardX = worldX;
     return;
   }
-  const pWater = (0.09 + 0.4 * r) * (has(s, 'wells') ? 1.5 : 1) + (has(s, 'wells') ? 0.07 : 0);
-  if (R() < pWater) { s.things.push(item('water', worldX)); return; }
+  const pBase = 0.09 + 0.4 * r;
+  const pWater = has(s, 'wells') ? pBase * 1.5 + 0.07 : pBase;
+  const u = R();
+  if (u < pWater) { const th = item('water', worldX); if (u >= pBase) th.bonus = 'wells'; s.things.push(th); return; }
   // food: weighted by what the land offers now
   const weights: [Kind, number][] = [
     ['fish', 1.1 * lake],
@@ -206,7 +238,7 @@ function spawn(s: State, worldX: number) {
   const total = weights.reduce((a, [, w]) => a + w, 0);
   if (R() < 0.34 && total > 0) {
     let pick = R() * total;
-    for (const [k, w] of weights) { pick -= w; if (pick <= 0) { s.things.push(item(k, worldX)); return; } }
+    for (const [k, w] of weights) { pick -= w; if (pick <= 0) { const th = item(k, worldX); if (k === 'field') th.bonus = 'sow'; s.things.push(th); return; } }
   }
 }
 
@@ -217,17 +249,29 @@ function item(kind: Kind, x: number): Thing {
 }
 
 /** Value of a find in the two stores. */
-export function value(s: State, k: Kind): [number, number] {
-  const r = localRain(s);
+export function value(s: State, k: Kind, x?: StrategyId): [number, number] {
+  const r = localRain(s, x);
   let w = 0, f = 0;
-  if (k === 'water') w = 15 * (has(s, 'wells') ? 1.35 : 1);
-  if (k === 'fish') f = 8 * (has(s, 'harpoons') ? 2 : 1);
-  if (k === 'grain') f = 7 * (has(s, 'wildgrain') ? 2 : 1);
+  if (k === 'water') w = 15 * (hx(s, 'wells', x) ? 1.35 : 1);
+  if (k === 'fish') f = 8 * (hx(s, 'harpoons', x) ? 2 : 1);
+  if (k === 'grain') f = 7 * (hx(s, 'wildgrain', x) ? 2 : 1);
   if (k === 'game') f = 11;
-  if (k === 'field') f = (s.spellLeft > 0 ? 4 : 18 * Math.min(1, r / 0.35)) * (has(s, 'move') ? 0.6 : 1);
-  if (has(s, 'pottery')) f *= 1.3;
-  if (has(s, 'share')) { w *= 0.9; f *= 0.9; }
+  if (k === 'field') f = (s.spellLeft > 0 ? 4 : 18 * Math.min(1, r / 0.35)) * (hx(s, 'move', x) ? 0.6 : 1);
+  if (hx(s, 'pottery', x)) f *= 1.3;
+  if (hx(s, 'share', x)) { w *= 0.9; f *= 0.9; }
   return [w, f];
+}
+
+/** Water and food used per second, after milk. */
+function needs(s: State, x?: StrategyId): [number, number, number] {
+  const r = localRain(s, x);
+  let w = 1.1 + 3.6 * (1 - r);
+  let f = 2.1, milk = 0;
+  if (hx(s, 'pottery', x)) { f *= 0.85; w *= 1.06; }
+  if (hx(s, 'cattle', x)) { w *= 1.25; milk = 1.6 * s.herd * Math.min(1, r / 0.3); }
+  if (hx(s, 'wells', x)) f *= 1.12;
+  if (hx(s, 'sow', x)) w *= 1.08;
+  return [w, f, milk];
 }
 
 export function step(s: State, dt: number) {
@@ -247,22 +291,24 @@ export function step(s: State, dt: number) {
   }
 
   // daily needs
-  let wDrain = 1.1 + 3.6 * (1 - r);
-  let fDrain = 2.1;
-  if (has(s, 'pottery')) { fDrain *= 0.85; wDrain *= 1.06; }
-  if (has(s, 'cattle')) {
-    wDrain *= 1.25;
-    s.herd = Math.max(0.15, Math.min(1, s.herd + dt * 0.25 * (r - 0.32)));
-    fDrain -= 1.6 * s.herd * Math.min(1, r / 0.3);
+  if (has(s, 'cattle')) s.herd = Math.max(0.15, Math.min(1, s.herd + dt * 0.25 * (r - 0.32)));
+  const [wNeed, fNeed, milk] = needs(s);
+  const fNet = Math.max(0.3, fNeed - milk);
+  s.water -= wNeed * dt;
+  s.food -= fNet * dt;
+  for (const id of s.chosen) {
+    if (id === 'cattle') { const [w0] = needs(s, id); credit(s, id, (w0 - wNeed) * dt, (fNeed - milk > 0.3 ? milk : fNeed - 0.3) * dt); continue; }
+    const [w0, f0, m0] = needs(s, id);
+    credit(s, id, (w0 - wNeed) * dt, (Math.max(0.3, f0 - m0) - fNet) * dt);
   }
-  if (has(s, 'wells')) fDrain *= 1.12;
-  if (has(s, 'sow')) wDrain *= 1.08;
-  s.water -= wDrain * dt;
-  s.food -= Math.max(0.3, fDrain) * dt;
+  if (milk > 0.3 && (s.milkClock -= dt) <= 0) {
+    s.milkClock = 2.2;
+    s.fx.push({ x: PLAYER_X - 70, y: GROUND - 40, text: '+milk', age: 0, kind: 'food' });
+  }
 
   // neighbours
   if (has(s, 'share') && s.bce <= s.shareReady && (s.water < 15 || s.food < 15)) {
-    if (s.water < 15) s.water = 42; else s.food = 42;
+    if (s.water < 15) { credit(s, 'share', 42 - s.water, 0); s.water = 42; } else { credit(s, 'share', 0, 42 - s.food); s.food = 42; }
     s.shareReady = s.bce - 600;
     s.events.push({ bce: s.bce, text: 'Neighbours helped' });
     s.fx.push({ x: PLAYER_X, y: s.y - 70, text: 'Neighbours helped', age: 0, kind: 'water' });
@@ -273,7 +319,8 @@ export function step(s: State, dt: number) {
     const gap = s.water - s.food;
     if (Math.abs(gap) > 15) {
       const amt = Math.min(3 * dt, Math.abs(gap) / 2);
-      if (gap > 0) { s.water -= amt; s.food += amt * 0.85; } else { s.food -= amt; s.water += amt * 0.85; }
+      if (gap > 0) { s.water -= amt; s.food += amt * 0.85; credit(s, 'trade', -amt, amt * 0.85); }
+      else { s.food -= amt; s.water += amt * 0.85; credit(s, 'trade', amt * 0.85, -amt); }
     }
   }
 
@@ -296,6 +343,11 @@ export function step(s: State, dt: number) {
       if (s.hurt <= 0) { s.water -= 8; s.food -= 8; s.hurt = 0.8; th.taken = true; s.fx.push({ x: PLAYER_X, y: s.y - 60, text: '−8 water, −8 food', age: 0, kind: 'hurt' }); }
     } else {
       const [w, f] = value(s, th.kind);
+      for (const id of s.chosen) {
+        if (th.bonus === id) { credit(s, id, w, f); continue; }
+        const [w0, f0] = value(s, th.kind, id);
+        if (w !== w0 || f !== f0) credit(s, id, w - w0, f - f0);
+      }
       s.water = Math.min(100, s.water + w); s.food = Math.min(100, s.food + f);
       th.taken = true;
       s.fx.push({ x: th.x + th.w / 2, y: th.y - 6, text: w ? `+${Math.round(w)} water` : `+${Math.round(f)} food`, age: 0, kind: w ? 'water' : 'food' });
