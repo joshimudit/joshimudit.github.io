@@ -1,73 +1,82 @@
-// Dryland Runner: the rules of the game, kept free of drawing code so they can be
+// The Sahara game: the rules of the game, kept free of drawing code so they can be
 // tested on their own. All rates are per second of play; one second is YEARS_PER_SEC years.
 
 export const START_BCE = 8500;
 export const END_BCE = 1500;
 export const YEARS_PER_SEC = 40;
 export const GATES = [7000, 5300, 3500, 2500]; // councils after the first, in years BCE
-export const SPEED = 270; // world scroll, px per second
+export const SPEED = 200; // world scroll, px per second
 export const GROUND = 300; // y of the path in a 960 x 400 world
 export const PLAYER_X = 170;
 
 export type StrategyId =
-  | 'pottery' | 'harpoons' | 'wildgrain' | 'share' | 'cattle' | 'move' | 'wells' | 'sow';
+  | 'pottery' | 'harpoons' | 'wildgrain' | 'share' | 'trade' | 'cattle' | 'move' | 'wells' | 'sow';
+
+export type Area = 'Food' | 'Water' | 'People';
 
 export interface Strategy {
   id: StrategyId;
+  area: Area;
   name: string;
-  gain: string;
-  cost: string;
-  real: string;
+  gain: string; // one line
+  cost: string; // one line
+  real: string; // shown at the end
   from: number; // first offered at this year BCE (larger = earlier)
 }
 
 export const STRATEGIES: Strategy[] = [
   {
-    id: 'pottery', name: 'Make pottery', from: 8500,
-    gain: 'Cook and store. Every food you find is worth more, and food lasts longer.',
-    cost: 'Pots are heavy: you settle near water, and drink a little more.',
-    real: 'Some of Africa’s oldest pottery, from before 9400 BCE at Ounjougou in Mali, was made by foragers who boiled wild grass seeds, not by farmers.',
-  },
-  {
-    id: 'harpoons', name: 'Fish the lakes', from: 8500,
-    gain: 'Bone harpoons and nets. Fish are worth twice as much.',
-    cost: 'Only as good as the lakes. When they shrink, so does this.',
+    id: 'harpoons', area: 'Food', name: 'Fish the lakes', from: 8500,
+    gain: 'Fish are worth double.',
+    cost: 'Useless once the lakes dry up.',
     real: 'Camps beside the early Holocene lakes and rivers of the Sahara are full of fish bones and bone harpoons, from the Nile to Mali.',
   },
   {
-    id: 'wildgrain', name: 'Gather wild grain', from: 8500,
-    gain: 'Harvest wild sorghum and millet. Grain is worth twice as much.',
-    cost: 'Wild stands need rain. Dry years leave little to gather.',
+    id: 'wildgrain', area: 'Food', name: 'Gather wild grain', from: 8500,
+    gain: 'Grain is worth double.',
+    cost: 'Wild grain needs rain.',
     real: 'Seeds of wild sorghum and millet turn up at camps in the eastern Sahara thousands of years before either crop was domesticated.',
   },
   {
-    id: 'share', name: 'Share with neighbours', from: 7000,
-    gain: 'When water or food runs very low, neighbours help you out, about once every 600 years.',
-    cost: 'You also give: every find is worth a little less to you.',
-    real: 'Lending animals and food between families is still one of the main ways dryland herders insure against drought.',
+    id: 'pottery', area: 'Food', name: 'Make pottery', from: 8500,
+    gain: 'Cook and store: food lasts longer.',
+    cost: 'You drink a little more.',
+    real: 'Some of Africa’s oldest pottery, from before 9400 BCE at Ounjougou in Mali, was made by people who boiled wild grass seeds, long before farming.',
   },
   {
-    id: 'cattle', name: 'Herd cattle', from: 7000,
-    gain: 'A walking larder. The herd gives milk all the time, as long as there is grazing.',
-    cost: 'Cattle drink. Water runs out faster, and the herd shrinks in dry years.',
+    id: 'share', area: 'People', name: 'Share with neighbours', from: 8500,
+    gain: 'Neighbours rescue you when you run low.',
+    cost: 'You share your finds too.',
+    real: 'Lending animals and food between families is still one of the main ways dryland herders get through droughts.',
+  },
+  {
+    id: 'trade', area: 'People', name: 'Trade', from: 7000,
+    gain: 'Swap extra food for water, and back.',
+    cost: 'Every swap loses a bit.',
+    real: 'In the Sahel today, herders and farmers still swap milk and animals for grain. Each side covers what the other lacks.',
+  },
+  {
+    id: 'cattle', area: 'Food', name: 'Herd cattle', from: 7000,
+    gain: 'Milk every day while there is grass.',
+    cost: 'Cattle drink a lot.',
     real: 'Herding spread across the Sahara thousands of years before crops were domesticated in Africa. Cattle came first.',
   },
   {
-    id: 'move', name: 'Follow the rain', from: 5300,
-    gain: 'Move south with the rains. Your world is always wetter than where you came from.',
-    cost: 'Long journeys: rougher ground, more to trip over, and fields are left behind.',
+    id: 'move', area: 'Water', name: 'Follow the rain', from: 5300,
+    gain: 'Move south, where it is wetter.',
+    cost: 'Rough ground, and fields left behind.',
     real: 'As the Sahara dried after about 5300 BCE, people moved towards the Nile valley and the Sahel (Kuper & Kröpelin, 2006).',
   },
   {
-    id: 'wells', name: 'Dig wells', from: 5300,
-    gain: 'Catch run-off and dig for groundwater. Water turns up more often and goes further.',
-    cost: 'Digging is hard work: you need more food.',
-    real: 'Wells, dams and run-off farming are still how people farm the world’s drylands today.',
+    id: 'wells', area: 'Water', name: 'Dig wells', from: 5300,
+    gain: 'More water, more often.',
+    cost: 'Hard work: you eat more.',
+    real: 'Wells, small dams and catching run-off are still how people farm the world’s drylands today.',
   },
   {
-    id: 'sow', name: 'Sow sorghum and millet', from: 3500,
-    gain: 'Plant fields of domesticated grain. A big harvest in good years.',
-    cost: 'Fields can’t move and fail in dry spells. Tending them costs water.',
+    id: 'sow', area: 'Food', name: 'Farm sorghum and millet', from: 3500,
+    gain: 'Big harvests in good years.',
+    cost: 'Fields fail in dry spells.',
     real: 'Domesticated sorghum appears in eastern Sudan by 3500–3000 BCE (Winchell et al., 2017), and pearl millet in Mali by about 2500 BCE (Manning et al., 2011).',
   },
 ];
@@ -142,13 +151,18 @@ export function localRain(s: State): number {
 
 /** Three options for a council, drawn from what people could plausibly do at that time. */
 export function gateOptions(s: State): StrategyId[] {
-  const open = STRATEGIES.filter((x) => x.from >= s.bce && !has(s, x.id)).map((x) => x.id);
-  const fresh = open.filter((id) => byId(id).from < s.lastCouncil);
-  const out: StrategyId[] = [];
+  const open = STRATEGIES.filter((x) => x.from >= s.bce && !has(s, x.id));
+  const fresh = open.filter((x) => x.from < s.lastCouncil);
+  const out: Strategy[] = [];
   if (fresh.length) out.push(fresh[Math.floor(s.rng() * fresh.length)]);
-  const rest = open.filter((id) => !out.includes(id));
-  while (out.length < 3 && rest.length) out.push(rest.splice(Math.floor(s.rng() * rest.length), 1)[0]);
-  return out;
+  let rest = open.filter((x) => !out.includes(x));
+  while (out.length < 3 && rest.length) {
+    const newArea = rest.filter((x) => !out.some((o) => o.area === x.area));
+    const pool = newArea.length ? newArea : rest;
+    const pick = pool[Math.floor(s.rng() * pool.length)];
+    out.push(pick); rest = rest.filter((x) => x !== pick);
+  }
+  return out.map((x) => x.id);
 }
 
 export function choose(s: State, id: StrategyId) {
@@ -172,15 +186,15 @@ function spawn(s: State, worldX: number) {
   const aridity = 1 - rainfall(s.bce);
   const lake = Math.max(0, Math.min(1, (r - 0.45) / 0.4));
   // hazards
-  const pHaz = (0.2 + 0.18 * aridity) * (has(s, 'move') ? 1.3 : 1);
-  if (R() < pHaz && worldX - s.lastHazardX > 300) {
+  const pHaz = (0.2 + 0.18 * aridity) * (has(s, 'move') ? 1.3 : 1) * (s.bce > 8000 ? 0.4 : 1);
+  if (R() < pHaz && worldX - s.lastHazardX > 260) {
     const kind: Kind = aridity > 0.5 && R() < 0.55 ? 'dune' : R() < 0.5 ? 'rock' : 'thorn';
     const [w, h] = SIZES[kind];
     s.things.push({ kind, x: worldX, y: GROUND - h, w, h });
     s.lastHazardX = worldX;
     return;
   }
-  const pWater = (0.05 + 0.4 * r) * (has(s, 'wells') ? 1.5 : 1) + (has(s, 'wells') ? 0.07 : 0);
+  const pWater = (0.09 + 0.4 * r) * (has(s, 'wells') ? 1.5 : 1) + (has(s, 'wells') ? 0.07 : 0);
   if (R() < pWater) { s.things.push(item('water', worldX)); return; }
   // food: weighted by what the land offers now
   const weights: [Kind, number][] = [
@@ -233,13 +247,13 @@ export function step(s: State, dt: number) {
   }
 
   // daily needs
-  let wDrain = 1.4 + 4.4 * (1 - r);
-  let fDrain = 2.6;
+  let wDrain = 1.1 + 3.6 * (1 - r);
+  let fDrain = 2.1;
   if (has(s, 'pottery')) { fDrain *= 0.85; wDrain *= 1.06; }
   if (has(s, 'cattle')) {
     wDrain *= 1.25;
     s.herd = Math.max(0.15, Math.min(1, s.herd + dt * 0.25 * (r - 0.32)));
-    fDrain -= 1.9 * s.herd * Math.min(1, r / 0.3);
+    fDrain -= 1.6 * s.herd * Math.min(1, r / 0.3);
   }
   if (has(s, 'wells')) fDrain *= 1.12;
   if (has(s, 'sow')) wDrain *= 1.08;
@@ -254,6 +268,15 @@ export function step(s: State, dt: number) {
     s.fx.push({ x: PLAYER_X, y: s.y - 70, text: 'Neighbours helped', age: 0, kind: 'water' });
   }
 
+  // trade: surplus flows to whatever is short, with a loss
+  if (has(s, 'trade')) {
+    const gap = s.water - s.food;
+    if (Math.abs(gap) > 15) {
+      const amt = Math.min(3 * dt, Math.abs(gap) / 2);
+      if (gap > 0) { s.water -= amt; s.food += amt * 0.85; } else { s.food -= amt; s.water += amt * 0.85; }
+    }
+  }
+
   // movement
   s.vy += 1900 * dt; s.y += s.vy * dt;
   if (s.y >= GROUND) { s.y = GROUND; s.vy = 0; s.onGround = true; }
@@ -262,7 +285,7 @@ export function step(s: State, dt: number) {
   for (const th of s.things) th.x -= dx;
   s.lastHazardX -= dx;
   s.spawnClock -= dt;
-  if (s.spawnClock <= 0) { spawn(s, 1000); s.spawnClock = 0.32 + s.rng() * 0.28; }
+  if (s.spawnClock <= 0) { spawn(s, 1000); s.spawnClock = 0.42 + s.rng() * 0.3; }
 
   // contact
   const px = PLAYER_X - 12, pw = 24, ph = 46, py = s.y - ph;
