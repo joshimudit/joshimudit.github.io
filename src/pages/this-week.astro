@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { issues, formatDay } from '../data/digest';
+import { issues, formatDay, host } from '../data/digest';
 
 const sorted = [...issues].sort((a, b) => b.number - a.number);
 const [latest, ...past] = sorted;
@@ -24,6 +24,15 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <li class="item">
               <span class="num" aria-hidden="true">{pad(i + 1)}</span>
               <div class="body">
+                <a class:list={["thumb", { tile: !it.image }]} href={it.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  {it.image ? (
+                    <img src={it.image} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+                      onerror="this.parentElement.classList.add('tile');this.remove()" />
+                  ) : null}
+                  <span class="tile-text data">{host(it.url)}</span>
+                </a>
+                {it.image && <p class="credit data">Image via {host(it.url)}</p>}
+                <div class="text">
                 {it.home && <p class="home data">From home</p>}
                 <h2>{it.title}</h2>
                 <p>{it.summary}</p>
@@ -35,6 +44,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
                   <span>{it.source}</span> <span aria-hidden="true">·</span> <time class="nowrap" datetime={it.date}>{formatDay(it.date)}</time> <span aria-hidden="true">·</span>
                   <a class="nowrap" href={it.url} target="_blank" rel="noopener">Read the original<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
                 </p>
+                </div>
               </div>
             </li>
           ))}
@@ -91,6 +101,44 @@ const pad = (n: number) => String(n).padStart(2, '0');
     color: var(--ochre);
   }
 
+
+  /* Thumbnail: the source's own preview image, linking to the original.
+     Sources without one get a plain text tile. */
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    grid-template-areas: 'text thumb' 'text credit' 'text .';
+    grid-template-rows: auto auto 1fr;
+    column-gap: 2rem;
+    align-content: start;
+  }
+  .text { grid-area: text; min-width: 0; }
+  .thumb {
+    grid-area: thumb;
+    display: block;
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-radius: 6px;
+    background: var(--line);
+    margin-top: 0.35rem;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+  .thumb:hover img { transform: scale(1.03); }
+  .tile-text { display: none; }
+  .thumb, .thumb:hover { text-decoration: none; }
+  .thumb.tile {
+    display: grid;
+    place-items: center;
+    background:
+      repeating-linear-gradient(135deg, transparent 0 9px, color-mix(in srgb, var(--ink) 7%, transparent) 9px 10px),
+      color-mix(in srgb, var(--blue) 8%, var(--bg));
+    border: 1px solid var(--line);
+  }
+  .thumb.tile .tile-text { display: block; color: var(--muted); padding: 0 1rem; text-align: center; }
+  .credit { grid-area: credit; margin: 0.4rem 0 0; color: var(--muted); font-size: 0.7rem; }
+  @media (prefers-reduced-motion: reduce) { .thumb img { transition: none; } }
+
   .body h2 { font-size: clamp(1.45rem, 2.6vw, 1.95rem); margin-bottom: 0.5em; max-width: 30ch; }
   .body p { max-width: var(--measure); }
 
@@ -135,6 +183,13 @@ const pad = (n: number) => String(n).padStart(2, '0');
   details ol { margin: 0.9rem 0 0.4rem; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
   details .home { margin: 0 0.5rem 0 0; }
 
+  @media (max-width: 960px) {
+    .body { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: 'thumb' 'credit' 'text'; }
+    .thumb { max-width: 32rem; margin-bottom: 0; }
+    .credit { margin-bottom: 1rem; }
+    .thumb.tile { display: none; }
+    .thumb:not(.tile) { margin-bottom: 0; }
+  }
   @media (max-width: 760px) {
     .item { grid-template-columns: 1fr; gap: 0.5rem; padding-block: 1.75rem; }
     .num { font-size: 2.25rem; }

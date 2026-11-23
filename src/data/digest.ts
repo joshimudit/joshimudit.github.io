@@ -4,7 +4,11 @@
 // Rules for every item:
 // - It links to the original, and every fact in it was read in that original.
 // - Words are our own: a short summary, never copied paragraphs.
-// - `home: true` marks India items (shown with a "From home" tag). Usually one, sometimes two.
+// - `home: true` marks the "From home" item: Uttarakhand first, the wider Himalaya as fallback,
+//   and skipped in weeks with nothing good. Other India news can sit among the regular items.
+// - `image` is the preview image the source itself publishes for the article (its og:image),
+//   shown as a thumbnail that links to the original. Leave it out if the source has none;
+//   the page then shows a plain text tile instead.
 // - `take` is Mudit's one line. Leave it out until he writes it; the page hides it when empty.
 
 export type DigestItem = {
@@ -16,6 +20,8 @@ export type DigestItem = {
   date: string; // date of the original, 'YYYY-MM-DD'
   home?: boolean;
   take?: string;
+  image?: string;
+  imageAlt?: string;
 };
 
 export type Issue = {
@@ -25,6 +31,69 @@ export type Issue = {
 };
 
 export const issues: Issue[] = [
+  {
+    number: 2,
+    date: '2026-11-23',
+    items: [
+      {
+        title: '245 animals living inside one deep-sea rock',
+        summary:
+          'Researchers at MARUM, University of Bremen, examined 244 metal-rich nodules from the Pacific’s Clarion-Clipperton Zone, 4,000 to 6,000 metres down, and found 4,139 animals smaller than a millimetre living in their cracks. One nodule alone held 245.',
+        why:
+          'The nodule communities are unlike those in the surrounding mud, yet similar to each other across sites up to 1,000 km apart. These are the rocks deep-sea miners want for nickel, cobalt and copper, and they take millions of years to form, so losing them could be permanent.',
+        source: 'ScienceDaily · Scientific Reports',
+        url: 'https://www.sciencedaily.com/releases/2026/11/261114202133.htm',
+        date: '2026-11-16',
+        image: 'https://www.sciencedaily.com/images/1920/polymetallic-nodules-in-clarion-clipperton-fracture-zone.webp',
+        imageAlt: 'A small crustacean among dark polymetallic nodules on the deep Pacific seafloor',
+      },
+      {
+        title: 'Less land, more money per hectare',
+        summary:
+          'A nine-year evaluation of Kenya’s Farm to Market Alliance, which links about 400,000 smallholders to inputs, training and buyers through 2,126 farmer service centres, finds women earn about 18 per cent more per hectare than men, on plots averaging 1.9 acres against 2.8.',
+        why:
+          'Per hectare is not the whole story. Service centres run by women average about KES 144,000 a year in profit against KES 515,000 for those run by men, and own fewer machines; women can lose up to half their bean harvest shelling by hand. The skill is there. The capital is not.',
+        source: 'allAfrica',
+        url: 'https://allafrica.com/stories/202611200236.html',
+        date: '2026-11-20',
+      },
+      {
+        title: 'What happens when 936 AI scientists share a preprint server',
+        summary:
+          'Over twelve weeks, 35 labs ran 936 autonomous AI agents that shared a preprint server and a chat workspace. They produced 936 studies with code and data, retracted some of their own mistakes and even set up their own peer-review journal. Blinded reviewers rated the work higher on rigour but lower on novelty than human preprints.',
+        why:
+          'The failures look familiar. Told to draft a proposal without citations, agents reused a paper’s method without credit in 42 of 48 trials, although all of them said afterwards that citing was required. A false result refuted twice still left 95–98 per cent of later agents calling the question “contested”. The norms of science do not come free with the tools.',
+        source: 'alphaXiv preprint, not yet peer reviewed',
+        url: 'https://www.alphaxiv.org/abs/2611.society-ai-scientists.pdf',
+        date: '2026-11-21',
+      },
+      {
+        title: 'The mountains did not get their own agenda',
+        summary:
+          'Nepal, with Bhutan and Kyrgyzstan, pushed for a standalone COP31 agenda item on warming in high mountains. Competing priorities edged it out, but the draft cover text still recognised the particular vulnerability of mountain regions and glacier-dependent communities. India was among the major countries that skipped the high-level session on mountains.',
+        why:
+          'The stakes for India are high: the Himalaya covers 17 per cent of its land. At current emission levels only 16 per cent of Himalayan glaciers may survive the century, and Bhutan now counts more than 50 new glacial lakes formed in just five years.',
+        source: 'Mongabay India',
+        url: 'https://india.mongabay.com/2026/11/the-fragility-of-mountains-loom-large-over-cop31/',
+        date: '2026-11-18',
+        image: 'https://imgs.mongabay.com/wp-content/uploads/sites/30/2026/11/18145705/AP26320722431041-scaled.jpg',
+        imageAlt: 'Photo from the Mongabay India article on mountains at COP31',
+      },
+      {
+        title: 'The women keeping Uttarakhand’s native bees alive',
+        summary:
+          'In Uttarakhand villages, traditional houses have hives built into their mud walls for the Indian honey bee. Women seal the hives with clay and cow dung, lure new swarms with a trail of honey, and feed the colonies amaranth or hemp seed powder through the winter.',
+        why:
+          'As concrete replaces mud, the hives go with the old houses: one study in Chamoli found wall hives per house fell from about 11 to fewer than one in homes built between 2001 and 2010. A Kumaun University researcher puts it plainly: women are the reason the species still survives there.',
+        source: 'Mongabay',
+        url: 'https://news.mongabay.com/2026/10/the-women-keeping-uttarakhands-native-bees-alive/',
+        date: '2026-10-20',
+        home: true,
+        image: 'https://imgs.mongabay.com/wp-content/uploads/sites/20/2026/10/19172030/Indian-Honey-Bee-3-1200x800.jpg',
+        imageAlt: 'An Indian honey bee',
+      },
+    ],
+  },
   {
     number: 1,
     date: '2026-11-18',
@@ -87,4 +156,8 @@ export const issues: Issue[] = [
 export function formatDay(d: string) {
   const [y, m, day] = d.split('-').map(Number);
   return new Date(y, m - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+export function host(url: string) {
+  return new URL(url).hostname.replace(/^www\./, '');
 }
