@@ -9,11 +9,11 @@ export const profile = {
   photo: '/img/mudit-alps.webp',
   photoAlt: 'Mudit Joshi on a mountain ridge in the Alps',
   lede:
-    'I build models of how climate, natural ecosystems and farming shape each other, and I use the deep past to test ideas about where they go next.',
+    'I use models and systems thinking to connect climate, food systems and natural ecosystems, and I look to the deep past to understand where they are heading.',
   about: [
     'My PhD treats the last 10,000 years as a natural experiment in how climate decides where plants, wild and farmed, can thrive, especially as farming spread into the drylands of Africa. I combine palaeoclimate reconstructions, crop suitability modelling and LPJmL, a model that simulates natural vegetation and crops side by side.',
     'Before that I went much further back. For my master’s thesis at ETH Zurich I simulated how plant biodiversity evolved with climate over 400 million years, long before anyone farmed.',
-    'What ties it together is systems thinking. Food systems and natural ecosystems run on the same climate and the same land, so I study them together, turning uncertain, messy environmental data into models people can reason with. Lately that includes AI agents, used carefully and evaluated in the open.',
+    'What ties it together is systems thinking. Food systems and natural ecosystems run on the same climate and the same land, so I study them together, using models to turn uncertain, messy environmental data into insight people can reason with. Lately that includes AI agents, used carefully and evaluated in the open.',
   ],
 };
 
