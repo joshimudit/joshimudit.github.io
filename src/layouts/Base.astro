@@ -76,6 +76,19 @@ const nav = [
     </footer>
 
     <script>
+      // Links to other websites open in a new tab; links within the site stay in this tab.
+      document.querySelectorAll('a[href]').forEach((a) => {
+        const href = a.getAttribute('href') || '';
+        if (!/^https?:\/\//i.test(href)) return;
+        try {
+          if (new URL(href).host === location.host) return;
+        } catch { return; }
+        a.setAttribute('target', '_blank');
+        const rel = new Set((a.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
+        rel.add('noopener'); rel.add('noreferrer');
+        a.setAttribute('rel', [...rel].join(' '));
+      });
+
       const btn = document.querySelector('.theme') as HTMLButtonElement;
       const label = btn.querySelector('.theme-label') as HTMLSpanElement;
       const sync = () => {
