@@ -1,0 +1,621 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="Dryland Runner: 7,000 years in a drying Sahara" description="A one-button game about living through the end of the Green Sahara, 8500 to 1500 BCE. Every thousand years, choose how your people live. Built for teaching and outreach.">
+  <div class="wrap page dr-page">
+    <header class="page-head">
+      <p class="crumb"><a href="/lab">Lab</a></p>
+      <h1>Dryland Runner</h1>
+      <p>Ten thousand years ago the Sahara was green, with lakes, grassland and fish. Then it slowly turned to desert. Lead a group of people through those 7,000 years, and at five turning points decide how they live.</p>
+    </header>
+
+    <section class="game" aria-label="Dryland Runner game">
+      <div class="hud" aria-live="off">
+        <div class="when">
+          <span id="h-year" class="year">8,500 BCE</span>
+          <span id="h-ago" class="ago">10,525 years ago</span>
+          <span id="h-era" class="era">Green Sahara</span>
+        </div>
+        <div class="meters">
+          <div class="meter m-water"><span class="lab">Water</span><div class="bar"><i id="b-water"></i></div><span id="n-water" class="num">80</span></div>
+          <div class="meter m-food"><span class="lab">Food</span><div class="bar"><i id="b-food"></i></div><span id="n-food" class="num">80</span></div>
+          <div class="meter m-rain"><span class="lab">Rain</span><div class="bar"><i id="b-rain"></i></div><span id="n-rain" class="num">wet</span></div>
+        </div>
+      </div>
+
+      <div class="stage" id="stage">
+        <canvas id="cv" width="960" height="400" aria-label="Side-scrolling landscape. Your group walks east to west through time." role="img"></canvas>
+        <p id="banner" class="banner" hidden></p>
+        <button id="pause" class="pause" type="button" aria-label="Pause" hidden>Pause</button>
+
+        <div id="ov-start" class="ov">
+          <div class="ov-box">
+            <h2>8500 BCE, the Green Sahara</h2>
+            <p>Rain falls every summer. There are lakes with fish and hippos, and grass as far as you can see. Over the next 7,000 years it will dry into desert. Nobody living then could see it coming.</p>
+            <p>Keep your people’s <strong class="t-water">water</strong> and <strong class="t-food">food</strong> above zero. Run into what you need, jump over rocks, thorns and dunes. Five times on the way, the group meets to decide how to live.</p>
+            <p class="keys">Jump: tap the scene, or press space or ↑. Pause: P.</p>
+            <button id="go" class="btn" type="button">Begin in 8500 BCE</button>
+          </div>
+        </div>
+
+        <div id="ov-gate" class="ov" hidden>
+          <div class="ov-box wide">
+            <h2 id="g-title">The council of 8500 BCE</h2>
+            <p id="g-sit" class="sit"></p>
+            <div id="g-opts" class="opts"></div>
+          </div>
+        </div>
+
+        <div id="ov-paused" class="ov" hidden>
+          <div class="ov-box"><h2>Paused</h2><button id="resume" class="btn" type="button">Carry on</button></div>
+        </div>
+      </div>
+
+      <p class="turn">On a phone, turn it sideways for a bigger view.</p>
+      <p class="chosen-line"><span class="lab">How your people live:</span> <span id="h-chosen">nothing decided yet</span></p>
+    </section>
+
+    <section id="end" class="end" hidden aria-live="polite">
+      <h2 id="e-title"></h2>
+      <p id="e-text" class="e-text"></p>
+      <figure class="chart">
+        <svg id="e-chart" viewBox="0 0 760 280" role="img" aria-label="Your water and food over time, with rainfall and your choices"></svg>
+        <figcaption><span class="k k-rain"></span>Rain <span class="k k-water"></span>Water <span class="k k-food"></span>Food <span class="k k-spell"></span>Dry spells. Ticks mark your choices.</figcaption>
+      </figure>
+      <div class="real">
+        <h3>What really happened</h3>
+        <ul>
+          <li>The Green Sahara was driven by a slow wobble in Earth’s orbit that strengthened the African monsoon. As it weakened, the rains moved south.</li>
+          <li>The eastern Sahara was settled from about 8500 BCE. After about 5300 BCE it dried, and by 3500 BCE people had largely left for the Nile valley, the oases and the south.</li>
+          <li>In Africa, herding came before farming. Domesticated sorghum and pearl millet only appear after 3500 BCE, when the desert was already spreading.</li>
+          <li>No single strategy carried people through. They combined them, moved, and changed them as the climate changed.</li>
+        </ul>
+      </div>
+      <button id="again" class="btn" type="button">Play again</button>
+    </section>
+
+    <section class="notes">
+      <div>
+        <h2>What is real, and what is simplified</h2>
+        <p>The climate follows the reconstruction for the eastern Sahara by Kuper and Kröpelin: humid from about 8500 BCE, drying after 5300 BCE, desert by 3500 BCE. Each strategy is something people really did, and each card says when the evidence for it appears.</p>
+        <p>Everything else is a game. One second is 40 years. Dry spells come at random. The numbers for water, food and each strategy were chosen so that the choices matter, not measured. And the climate here doesn’t respond to people, which in reality it may have.</p>
+      </div>
+      <div>
+        <h2>For classes and discussions</h2>
+        <ol>
+          <li>A strategy that worked for 2,000 years can turn into a trap. Did that happen to you? Where else do we see this kind of lock-in?</li>
+          <li>In the Near East, farming came first and herding followed. In Africa it was the other way round. Why might mobile herding suit a climate you can’t predict?</li>
+          <li>Sharing makes every find worth a bit less, but saves you in a crisis. Where do societies make that trade today?</li>
+          <li>Some researchers have argued that herders’ grazing helped end the Green Sahara, while most see the orbit as the main driver. How would the game change if the land responded to how you used it?</li>
+          <li>The Sahel faces drying and unreliable rain today. Which of these strategies are still in use, and what do people have now that they didn’t then?</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sources">
+      <h2>Sources</h2>
+      <ul>
+        <li>Kuper, R. &amp; Kröpelin, S. (2006). Climate-controlled Holocene occupation in the Sahara: motor of Africa’s evolution. <em>Science</em> 313, 803–807. <a href="https://doi.org/10.1126/science.1130989">doi:10.1126/science.1130989</a></li>
+        <li>Huysecom, E. et al. (2009). The emergence of pottery in Africa during the tenth millennium cal BC: new evidence from Ounjougou (Mali). <em>Antiquity</em> 83, 905–917. <a href="https://doi.org/10.1017/S0003598X00099245">doi:10.1017/S0003598X00099245</a></li>
+        <li>Sutton, J. E. G. (1977). The African aqualithic. <em>Antiquity</em> 51, 25–34.</li>
+        <li>Marshall, F. &amp; Hildebrand, E. (2002). Cattle before crops: the beginnings of food production in Africa. <em>Journal of World Prehistory</em> 16, 99–143.</li>
+        <li>Winchell, F. et al. (2017). Evidence for sorghum domestication in fourth-millennium BC eastern Sudan. <em>Current Anthropology</em> 58, 673–683.</li>
+        <li>Manning, K. et al. (2011). 4500-year old domesticated pearl millet from the Tilemsi Valley, Mali. <em>Journal of Archaeological Science</em> 38, 312–322.</li>
+        <li>Wright, D. K. (2017). Humans as agents in the termination of the African Humid Period. <em>Frontiers in Earth Science</em> 5, 4.</li>
+      </ul>
+      <p class="made">Made for outreach in the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, which studies farming in drylands past and present. Spotted something wrong? <a href="/#contact">Tell me</a>.</p>
+    </section>
+  </div>
+</Base>
+
+<script>
+  import * as M from '../../lib/dryland-model';
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+  const cv = $<HTMLCanvasElement>('cv');
+  const ctx = cv.getContext('2d')!;
+  const W = 960, H = 400;
+  let VW = 960; // visible width of the world; narrower on phones so things stay big
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const NOW = new Date().getFullYear();
+
+  let s = M.newState();
+  let mode: 'start' | 'run' | 'gate' | 'pause' | 'end' = 'start';
+  let last = 0;
+  let scroll = 0; // total px travelled, for the scenery
+
+  // ---------- colour ----------
+  type Pal = Record<string, [string, string]>; // [wet, dry]
+  const DAY: Pal = {
+    sky: ['#cfe4e6', '#eee2c9'], skyLow: ['#e6f0ea', '#f5ead2'], far: ['#9dbca3', '#dcc08f'], mid: ['#6f9a63', '#c9a66b'],
+    ground: ['#7c9a52', '#d2a564'], path: ['#9b7b52', '#b8875a'], tree: ['#3f6b3a', '#7c6a3e'], trunk: ['#5c4630', '#5c4630'],
+    lake: ['#5b9cbf', '#8fb6c4'], tuft: ['#56803f', '#a88a4c'], sun: ['#f2c25b', '#f0a842'],
+  };
+  const NIGHT: Pal = {
+    sky: ['#14232a', '#2a2418'], skyLow: ['#1d3330', '#3a3020'], far: ['#25402f', '#4d3f28'], mid: ['#2f5034', '#63502f'],
+    ground: ['#334f2d', '#6e5633'], path: ['#4a3a26', '#5a4529'], tree: ['#5d9a5a', '#8d7a48'], trunk: ['#7a6248', '#7a6248'],
+    lake: ['#3f7396', '#55707a'], tuft: ['#6c9e55', '#9a8046'], sun: ['#e8e4cf', '#e8d9b0'],
+  };
+  const INK = { day: { ink: '#11252b', water: '#1f6fa3', food: '#a85a06', hurt: '#8a2b1a', rock: '#62574c', thorn: '#3c3a28', dune: '#c99a55', duneEdge: '#a77a3c', cow: '#f2ede2', cowSpot: '#5a4434', fish: '#2e5f73', grain: '#b0741b', stalk: '#6e7f3b', game: '#8a5a32', pot: '#b36a2b' },
+               night: { ink: '#e6ece4', water: '#7cc0ea', food: '#e8b25c', hurt: '#f08a6a', rock: '#8c8070', thorn: '#a7a07a', dune: '#a98049', duneEdge: '#7d5d33', cow: '#e9e3d4', cowSpot: '#4a382a', fish: '#8cc4d4', grain: '#e0a648', stalk: '#9fb06a', game: '#c39260', pot: '#d48a4b' } };
+  const night = () => document.documentElement.dataset.theme === 'night';
+  const hex = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const mix = (a: string, b: string, t: number) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`; };
+  const col = (k: string, dry: number) => { const p = (night() ? NIGHT : DAY)[k]; return mix(p[0], p[1], Math.max(0, Math.min(1, dry))); };
+  const ink = () => (night() ? INK.night : INK.day);
+
+  // ---------- canvas sizing ----------
+  function fit() {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    VW = ($('stage').clientWidth || 960) < 640 ? 600 : 960;
+    cv.style.aspectRatio = `${VW} / ${H}`;
+    const w = cv.clientWidth;
+    cv.width = Math.round(w * dpr); cv.height = Math.round((w * H / VW) * dpr);
+    ctx.setTransform(cv.width / VW, 0, 0, cv.height / H, 0, 0);
+  }
+  window.addEventListener('resize', () => { fit(); draw(); });
+
+  // ---------- scenery ----------
+  const hash = (n: number) => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
+
+  function draw() {
+    const r = M.localRain(s);
+    const dry = 1 - Math.min(1, r / 0.9);
+    const lake = Math.max(0, Math.min(1, (r - 0.45) / 0.4));
+    const K = ink();
+    const off = reduce ? 0 : scroll;
+
+    // sky
+    const g = ctx.createLinearGradient(0, 0, 0, 260);
+    g.addColorStop(0, col('sky', dry)); g.addColorStop(1, col('skyLow', dry));
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = col('sun', dry);
+    const sx = VW - 170;
+    ctx.beginPath(); ctx.arc(sx, 70, night() ? 22 : 28, 0, Math.PI * 2); ctx.fill();
+    if (night()) { ctx.fillStyle = col('sky', dry); ctx.beginPath(); ctx.arc(sx - 10, 64, 20, 0, Math.PI * 2); ctx.fill(); }
+
+    // far hills turning to dunes
+    ctx.fillStyle = col('far', dry);
+    ctx.beginPath(); ctx.moveTo(0, 260);
+    for (let x = 0; x <= W; x += 8) {
+      const u = x + off * 0.12;
+      const hill = 30 * Math.sin(u / 160) + 18 * Math.sin(u / 57 + 1.3);
+      const dune = 34 * Math.pow(Math.abs(Math.sin(u / 120)), 0.6);
+      ctx.lineTo(x, 215 - (hill * (1 - dry) + dune * dry));
+    }
+    ctx.lineTo(W, 260); ctx.closePath(); ctx.fill();
+
+    // middle band of grass and trees
+    ctx.fillStyle = col('mid', dry);
+    ctx.fillRect(0, 255, W, 50);
+    // lake
+    if (lake > 0.02) {
+      ctx.globalAlpha = lake;
+      ctx.fillStyle = col('lake', dry);
+      ctx.beginPath();
+      const lx = 480 - ((off * 0.3) % 1400);
+      for (const cx of [lx, lx + 1400]) ctx.ellipse(cx, 276, 260 * (0.5 + lake / 2), 9 + 5 * lake, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    const step = 90, o2 = off * 0.45;
+    for (let i = Math.floor(o2 / step) - 1; i < (o2 + W) / step + 1; i++) {
+      if (hash(i) > 0.15 + 0.75 * (1 - dry)) continue;
+      const x = i * step - o2 + hash(i + 9) * 40, sc = 0.7 + hash(i + 3) * 0.6;
+      tree(x, 268, sc * (1 - dry * 0.35), dry);
+    }
+
+    // ground and path
+    ctx.fillStyle = col('ground', dry); ctx.fillRect(0, 290, W, H - 290);
+    ctx.fillStyle = col('path', dry); ctx.fillRect(0, M.GROUND, W, 14);
+    ctx.fillStyle = col('tuft', dry);
+    for (let i = Math.floor(off / 37) - 1; i < (off + W) / 37 + 1; i++) {
+      if (hash(i * 3.1) > 0.25 + 0.6 * (1 - dry)) continue;
+      const x = i * 37 - off, y = 330 + hash(i) * 60;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 3, y - 9 * (1 - dry * 0.6)); ctx.lineTo(x + 6, y); ctx.fill();
+    }
+
+    for (const th of s.things) thing(th, K);
+    group(K);
+
+    // floating messages
+    ctx.font = '600 13px Geologica Variable, sans-serif'; ctx.textAlign = 'center';
+    ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.strokeStyle = night() ? '#121a15' : '#ffffff';
+    for (const f of s.fx) {
+      ctx.globalAlpha = Math.max(0, 1 - f.age / 1.1);
+      ctx.fillStyle = f.kind === 'water' ? K.water : f.kind === 'food' ? K.food : K.hurt;
+      ctx.strokeText(f.text, f.x, f.y - 34); ctx.fillText(f.text, f.x, f.y - 34);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tree(x: number, y: number, sc: number, dry: number) {
+    ctx.fillStyle = col('trunk', dry);
+    ctx.fillRect(x - 2 * sc, y - 34 * sc, 4 * sc, 34 * sc);
+    ctx.fillStyle = col('tree', dry);
+    ctx.beginPath(); // flat-topped acacia
+    ctx.ellipse(x, y - 38 * sc, 30 * sc, 9 * sc, 0, 0, Math.PI * 2);
+    ctx.ellipse(x - 12 * sc, y - 33 * sc, 16 * sc, 6 * sc, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function thing(th: M.Thing, K: typeof INK.day) {
+    const { x, y, w, h } = th;
+    ctx.save();
+    switch (th.kind) {
+      case 'water': {
+        ctx.fillStyle = K.water;
+        ctx.beginPath(); ctx.ellipse(x + w / 2, y + h - 4, w / 2, 6, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(x + w / 2, y - 14); ctx.bezierCurveTo(x + w / 2 + 9, y - 2, x + w / 2 + 8, y + 6, x + w / 2, y + 6); ctx.bezierCurveTo(x + w / 2 - 8, y + 6, x + w / 2 - 9, y - 2, x + w / 2, y - 14); ctx.fill();
+        break;
+      }
+      case 'fish': {
+        ctx.fillStyle = K.fish;
+        ctx.beginPath(); ctx.ellipse(x + 12, y + 9, 12, 6, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(x + 22, y + 9); ctx.lineTo(x + 30, y + 2); ctx.lineTo(x + 30, y + 16); ctx.fill();
+        break;
+      }
+      case 'grain': {
+        ctx.strokeStyle = K.stalk; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(x + 11, y + h); ctx.lineTo(x + 11, y + 8); ctx.stroke();
+        ctx.fillStyle = K.grain;
+        for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.ellipse(x + 8 + (i % 2) * 6, y + 4 + i * 4, 3.5, 2.5, 0, 0, Math.PI * 2); ctx.fill(); }
+        break;
+      }
+      case 'game': {
+        ctx.fillStyle = K.game; // a leaping gazelle
+        ctx.beginPath(); ctx.ellipse(x + 17, y + 13, 13, 6, -0.15, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x + 31, y + 6, 4, 3, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = K.game; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(x + 28, y + 9); ctx.lineTo(x + 30, y + 6);
+        ctx.moveTo(x + 32, y + 4); ctx.lineTo(x + 30, y - 4); ctx.moveTo(x + 33, y + 4); ctx.lineTo(x + 34, y - 4);
+        ctx.moveTo(x + 8, y + 15); ctx.lineTo(x - 2, y + 24); ctx.moveTo(x + 26, y + 15); ctx.lineTo(x + 36, y + 24); ctx.stroke();
+        break;
+      }
+      case 'field': {
+        const fail = s.spellLeft > 0;
+        for (let i = 0; i < 6; i++) {
+          const fx = x + 6 + i * 11;
+          ctx.strokeStyle = K.stalk; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(fx, y + h); ctx.lineTo(fx + (fail ? 5 : 0), y + (fail ? 16 : 8)); ctx.stroke();
+          if (!fail) { ctx.fillStyle = K.grain; ctx.beginPath(); ctx.ellipse(fx, y + 5, 4, 6, 0, 0, Math.PI * 2); ctx.fill(); }
+        }
+        break;
+      }
+      case 'rock': {
+        ctx.fillStyle = K.rock;
+        ctx.beginPath(); ctx.moveTo(x, y + h); ctx.lineTo(x + 4, y + 8); ctx.lineTo(x + 14, y); ctx.lineTo(x + 26, y + 6); ctx.lineTo(x + w, y + h); ctx.fill();
+        break;
+      }
+      case 'thorn': {
+        ctx.strokeStyle = K.thorn; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+        ctx.beginPath();
+        for (let i = 0; i < 7; i++) { const a = -Math.PI * (0.1 + 0.8 * (i / 6)); ctx.moveTo(x + w / 2, y + h); ctx.lineTo(x + w / 2 + Math.cos(a) * w * 0.55, y + h + Math.sin(a) * h); }
+        ctx.stroke();
+        break;
+      }
+      case 'dune': {
+        ctx.fillStyle = K.dune;
+        ctx.beginPath(); ctx.moveTo(x, y + h); ctx.quadraticCurveTo(x + w * 0.35, y - 4, x + w * 0.62, y + 2); ctx.lineTo(x + w, y + h); ctx.fill();
+        ctx.strokeStyle = K.duneEdge; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(x + w * 0.62, y + 2); ctx.lineTo(x + w, y + h); ctx.stroke();
+        break;
+      }
+    }
+    ctx.restore();
+  }
+
+  function person(x: number, footY: number, phase: number, K: typeof INK.day, carry: 'pot' | 'spear' | null, airborne: boolean) {
+    ctx.strokeStyle = K.ink; ctx.fillStyle = K.ink; ctx.lineWidth = 3.2; ctx.lineCap = 'round';
+    const hip = footY - 22, neck = footY - 40;
+    const sw = airborne ? 0.5 : Math.sin(phase) * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(x, hip); ctx.lineTo(x + Math.sin(sw) * 12, footY);
+    ctx.moveTo(x, hip); ctx.lineTo(x - Math.sin(sw) * 12, footY);
+    ctx.moveTo(x, hip); ctx.lineTo(x + 2, neck);
+    ctx.moveTo(x + 1, neck + 4); ctx.lineTo(x + 1 - Math.sin(sw) * 9, hip + 2);
+    ctx.stroke();
+    ctx.beginPath(); ctx.arc(x + 3, neck - 7, 6, 0, Math.PI * 2); ctx.fill();
+    if (carry === 'pot') {
+      ctx.fillStyle = K.pot;
+      ctx.beginPath(); ctx.ellipse(x + 3, neck - 19, 8, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(x - 1, neck - 27, 8, 4);
+    }
+    if (carry === 'spear') {
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x + 1, neck + 4); ctx.lineTo(x + 6, hip + 2); ctx.moveTo(x - 6, hip + 8); ctx.lineTo(x + 18, neck - 16); ctx.stroke();
+    }
+  }
+
+  function cow(x: number, footY: number, phase: number, K: typeof INK.day, size: number) {
+    const b = Math.sin(phase) * 1.5;
+    ctx.save(); ctx.translate(x, footY); ctx.scale(size, size);
+    ctx.strokeStyle = K.cowSpot; ctx.lineWidth = 3; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-12, -14); ctx.lineTo(-12 + Math.sin(phase) * 3, 0); ctx.moveTo(10, -14); ctx.lineTo(10 - Math.sin(phase) * 3, 0);
+    ctx.stroke();
+    ctx.fillStyle = K.cow;
+    ctx.beginPath(); ctx.ellipse(0, -20 + b, 17, 9, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = K.cowSpot; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.fillStyle = K.cowSpot;
+    ctx.beginPath(); ctx.ellipse(-4, -22 + b, 6, 4, 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(20, -24 + b, 6, 4.5, 0.4, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(19, -28 + b); ctx.quadraticCurveTo(16, -38 + b, 10, -36 + b); ctx.moveTo(22, -28 + b); ctx.quadraticCurveTo(27, -38 + b, 32, -35 + b); ctx.stroke();
+    ctx.restore();
+  }
+
+  function group(K: typeof INK.day) {
+    const ph = reduce ? 0 : s.t * 12;
+    if (M.has(s, 'cattle')) {
+      const n = Math.max(1, Math.ceil(s.herd * 3));
+      for (let i = 0; i < n; i++) cow(M.PLAYER_X - 62 - i * 44, M.GROUND, ph + i * 1.7, K, 0.9 - i * 0.06);
+    }
+    person(M.PLAYER_X - 30, M.GROUND, ph + 2.1, K, M.has(s, 'harpoons') ? 'spear' : null, false);
+    if (s.hurt > 0 && !reduce && Math.floor(s.hurt * 12) % 2) return;
+    person(M.PLAYER_X, s.y, ph, K, M.has(s, 'pottery') ? 'pot' : null, !s.onGround);
+  }
+
+  // ---------- HUD ----------
+  const fmt = (n: number) => Math.round(n).toLocaleString('en-GB');
+  function hud() {
+    const b = Math.max(M.END_BCE, s.bce);
+    $('h-year').textContent = `${fmt(b)} BCE`;
+    $('h-ago').textContent = `${fmt(b + NOW - 1)} years ago`;
+    $('h-era').textContent = M.era(b);
+    const r = M.localRain(s);
+    for (const [k, v] of [['water', s.water], ['food', s.food]] as const) {
+      $('b-' + k).style.width = `${Math.max(0, v)}%`;
+      $('n-' + k).textContent = v < 20 ? `${Math.round(v)} low` : `${Math.round(v)}`;
+      $('b-' + k).parentElement!.parentElement!.classList.toggle('low', v < 20);
+    }
+    $('b-rain').style.width = `${Math.round(r * 100)}%`;
+    $('n-rain').textContent = s.spellLeft > 0 ? 'dry spell' : r > 0.7 ? 'wet' : r > 0.4 ? 'drying' : 'arid';
+    $('h-chosen').textContent = s.chosen.length ? s.chosen.map((id) => M.byId(id).name).join(', ') : 'nothing decided yet';
+    const ban = $('banner');
+    if (s.spellLeft > 0) { ban.hidden = false; ban.textContent = 'Dry spell: years of failed rains'; }
+    else ban.hidden = true;
+  }
+
+  // ---------- councils ----------
+  function situation(): string {
+    const r = M.rainfall(s.bce);
+    if (s.bce >= 6500) return 'The lakes are full and the grass is tall. Life is good, for now.';
+    if (s.bce >= 5400) return 'Still green, but a few elders say the rains are less reliable than in their grandparents’ time.';
+    if (r > 0.55) return 'The rains are failing more often. Some lakes have turned to marsh.';
+    if (r > 0.3) return 'The lakes are drying up and the grassland is thinning. Families are leaving for the south and the Nile.';
+    return 'The desert is spreading. Only rivers, oases and the far south stay green.';
+  }
+
+  function openGate() {
+    mode = 'gate';
+    const opts = M.council(s);
+    if (!opts.length) { mode = 'run'; return; }
+    $('g-title').textContent = `The council of ${fmt(Math.round(s.bce / 100) * 100)} BCE`;
+    $('g-sit').dataset.n = String(s.chosen.length + 1);
+    $('g-sit').textContent = situation();
+    const box = $('g-opts');
+    box.innerHTML = '';
+    opts.forEach((id, i) => {
+      const st = M.byId(id);
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'opt';
+      b.innerHTML = `<span class="o-key">${i + 1}</span><strong>${st.name}</strong><span class="o-gain">${st.gain}</span><span class="o-cost">${st.cost}</span><span class="o-real">${st.real}</span>`;
+      b.addEventListener('click', () => pick(id));
+      box.appendChild(b);
+    });
+    $('ov-gate').hidden = false;
+    (box.firstElementChild as HTMLElement)?.focus({ preventScroll: true });
+  }
+
+  function pick(id: M.StrategyId) {
+    M.choose(s, id);
+    $('ov-gate').hidden = true;
+    hud();
+    resume();
+  }
+
+  // ---------- loop ----------
+  function frame(ts: number) {
+    if (mode !== 'run') return;
+    const dt = Math.min(0.05, (ts - last) / 1000 || 0);
+    last = ts;
+    M.step(s, dt);
+    scroll += M.SPEED * dt;
+    if (M.gateDue(s)) { draw(); hud(); openGate(); return; }
+    draw(); hud();
+    if (s.over) { finish(); return; }
+    requestAnimationFrame(frame);
+  }
+
+  function resume() {
+    mode = 'run';
+    $('pause').hidden = false;
+    last = performance.now();
+    requestAnimationFrame(frame);
+  }
+
+  function start() {
+    s = M.newState(); scroll = 0;
+    $('ov-start').hidden = true; $('end').hidden = true;
+    draw(); hud();
+    $('stage').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    openGate(); // the first council, before setting out
+  }
+
+  function pause() {
+    if (mode !== 'run') return;
+    mode = 'pause'; $('ov-paused').hidden = false; ($('resume') as HTMLButtonElement).focus({ preventScroll: true });
+  }
+
+  // ---------- end ----------
+  function finish() {
+    mode = 'end';
+    $('pause').hidden = true;
+    const year = fmt(Math.max(M.END_BCE, s.bce));
+    const lasted = fmt(M.START_BCE - Math.max(M.END_BCE, s.bce));
+    const t = $('e-title'), p = $('e-text');
+    const fishy = (M.has(s, 'harpoons') || M.has(s, 'wildgrain')) && !M.has(s, 'cattle') && !M.has(s, 'move') && !M.has(s, 'wells');
+    if (s.over === 'won') {
+      t.textContent = 'Your people made it to 1500 BCE';
+      p.textContent = `Seven thousand years, from a green Sahara to desert, living by: ${s.chosen.map((id) => M.byId(id).name.toLowerCase()).join(', ')}. Look at the chart: which choices carried you through the drying, and which stopped mattering?`;
+    } else {
+      t.textContent = s.over === 'water' ? `The water ran out in ${year} BCE` : `Food ran out in ${year} BCE`;
+      const why = s.bce > 5300
+        ? 'This was still the Green Sahara. Hard times came from dry spells and stumbles, not the big drying.'
+        : fishy
+          ? 'Your way of life fitted a green Sahara perfectly. When the lakes and wild grasses went, it had nothing to fall back on.'
+          : 'The climate changed faster than your way of life did.';
+      p.textContent = `Your group lasted ${lasted} years before breaking up and moving on. ${why}`;
+    }
+    chart();
+    $('end').hidden = false;
+    $('end').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  function chart() {
+    const svg = $('e-chart');
+    const L = 40, R = 740, T = 14, B = 220;
+    const X = (b: number) => L + ((M.START_BCE - b) / (M.START_BCE - M.END_BCE)) * (R - L);
+    const Y = (v: number) => B - (v / 100) * (B - T);
+    const line = (key: 'water' | 'food' | 'rain', cls: string) => {
+      const pts = s.log.map((d) => `${X(d.bce).toFixed(1)},${Y(key === 'rain' ? d.rain * 100 : d[key]).toFixed(1)}`);
+      return pts.length ? `<polyline class="${cls}" points="${pts.join(' ')}"/>` : '';
+    };
+    const ref = Array.from({ length: 141 }, (_, i) => { const b = M.START_BCE - i * 50; return `${X(b).toFixed(1)},${Y(M.rainfall(b) * 100).toFixed(1)}`; });
+    let out = `<rect class="c-bg" x="${L}" y="${T}" width="${R - L}" height="${B - T}"/>`;
+    // dry spells
+    for (const e of s.events.filter((e) => e.text === 'Dry spell')) {
+      const x0 = X(e.bce), x1 = Math.min(R, X(e.bce - 4.5 * M.YEARS_PER_SEC));
+      out += `<rect class="c-spell" x="${x0}" y="${T}" width="${Math.max(2, x1 - x0)}" height="${B - T}"/>`;
+    }
+    out += `<polyline class="c-ref" points="${ref.join(' ')}"/>`;
+    out += line('water', 'c-water') + line('food', 'c-food');
+    for (let b = 8000; b >= 2000; b -= 1000) out += `<text class="c-ax" x="${X(b)}" y="${B + 18}" text-anchor="middle">${fmt(b)} BCE</text>`;
+    out += `<text class="c-ax" x="${L - 6}" y="${Y(100) + 4}" text-anchor="end">100</text><text class="c-ax" x="${L - 6}" y="${Y(0) + 4}" text-anchor="end">0</text>`;
+    const choices = s.events.filter((e) => e.text !== 'Dry spell' && e.text !== 'Neighbours helped');
+    choices.forEach((e, i) => {
+      const x = X(e.bce);
+      out += `<line class="c-tick" x1="${x}" x2="${x}" y1="${B}" y2="${B + 6}"/><text class="c-choice" x="${x > R - 110 ? x : x + 3}" text-anchor="${x > R - 110 ? 'end' : 'start'}" y="${B + 36 + (i % 2) * 14}">${e.text}</text>`;
+    });
+    if (s.over !== 'won') out += `<line class="c-end" x1="${X(s.bce)}" x2="${X(s.bce)}" y1="${T}" y2="${B}"/>`;
+    svg.innerHTML = out;
+  }
+
+  // ---------- input ----------
+  const tryJump = () => { if (mode === 'run') M.jump(s); };
+  cv.addEventListener('pointerdown', (e) => { e.preventDefault(); tryJump(); });
+  window.addEventListener('keydown', (e) => {
+    if (mode === 'run' && (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW')) { e.preventDefault(); tryJump(); }
+    else if (mode === 'run' && (e.code === 'KeyP' || e.code === 'Escape')) pause();
+    else if (mode === 'pause' && (e.code === 'KeyP' || e.code === 'Escape')) { $('ov-paused').hidden = true; resume(); }
+    else if (mode === 'gate' && /^Digit[1-3]$/.test(e.code)) {
+      const b = $('g-opts').children[Number(e.code.slice(5)) - 1] as HTMLButtonElement | undefined;
+      b?.click();
+    }
+  });
+  $('go').addEventListener('click', start);
+  $('again').addEventListener('click', () => { $('stage').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); start(); });
+  $('pause').addEventListener('click', pause);
+  $('resume').addEventListener('click', () => { $('ov-paused').hidden = true; resume(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+  document.addEventListener('themechange', () => draw());
+
+  fit(); draw(); hud();
+  (window as any).__dr = { get s() { return s; }, get mode() { return mode; } };
+</script>
+
+<style>
+  .crumb { margin: 0 0 0.5rem; font-size: 0.92rem; }
+  .game { margin-top: 0.5rem; }
+
+  .hud { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 0.75rem 2rem; margin-bottom: 0.7rem; }
+  .when { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.3rem 0.9rem; }
+  .year { font-family: var(--serif); font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1; font-variant-numeric: tabular-nums; }
+  .ago { color: var(--muted); font-size: 0.9rem; }
+  .era { color: var(--ochre); font-size: 0.9rem; font-weight: 500; }
+  .meters { display: grid; grid-template-columns: repeat(3, minmax(8.5rem, 1fr)); gap: 0.4rem 1.1rem; flex: 1 1 26rem; max-width: 34rem; }
+  .meter { display: grid; grid-template-columns: 3.1rem 1fr 4.2rem; align-items: center; gap: 0.45rem; font-size: 0.85rem; }
+  .meter .lab { color: var(--muted); }
+  .bar { height: 10px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 80%; transition: width 0.15s linear; }
+  .m-water .bar i { background: #1f6fa3; }
+  .m-food .bar i { background: var(--ochre-fill); }
+  .m-rain .bar i { background: var(--moss); }
+  :global([data-theme='night']) .m-water .bar i { background: #7cc0ea; }
+  .num { font-family: var(--mono); font-size: 0.72rem; font-variant-numeric: tabular-nums; }
+  .meter.low .num { color: var(--ochre); font-weight: 600; }
+  .t-water { color: #1f6fa3; } .t-food { color: var(--ochre); }
+  :global([data-theme='night']) .t-water { color: #7cc0ea; }
+
+  .stage { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  #cv { display: block; width: 100%; aspect-ratio: 960 / 400; cursor: pointer; }
+  .stage { scroll-margin-top: 4rem; }
+  .banner { position: absolute; left: 50%; top: 0.8rem; transform: translateX(-50%); margin: 0; padding: 0.35rem 0.7rem; font-size: 0.85rem; font-weight: 500; color: var(--ink); background: color-mix(in srgb, var(--ochre-soft) 92%, transparent); border: 1px solid var(--ochre); border-radius: 3px; white-space: nowrap; }
+  .pause { position: absolute; right: 0.6rem; top: 0.6rem; font: inherit; font-size: 0.8rem; padding: 0.3rem 0.6rem; background: color-mix(in srgb, var(--surface) 85%, transparent); color: var(--ink); border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
+
+  .ov { position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; background: color-mix(in srgb, var(--bg) 55%, transparent); overflow: auto; }
+  .ov[hidden] { display: none; }
+  .ov-box { max-width: 34rem; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1.4rem 1.5rem; }
+  .ov-box.wide { max-width: 58rem; width: 100%; }
+  .ov-box h2 { font-size: clamp(1.3rem, 2.6vw, 1.7rem); margin: 0 0 0.5rem; }
+  .ov-box p { margin: 0 0 0.75rem; }
+  .keys { color: var(--muted); font-size: 0.88rem; }
+  .sit { color: var(--muted); }
+  .opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+  :global(.opt) { position: relative; display: flex; flex-direction: column; gap: 0.4rem; text-align: left; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0.85rem 0.9rem 0.9rem; cursor: pointer; }
+  :global(.opt:hover), :global(.opt:focus-visible) { border-color: var(--blue); outline: none; box-shadow: inset 0 0 0 1px var(--blue); }
+  :global(.opt strong) { font-family: var(--serif); font-weight: 400; font-size: 1.12rem; padding-right: 1.4rem; }
+  :global(.o-key) { position: absolute; right: 0.7rem; top: 0.7rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+  :global(.o-gain) { font-size: 0.9rem; }
+  :global(.o-cost) { font-size: 0.9rem; color: var(--ochre); }
+  :global(.o-real) { font-size: 0.8rem; color: var(--muted); border-top: 1px dotted var(--line); padding-top: 0.45rem; margin-top: auto; }
+
+  .turn { display: none; margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--muted); }
+  @media (max-width: 600px) and (orientation: portrait) { .turn { display: block; } }
+  .chosen-line { margin: 0.6rem 0 0; font-size: 0.9rem; }
+  .chosen-line .lab { color: var(--muted); }
+
+  .end { scroll-margin-top: 5rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .end h2 { margin-bottom: 0.4rem; }
+  .e-text { max-width: var(--measure); }
+  .chart { margin: 1.2rem 0 1.5rem; }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .chart figcaption { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; }
+  .k { display: inline-block; width: 1.1rem; height: 3px; margin-left: 0.4rem; vertical-align: middle; }
+  .k-rain { background: none; border-top: 2px dashed var(--moss); height: 0; }
+  .k-water { background: #1f6fa3; } .k-food { background: var(--ochre-fill); }
+  .k-spell { height: 0.7rem; width: 0.7rem; background: var(--ochre-soft); }
+  :global([data-theme='night']) .k-water { background: #7cc0ea; }
+  #e-chart :global(.c-bg) { fill: var(--surface); stroke: var(--line); }
+  #e-chart :global(.c-spell) { fill: var(--ochre-soft); opacity: 0.8; }
+  #e-chart :global(.c-ref) { fill: none; stroke: var(--moss); stroke-width: 2; stroke-dasharray: 5 4; }
+  #e-chart :global(.c-water) { fill: none; stroke: #1f6fa3; stroke-width: 2; }
+  #e-chart :global(.c-food) { fill: none; stroke: var(--ochre-fill); stroke-width: 2; }
+  :global([data-theme='night']) #e-chart :global(.c-water) { stroke: #7cc0ea; }
+  #e-chart :global(.c-ax) { font: 10px var(--sans); fill: var(--muted); }
+  #e-chart :global(.c-tick) { stroke: var(--ink); stroke-width: 1.5; }
+  #e-chart :global(.c-choice) { font: 10.5px var(--sans); fill: var(--ink); }
+  #e-chart :global(.c-end) { stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 2 3; }
+  .real { max-width: var(--measure); }
+  .real h3 { margin-bottom: 0.4rem; }
+  .real ul { padding-left: 1.1rem; margin: 0 0 1.4rem; }
+  .real li { margin-bottom: 0.35rem; }
+
+  .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 3rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .notes h2, .sources h2 { font-size: 1.35rem; }
+  .notes ol { padding-left: 1.2rem; margin: 0; }
+  .notes li { margin-bottom: 0.55rem; }
+  .sources { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .sources ul { list-style: none; padding: 0; margin: 0 0 1.2rem; font-size: 0.9rem; }
+  .sources li { padding: 0.35rem 0; border-bottom: 1px dotted var(--line); }
+  .made { color: var(--muted); font-size: 0.92rem; }
+
+  @media (max-width: 800px) {
+    .opts { grid-template-columns: 1fr; }
+    .notes { grid-template-columns: 1fr; }
+    .meters { grid-template-columns: 1fr; max-width: none; }
+    .ov { position: fixed; z-index: 50; place-items: start center; background: color-mix(in srgb, var(--bg) 94%, transparent); padding-top: 3rem; }
+    .ov-box { padding: 1rem; }
+  }
+</style>
