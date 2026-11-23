@@ -71,7 +71,6 @@ import Base from '../../layouts/Base.astro';
       </div>
 
       <p class="turn">On a phone, turn it sideways for a bigger view.</p>
-      <ul id="ways" class="ways" aria-label="Your choices and how they are doing"></ul>
     </section>
 
     <section id="end" class="end" hidden aria-live="polite">
@@ -113,15 +112,17 @@ import Base from '../../layouts/Base.astro';
     </section>
 
     <section class="sources">
-      <h2>Sources</h2>
-      <ul>
+      <details>
+        <summary>Sources</summary>
+        <ul>
         <li>Kuper, R. &amp; Kröpelin, S. (2006). Climate-controlled Holocene occupation in the Sahara: motor of Africa’s evolution. <em>Science</em> 313, 803–807. <a href="https://doi.org/10.1126/science.1130989">doi:10.1126/science.1130989</a></li>
         <li>Huysecom, E. et al. (2009). The emergence of pottery in Africa during the tenth millennium cal BC: new evidence from Ounjougou (Mali). <em>Antiquity</em> 83, 905–917. <a href="https://doi.org/10.1017/S0003598X00099245">doi:10.1017/S0003598X00099245</a></li>
         <li>Sutton, J. E. G. (1977). The African aqualithic. <em>Antiquity</em> 51, 25–34.</li>
         <li>Marshall, F. &amp; Hildebrand, E. (2002). Cattle before crops: the beginnings of food production in Africa. <em>Journal of World Prehistory</em> 16, 99–143.</li>
         <li>Winchell, F. et al. (2017). Evidence for sorghum domestication in fourth-millennium BC eastern Sudan. <em>Current Anthropology</em> 58, 673–683.</li>
         <li>Manning, K. et al. (2011). 4500-year old domesticated pearl millet from the Tilemsi Valley, Mali. <em>Journal of Archaeological Science</em> 38, 312–322.</li>
-      </ul>
+        </ul>
+      </details>
       <p class="made">Made for outreach in the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, which studies farming in drylands past and present. Spotted something wrong? <a href="/#contact">Tell me</a>.</p>
     </section>
   </div>
@@ -422,7 +423,7 @@ import Base from '../../layouts/Base.astro';
       $('n-' + k).textContent = v < 20 ? 'low!' : `${Math.round(v)}`;
       $('b-' + k).parentElement!.parentElement!.classList.toggle('low', v < 20);
     }
-    ways();
+    watch();
     for (const [y, text] of MILESTONES) if (s.bce <= y && s.bce > y - M.YEARS_PER_SEC * 0.1) say(text, 3.5);
     const ban = $('banner');
     const text = s.spellLeft > 0 ? 'Dry spell: the rains fail for years' : s.t < msgUntil ? msg : '';
@@ -445,42 +446,39 @@ import Base from '../../layouts/Base.astro';
     sow: { weak: 'Dry spell: your fields are failing' },
   };
   const lastLevel: Record<string, string> = {};
-  const lastTotal: Record<string, number> = {};
 
-  const amount = (l?: M.Ledger) => {
-    if (!l) return 'nothing yet';
-    const items = [['food', l.food], ['water', l.water]] as const;
-    const parts = items.filter(([, v]) => v >= 1).map(([k, v]) => `+${fmt(v)} ${k}`)
-      .concat(items.filter(([, v]) => v <= -1).map(([k, v]) => `−${fmt(-v)} ${k}`));
-    return parts.length ? parts.join(', ') : 'nothing yet';
-  };
-  const gaveText = (l?: M.Ledger) => {
-    const items = l ? ([['food', l.food], ['water', l.water]] as const) : [];
-    const gave = items.filter(([, v]) => v >= 1).map(([k, v]) => `${fmt(v)} ${k}`).join(' and ');
-    const cost = items.filter(([, v]) => v <= -1).map(([k, v]) => `${fmt(-v)} ${k}`).join(' and ');
-    if (gave && cost) return `It gave you ${gave} and cost you ${cost}`;
-    if (gave) return `It gave you ${gave}`;
-    if (cost) return `It cost you ${cost}`;
-    return 'It made little difference';
+  const SUBJ: Record<M.StrategyId, string> = {
+    harpoons: 'Fishing', wildgrain: 'Gathering wild grain', pottery: 'Pottery', share: 'Sharing', trade: 'Trading',
+    cattle: 'Herding', move: 'Moving south', wells: 'Your wells', sow: 'Farming',
   };
 
-  function ways() {
-    const ul = $('ways');
-    if (ul.children.length !== s.chosen.length) {
-      ul.innerHTML = s.chosen.map((id) => `<li data-id="${id}"><strong>${M.byId(id).name}</strong><span class="w-st"></span><span class="w-amt"></span></li>`).join('');
+  /** One plain sentence on how a choice worked out. */
+  function outcome(id: M.StrategyId, end: number): string {
+    const l = s.ledger[id], P = SUBJ[id];
+    if (id === 'share') {
+      const n = s.events.filter((e) => e.text === 'Neighbours helped').length;
+      return n ? `Neighbours rescued your people ${n === 1 ? 'once' : n === 2 ? 'twice' : `${n} times`}.` : 'Your neighbours never had to rescue you, but sharing cost you a little all along.';
     }
-    for (const li of Array.from(ul.children) as HTMLElement[]) {
-      const id = li.dataset.id as M.StrategyId;
-      const st = M.status(s, id), l = s.ledger[id];
-      li.dataset.level = st.level;
-      (li.children[1] as HTMLElement).textContent = st.text;
-      (li.children[2] as HTMLElement).textContent = amount(l);
-      const total = l ? l.food + l.water : 0;
-      if (mode === 'run' && total - (lastTotal[id] ?? total) > 2) { li.classList.remove('pulse'); void li.offsetWidth; li.classList.add('pulse'); }
-      if (mode === 'run' && Math.abs(total - (lastTotal[id] ?? total)) > 2 || lastTotal[id] === undefined) lastTotal[id] = total;
+    if (!l) return `${P} made little difference.`;
+    if (id === 'trade') {
+      if (Math.abs(l.water) + Math.abs(l.food) < 15) return 'You rarely had anything spare to trade.';
+      return l.water > 0 ? 'Trading turned your spare food into water when you ran short.' : 'Trading turned your spare water into food when you ran short.';
+    }
+    const net = l.food + l.water;
+    const what = l.water > l.food ? 'kept your people in water' : 'fed your people';
+    if (net < -5) return `${P} cost you more than it gave.`;
+    if (net < 8) return `${P} made little difference.`;
+    if (l.last > end + 500) return `${P} ${what} until about ${fmt(Math.round((l.last + NOW) / 100) * 100)} years ago, then stopped working.`;
+    return `${P} ${what} right to the end.`;
+  }
+
+  /** Watch the choices and warn, in plain words, when one starts to fail. */
+  function watch() {
+    for (const id of s.chosen) {
+      const lvl = M.status(s, id).level;
       const prev = lastLevel[id];
-      if (prev && prev !== st.level && WARN[id]?.[st.level]) say(WARN[id]![st.level], 4);
-      lastLevel[id] = st.level;
+      if (prev && prev !== lvl && WARN[id]?.[lvl]) say(WARN[id]![lvl], 4);
+      lastLevel[id] = lvl;
     }
   }
 
@@ -589,11 +587,8 @@ import Base from '../../layouts/Base.astro';
     if (moments.length) lines.push(`Along the way you ${moments.join(', ').replace(/, ([^,]*)$/, ' and $1')}.`);
     $('e-text').innerHTML = lines.map((l) => `<p>${l}</p>`).join('');
     $('e-real').innerHTML = s.chosen.map((id) => {
-      const l = s.ledger[id];
       const when = s.events.find((e) => e.text === M.byId(id).name)!.bce;
-      const stopped = l && l.last > end + 500 && (l.food > 1 || l.water > 1) && id !== 'share'
-        ? `, then stopped paying off around ${fmt(Math.round(l.last / 100) * 100)} BCE` : '';
-      return `<li data-id="${id}"><strong>${M.byId(id).name}</strong>, chosen ${fmt(Math.round((when + NOW) / 100) * 100)} years ago. ${gaveText(l)}${stopped}.<span class="hind">Replaying history to check this choice…</span><span class="fact">${M.byId(id).real}</span></li>`;
+      return `<li data-id="${id}"><strong>${M.byId(id).name}</strong>, chosen ${fmt(Math.round((when + NOW) / 100) * 100)} years ago. ${outcome(id, end)}<span class="hind">Replaying history to check this choice…</span><span class="fact">${M.byId(id).real}</span></li>`;
     }).join('');
     chart();
     $('end').hidden = false;
@@ -750,17 +745,6 @@ import Base from '../../layouts/Base.astro';
 
   .turn { display: none; margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--muted); }
   @media (max-width: 600px) and (orientation: portrait) { .turn { display: block; } }
-  .ways { list-style: none; padding: 0; margin: 0.7rem 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr)); gap: 0.5rem; }
-  .ways :global(li) { display: flex; flex-direction: column; gap: 0.1rem; padding: 0.5rem 0.7rem; border: 1px solid var(--line); border-left: 4px solid var(--moss); border-radius: 3px; background: var(--surface); font-size: 0.85rem; transition: background-color 0.4s; }
-  .ways :global(li strong) { font-weight: 500; font-size: 0.92rem; }
-  .ways :global(.w-st) { color: var(--ink); }
-  .ways :global(.w-amt) { color: var(--muted); font-family: var(--mono); font-size: 0.72rem; }
-  .ways :global(li[data-level='weak']) { border-left-color: var(--ochre-fill); }
-  .ways :global(li[data-level='weak'] .w-st) { color: var(--ochre); }
-  .ways :global(li[data-level='off']) { border-left-style: dashed; border-left-color: var(--muted); opacity: 0.75; }
-  .ways :global(li.pulse) { animation: pulse 0.6s ease-out; }
-  @keyframes pulse { from { background: var(--blue-soft); } to { background: var(--surface); } }
-  @media (prefers-reduced-motion: reduce) { .ways :global(li.pulse) { animation: none; } }
   .e-real :global(.hind) { display: block; margin-top: 0.15rem; }
   .e-real :global(.hind[data-verdict='best']) { color: var(--moss); }
   .e-real :global(.hind[data-verdict='worse']) { color: var(--ochre); }
@@ -796,7 +780,9 @@ import Base from '../../layouts/Base.astro';
   .real li { margin-bottom: 0.35rem; }
 
   .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 3rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
-  .notes h2, .sources h2 { font-size: 1.35rem; }
+  .notes h2 { font-size: 1.35rem; }
+  .sources summary { font-family: var(--serif); font-size: 1.35rem; cursor: pointer; margin-bottom: 0.6rem; }
+  .sources summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
   .notes ol { padding-left: 1.2rem; margin: 0; }
   .notes li { margin-bottom: 0.55rem; }
   .sources { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
