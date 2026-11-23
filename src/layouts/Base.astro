@@ -3,7 +3,6 @@ import '@fontsource/young-serif';
 import '@fontsource-variable/geologica';
 import '@fontsource/martian-mono/400.css';
 import '../styles/global.css';
-import SeasonSky from '../components/SeasonSky.astro';
 import { profile, links } from '../data/profile';
 
 interface Props { title?: string; description?: string }
@@ -45,7 +44,6 @@ const nav = [
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <SeasonSky />
     <header class="site-head">
       <div class="wrap head-row">
         <a class="home" href="/" aria-current={path === '/' ? 'page' : undefined}>{profile.name}</a>
