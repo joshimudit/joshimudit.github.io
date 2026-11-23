@@ -40,12 +40,39 @@ import Base from '../layouts/Base.astro';
       </div>
     </article>
 
+
+    <article class="feature">
+      <a class="preview" href="/lab/dryland-runner" aria-label="Open Dryland Runner">
+        <svg viewBox="0 0 400 230" aria-hidden="true">
+          <defs><linearGradient id="dr-g" x1="0" x2="1"><stop offset="0" class="d-wet" /><stop offset="1" class="d-dry" /></linearGradient></defs>
+          <rect class="d-sky" width="400" height="150" />
+          <path class="d-far" d="M0,150 C40,118 80,124 120,132 C160,140 190,120 230,126 C270,112 300,96 330,110 C360,96 380,104 400,100 L400,160 L0,160Z" />
+          <ellipse class="d-lake" cx="80" cy="150" rx="70" ry="7" />
+          <rect y="150" width="400" height="80" fill="url(#dr-g)" />
+          <rect class="d-path" y="176" width="400" height="6" />
+          <g class="d-tree"><rect x="38" y="122" width="3" height="28" /><ellipse cx="40" cy="120" rx="22" ry="6" /></g>
+          <g class="d-tree"><rect x="128" y="128" width="3" height="22" /><ellipse cx="130" cy="126" rx="17" ry="5" /></g>
+          <path class="d-dune" d="M300,176 Q318,150 334,156 L360,176Z" />
+          <g class="d-ink"><circle cx="212" cy="139" r="5" /><path d="M211,145 L213,160 M213,160 L205,176 M213,160 L222,174 M212,148 L204,162" /></g>
+          <ellipse class="d-pot" cx="212" cy="129" rx="6" ry="4.5" />
+          <g class="d-cow"><ellipse cx="170" cy="160" rx="13" ry="7" /><ellipse cx="185" cy="156" rx="5" ry="3.5" /></g>
+          <path class="d-drop" d="M262,158 c6,8 5,13 0,13 c-5,0 -6,-5 0,-13Z" />
+        </svg>
+      </a>
+      <div class="txt">
+        <p class="kind">Game</p>
+        <h2><a href="/lab/dryland-runner">Dryland Runner</a></h2>
+        <p>Seven thousand years in three minutes. Lead a group of people from the Green Sahara of 8500 BCE into the desert, and at five turning points decide how they live: fish, herd, farm, share or move. What worked yesterday may not work tomorrow.</p>
+        <p class="for">For classrooms, outreach events and anyone curious about how people lived with climate change.</p>
+        <a class="btn" href="/lab/dryland-runner">Play Dryland Runner</a>
+      </div>
+    </article>
+
     <section class="workshop" aria-labelledby="ws-h">
       <h2 id="ws-h">In the workshop</h2>
       <ul>
         <li><strong>Overshoot</strong><span>A one-button game about harvesting faster than nature regrows.</span></li>
         <li><strong>Tipping Point</strong><span>A lake that flips from clear to green, and the long way back.</span></li>
-        <li><strong>Dryland Runner</strong><span>Ten thousand years of farming in Africa’s drylands, as a game for the AGRI-DRY project.</span></li>
         <li><strong>A live agent experiment</strong><span>AI agents carrying out a real study, with every run logged here.</span></li>
       </ul>
     </section>
@@ -63,6 +90,19 @@ import Base from '../layouts/Base.astro';
   :global([data-theme='night']) .p-soil { fill: #5a4632; }
   :global([data-theme='night']) .p-blade { stroke: #7fbf72; }
   :global([data-theme='night']) .p-co2 { fill: #a9b6aa; }
+  .feature + .feature { padding-top: 3rem; }
+  .d-sky { fill: #d7e8e6; } .d-far { fill: #a9c4a0; } .d-lake { fill: #5b9cbf; } .d-path { fill: #9b7b52; opacity: 0.6; }
+  .d-wet { stop-color: #7c9a52; } .d-dry { stop-color: #d2a564; }
+  .d-tree rect { fill: #5c4630; } .d-tree ellipse { fill: #3f6b3a; } .d-dune { fill: #c99a55; }
+  .d-ink circle { fill: #11252b; } .d-ink path { fill: none; stroke: #11252b; stroke-width: 3; stroke-linecap: round; }
+  .d-pot { fill: #b36a2b; } .d-cow ellipse { fill: #f2ede2; stroke: #5a4434; stroke-width: 1.2; } .d-drop { fill: #1f6fa3; }
+  :global([data-theme='night']) .d-sky { fill: #18272a; }
+  :global([data-theme='night']) .d-far { fill: #2c4632; }
+  :global([data-theme='night']) .d-wet { stop-color: #334f2d; }
+  :global([data-theme='night']) .d-dry { stop-color: #6e5633; }
+  :global([data-theme='night']) .d-ink circle { fill: #e6ece4; }
+  :global([data-theme='night']) .d-ink path { stroke: #e6ece4; }
+  :global([data-theme='night']) .d-drop { fill: #7cc0ea; }
   .kind { color: var(--ochre); font-size: 0.92rem; margin-bottom: 0.3rem; }
   .txt h2 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.4em; }
   .txt h2 a { color: inherit; text-decoration: none; }
