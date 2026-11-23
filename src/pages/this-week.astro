@@ -1,7 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import { issues, formatDay, host } from '../data/digest';
-import DigestArt from '../components/DigestArt.astro';
+
+const drawings = import.meta.glob('../assets/digest/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const drawing = (name?: string) => (name ? drawings[`../assets/digest/${name}.svg`] : undefined);
 
 const sorted = [...issues].sort((a, b) => b.number - a.number);
 const [latest, ...past] = sorted;
@@ -24,18 +26,21 @@ const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
 
         <ol class="items">
           {latest.items.map((it, i) => (
-            <li class="item">
-              <span class="num" aria-hidden="true">{pad(i + 1)}</span>
+            <li class:list={['item', { flip: i % 2 === 1 }]}>
               <div class="body">
                 <a class="thumb" href={it.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-                  <DigestArt seed={it.title} label={host(it.url)} />
-                  {it.image && (
+                  {it.image ? (
                     <img src={it.image} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"
-                      onerror="this.remove()" />
-                  )}
+                      onerror="this.parentElement.classList.add('failed');this.remove()" />
+                  ) : drawing(it.illustration) ? (
+                    <span class="drawing" set:html={drawing(it.illustration)} />
+                  ) : null}
+                  <span class="fallback data">{host(it.url)}</span>
                 </a>
                 {it.image && <p class="credit data">Image via {host(it.url)}</p>}
+                {!it.image && drawing(it.illustration) && <p class="credit data">Illustration</p>}
                 <div class="text">
+                <span class="num" aria-hidden="true">{pad(i + 1)}</span>
                 {it.home && (
                   <p class="home data">From home <span aria-hidden="true">·</span> <a href={HOME.url} target="_blank" rel="noopener">{HOME.name}<span class="sr-only"> (official tourism site, opens in a new tab)</span></a></p>
                 )}
@@ -90,35 +95,32 @@ const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
   .issue-line { margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; }
 
   .items { list-style: none; padding: 0; margin: 0; }
-  .item {
-    display: grid;
-    grid-template-columns: 4.25rem minmax(0, 1fr);
-    gap: 1.5rem;
-    padding-block: 2.25rem;
-    border-top: 1px solid var(--line);
-  }
+  .item { padding-block: 2.5rem; border-top: 1px solid var(--line); }
   .item:last-child { border-bottom: 1px solid var(--line); }
 
   .num {
+    display: block;
     font-family: var(--serif);
-    font-size: clamp(2.5rem, 5vw, 3.75rem);
+    font-size: clamp(1.9rem, 3.2vw, 2.5rem);
     line-height: 1;
     color: var(--ochre);
+    margin-bottom: 0.6rem;
   }
 
-
-  /* Thumbnail: the source's own preview image, linking to the original.
-     Underneath sits a generated contour graphic, which shows when the source
-     has no image or the image fails to load. */
+  /* Rows alternate: text | image, then image | text. */
   .body {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas: 'text thumb' 'text credit' 'text .';
     grid-template-rows: auto auto 1fr;
-    column-gap: 2.5rem;
+    column-gap: 3rem;
     align-content: start;
   }
+  .flip .body { grid-template-areas: 'thumb text' 'credit text' '. text'; }
   .text { grid-area: text; min-width: 0; }
+
+  /* Image: the source's own preview image, linked to the original. If there is none,
+     a small drawing made for that story. If an image fails to load, a quiet tile. */
   .thumb {
     grid-area: thumb;
     display: block;
@@ -127,10 +129,23 @@ const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
     overflow: hidden;
     border-radius: 6px;
     margin-top: 0.3rem;
+    background: color-mix(in srgb, var(--blue) 7%, var(--bg));
   }
   .thumb, .thumb:hover { text-decoration: none; }
   .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
   .thumb:hover img { transform: scale(1.03); }
+  .fallback { display: none; position: absolute; inset: 0; place-items: center; }
+  .thumb.failed .fallback { display: grid; }
+  .drawing, .drawing :global(svg) { display: block; width: 100%; height: 100%; }
+  .drawing :global(.bg) { fill: color-mix(in srgb, var(--blue) 7%, var(--bg)); }
+  .drawing :global(.ln), .drawing :global(.crop), .drawing :global(.paper) { fill: none; stroke: var(--blue); stroke-width: 1.4; stroke-linecap: round; }
+  .drawing :global(.paper) { fill: var(--bg); stroke-width: 1.6; }
+  .drawing :global(.ground) { stroke: color-mix(in srgb, var(--ink) 25%, transparent); stroke-width: 1; }
+  .drawing :global(.link) { fill: none; stroke: color-mix(in srgb, var(--blue) 30%, transparent); stroke-width: 1; }
+  .drawing :global(.node) { fill: var(--bg); stroke: var(--blue); stroke-width: 1.4; }
+  .drawing :global(.coin) { fill: var(--bg); stroke: var(--blue); stroke-width: 1.4; }
+  .drawing :global(.acc) { stroke: var(--ochre); fill: color-mix(in srgb, var(--ochre) 18%, var(--bg)); }
+  .drawing :global(.lbl) { font-family: var(--mono); font-size: 15px; fill: var(--muted); letter-spacing: 0.03em; }
   .credit { grid-area: credit; margin: 0.45rem 0 0; color: var(--muted); font-size: 0.68rem; }
   @media (prefers-reduced-motion: reduce) { .thumb img { transition: none; } }
 
@@ -181,13 +196,9 @@ const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
   details ol { margin: 0.9rem 0 0.4rem; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
   details .home { margin: 0 0.5rem 0 0; }
 
-  @media (max-width: 960px) {
-    .body { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: 'thumb' 'credit' 'text'; }
-    .thumb { margin-bottom: 0; }
-    .credit { margin-bottom: 1rem; }
-  }
-  @media (max-width: 760px) {
-    .item { grid-template-columns: 1fr; gap: 0.5rem; padding-block: 1.75rem; }
-    .num { font-size: 2.25rem; }
+  @media (max-width: 860px) {
+    .body, .flip .body { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: 'thumb' 'credit' 'text'; }
+    .credit { margin-bottom: 1.1rem; }
+    .item { padding-block: 1.9rem; }
   }
 </style>
