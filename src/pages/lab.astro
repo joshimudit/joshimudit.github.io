@@ -42,6 +42,29 @@ import Base from '../layouts/Base.astro';
 
 
     <article class="feature">
+      <a class="preview" href="/lab/sahara" aria-label="Open Ten thousand years in the Sahara">
+        <svg viewBox="0 0 400 230" aria-hidden="true">
+          <rect class="sg-land" width="400" height="230" />
+          <rect class="sg-belt" y="96" width="400" height="134" />
+          <rect class="sg-sea" width="400" height="12" />
+          <path class="sg-river" d="M372 230 C366 170 378 120 368 60 C362 30 372 20 366 12" />
+          <path class="sg-river" d="M0 140 C40 128 66 108 96 108 C128 108 140 130 160 150 C172 164 170 196 186 230" />
+          <ellipse class="sg-lake" cx="222" cy="136" rx="26" ry="14" />
+          <g class="sg-links"><path d="M296 70 L278 150 M296 70 L222 82 L180 54 L96 108 L222 136 L216 196 M96 108 L136 160 L216 196 M222 82 L222 136 M296 70 L366 60" /></g>
+          <g class="sg-dots"><circle cx="296" cy="70" r="6" /><circle cx="222" cy="82" r="6" /><circle cx="180" cy="54" r="6" /><circle cx="96" cy="108" r="6" /><circle cx="222" cy="136" r="6" /><circle cx="136" cy="160" r="6" /><circle cx="216" cy="196" r="6" /><circle cx="366" cy="60" r="6" /></g>
+          <circle class="sg-me" cx="296" cy="70" r="13" />
+        </svg>
+      </a>
+      <div class="txt">
+        <p class="kind">Game</p>
+        <h2><a href="/lab/sahara">Ten thousand years in the Sahara</a></h2>
+        <p>Lead a group of people from the Green Sahara 10,500 years ago to today. Choose how they find food and water, where they live, who they trade with and what they learn, as the rains retreat and history unfolds around them.</p>
+        <p class="for">Two modes: a story mode for younger players, and a full game for students and adults.</p>
+        <a class="btn" href="/lab/sahara">Play</a>
+      </div>
+    </article>
+
+    <article class="feature">
       <a class="preview" href="/lab/dryland-runner" aria-label="Open Dryland Runner">
         <svg viewBox="0 0 400 230" aria-hidden="true">
           <defs><linearGradient id="dr-g" x1="0" x2="1"><stop offset="0" class="d-wet" /><stop offset="1" class="d-dry" /></linearGradient></defs>
@@ -91,6 +114,13 @@ import Base from '../layouts/Base.astro';
   :global([data-theme='night']) .p-blade { stroke: #7fbf72; }
   :global([data-theme='night']) .p-co2 { fill: #a9b6aa; }
   .feature + .feature { padding-top: 3rem; }
+  .sg-land { fill: #ead6aa; } .sg-belt { fill: #9cbb72; opacity: 0.75; } .sg-sea { fill: #8fc0d8; } .sg-river { stroke: #3d8bbd; stroke-width: 4; fill: none; } .sg-lake { fill: #3d8bbd; }
+  .sg-links path { stroke: #11252b; stroke-width: 1.4; stroke-dasharray: 4 5; fill: none; opacity: 0.6; }
+  .sg-dots circle { fill: #fff; stroke: #11252b; stroke-width: 2; } .sg-me { fill: none; stroke: #a85a06; stroke-width: 3.5; }
+  :global([data-theme='night']) .sg-land { fill: #3c3322; } :global([data-theme='night']) .sg-belt { fill: #4f7a43; }
+  :global([data-theme='night']) .sg-sea { fill: #2f5466; } :global([data-theme='night']) .sg-links path { stroke: #e6ece4; }
+  :global([data-theme='night']) .sg-dots circle { fill: #18231c; stroke: #e6ece4; } :global([data-theme='night']) .sg-me { stroke: #e8b25c; }
+
   .d-sky { fill: #d7e8e6; } .d-far { fill: #a9c4a0; } .d-lake { fill: #5b9cbf; } .d-path { fill: #9b7b52; opacity: 0.6; }
   .d-wet { stop-color: #7c9a52; } .d-dry { stop-color: #d2a564; }
   .d-tree rect { fill: #5c4630; } .d-tree ellipse { fill: #3f6b3a; } .d-dune { fill: #c99a55; }

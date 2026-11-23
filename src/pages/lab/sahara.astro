@@ -1,0 +1,885 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SOURCES } from '../../lib/sahara/world';
+---
+<Base title="Ten thousand years in the Sahara" description="A game about living through 10,500 years of climate change in the Sahara and Sahel. Choose how your people get food and water, where they live and what they learn, and see what happens.">
+  <div class="wrap page sg">
+    <header class="page-head">
+      <p class="crumb"><a href="/lab">Lab</a></p>
+      <h1>Ten thousand years in the Sahara</h1>
+      <p>The Sahara was once green. Lead a group of people through 10,500 years of a changing climate. Choose how they find food and water, where they live and what they learn, and see where your choices take them.</p>
+    </header>
+
+    <!-- start -->
+    <section id="s-start" class="start">
+      <h2>Choose how to play</h2>
+      <div class="levels">
+        <button class="level" type="button" data-level="1">
+          <svg viewBox="0 0 120 70" aria-hidden="true"><rect width="120" height="70" rx="4" class="lv-sky" /><ellipse cx="50" cy="52" rx="34" ry="7" class="lv-water" /><rect y="56" width="120" height="14" class="lv-ground" /><g class="lv-ink"><circle cx="92" cy="38" r="3.5" /><path d="M92 42 L92 52 M92 52 L88 60 M92 52 L96 60 M92 45 L86 50" /></g><circle cx="100" cy="16" r="7" class="lv-sun" /></svg>
+          <strong>Story mode</strong>
+          <span>For younger players. Pick one card each turn and see what happens. About 15 turns, from the green Sahara to the desert.</span>
+        </button>
+        <button class="level" type="button" data-level="2">
+          <svg viewBox="0 0 120 70" aria-hidden="true"><rect width="120" height="70" rx="4" class="lv-sand" /><rect y="34" width="120" height="36" class="lv-green" /><path d="M104 0 L104 70" class="lv-river" /><circle cx="44" cy="26" r="4" class="lv-place" /><circle cx="64" cy="48" r="4" class="lv-place" /><circle cx="30" cy="56" r="4" class="lv-place" /><circle cx="86" cy="22" r="4" class="lv-place" /><path d="M44 26 L64 48 L30 56 M44 26 L86 22" class="lv-link" /></svg>
+          <strong>Full game</strong>
+          <span>For older students and adults. Split your people between jobs, move across the map and learn new skills. 10,500 years, right up to today.</span>
+        </button>
+      </div>
+      <ul class="how">
+        <li><b>Each turn is a stretch of time.</b> The climate changes slowly: the rains move south, lakes shrink, the desert grows.</li>
+        <li><b>You decide how your people live.</b> Fish, gather, hunt, herd, farm, trade, move or learn something new.</li>
+        <li><b>Every choice has a cost.</b> What works today may fail tomorrow. Your people grow, or scatter.</li>
+      </ul>
+    </section>
+
+    <!-- game -->
+    <section id="s-game" class="game" hidden aria-label="The game">
+      <div class="hud">
+        <div class="when">
+          <span id="h-ago" class="ago">10,525 years ago</span>
+          <span id="h-sub" class="sub">8500 BCE, the eastern lakes</span>
+        </div>
+        <dl class="stats">
+          <div><dt>People</dt><dd id="h-pop">60</dd></div>
+          <div><dt>Stored food</dt><dd><span class="bar"><i id="h-store"></i></span></dd></div>
+          <div><dt>Water</dt><dd><span class="bar water"><i id="h-water"></i></span></dd></div>
+          <div id="h-herd-wrap" hidden><dt>Animals</dt><dd id="h-herd">0</dd></div>
+        </dl>
+      </div>
+
+      <div class="views">
+        <figure class="scene-wrap">
+          <svg id="scene" class="scene" viewBox="0 0 800 380" preserveAspectRatio="xMinYMax slice" role="img" aria-label="Your people and their land"></svg>
+          <p id="s-caption" class="caption"></p>
+        </figure>
+        <figure class="map-wrap">
+          <svg id="map" class="map" viewBox="0 0 300 300" role="img" aria-label="Map of the Sahara and Sahel. The green band shows where the summer rains reach."></svg>
+          <figcaption>Green: where the summer rains reach. <span id="m-hint"></span></figcaption>
+        </figure>
+      </div>
+
+      <div id="panel" class="panel" aria-live="polite"></div>
+    </section>
+
+    <!-- end -->
+    <section id="s-end" class="end" hidden aria-live="polite">
+      <h2 id="e-title"></h2>
+      <div id="e-text" class="e-text"></div>
+      <figure class="chart">
+        <svg id="e-chart" viewBox="0 0 760 250" role="img" aria-label="Your people over time"></svg>
+        <figcaption><span class="k k-pop"></span>Your people <span class="k k-wet"></span>How wet your home was <span class="k k-dot"></span>Moves</figcaption>
+      </figure>
+      <div class="end-grid">
+        <div>
+          <h3>Turning points</h3>
+          <ul id="e-turn" class="e-list"></ul>
+        </div>
+        <div>
+          <h3>Your story</h3>
+          <ol id="e-story" class="e-list story"></ol>
+        </div>
+      </div>
+      <div class="real">
+        <h3>What really happened</h3>
+        <ul id="e-real"></ul>
+      </div>
+      <div class="end-actions">
+        <button id="again" class="btn" type="button">Play again</button>
+        <button id="switch" class="btn-quiet" type="button">Try the other mode</button>
+      </div>
+    </section>
+
+    <section class="notes">
+      <div>
+        <h2>Behind the game</h2>
+        <p>The climate follows the retreat of the African summer rains after the Green Sahara, as reconstructed from lake shorelines and archaeological sites. Every skill, place and event in the game is real, and each comes with a short fact and its source.</p>
+        <p>The numbers are simplified so that choices matter: how much food a job brings, how fast herds grow, how quickly land wears out. It is a game for thinking with, not a model of the past.</p>
+      </div>
+      <div>
+        <h2>After you play</h2>
+        <ol>
+          <li>Which of your choices worked for a long time and then stopped working? Why?</li>
+          <li>Why might moving with animals suit a climate where you can’t predict the rain?</li>
+          <li>Farming fed more people, but also failed harder in droughts. When is that trade worth it?</li>
+          <li>Deep wells made water easy in the 1950s. Why did that make the 1970s drought worse for many herders?</li>
+          <li>Which ways of living from the game still exist in the Sahara and Sahel today?</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sources">
+      <details>
+        <summary>Sources</summary>
+        <ul>{SOURCES.map((s) => <li>{s}</li>)}</ul>
+      </details>
+      <p class="made">Made for outreach in the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, which studies farming in drylands past and present. Spotted something wrong? <a href="/#contact">Tell me</a>.</p>
+    </section>
+  </div>
+</Base>
+
+<script>
+  import * as E from '../../lib/sahara/engine';
+  import { PLACES, SKILLS, skill, HISTORY, ERA_FACTS, JOBS, beltEdge, wetness, type PlaceId, type JobId, type SkillId } from '../../lib/sahara/world';
+
+  const $ = <T extends Element = HTMLElement>(id: string) => document.getElementById(id) as unknown as T;
+  const NS = 'http://www.w3.org/2000/svg';
+  const NOW = new Date().getFullYear();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = (n: number) => Math.round(n).toLocaleString('en-GB');
+  const agoText = (y: number) => `${fmt(Math.max(0, NOW - y - (y < 0 ? 1 : 0)))} years ago`;
+  const dateText = (y: number) => (y < 0 ? `${fmt(-y)} BCE` : y === 0 ? '1 CE' : `${y} CE`);
+  const night = () => document.documentElement.dataset.theme === 'night';
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+
+  let g: E.Game;
+  let plan: E.Plan = E.emptyPlan();
+  let move: PlaceId | undefined;
+  let learn: SkillId | undefined;
+  let lastTurn: E.Turn | undefined;
+  let shownFacts = new Set<string>();
+  let auto = false;
+
+  function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, parent?: Element): SVGElementTagNameMap[K] {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
+    parent?.appendChild(e);
+    return e;
+  }
+
+  // ---------- colours ----------
+  const hex = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const mix = (a: string, b: string, t: number) => { const A = hex(a), B = hex(b); t = Math.max(0, Math.min(1, t)); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`; };
+  const PAL = {
+    day: { sky: ['#bcdfe3', '#f0e2c6'], far: ['#86a97a', '#d6b47d'], ground: ['#94ad64', '#dcbd86'], tree: ['#3d6a3a', '#8b7b4b'], grass: ['#5f8f3e', '#b39a5c'], water: '#3d8bbd', sun: '#f1b547' },
+    night: { sky: ['#14262b', '#2b2519'], far: ['#28432f', '#4d3f29'], ground: ['#304b2c', '#5d4a2e'], tree: ['#5f9b5a', '#8d7a49'], grass: ['#6c9e55', '#8c7845'], water: '#4f8fb8', sun: '#e8e2c8' },
+  };
+  const pal = () => (night() ? PAL.night : PAL.day);
+
+  // ---------- scene ----------
+  const scene = $<SVGSVGElement>('scene');
+  const S: Record<string, any> = {};
+  const seeded = (i: number) => { const x = Math.sin(i * 91.7 + 3.1) * 43758.5; return x - Math.floor(x); };
+
+  function hut(x: number, y: number, parent: Element) {
+    const gr = el('g', { class: 'hut', transform: `translate(${x} ${y})` }, parent);
+    el('path', { d: 'M-14 0 Q-14 -18 0 -20 Q14 -18 14 0 Z', class: 'hut-body' }, gr);
+    el('path', { d: 'M-4 0 L-4 -8 L4 -8 L4 0 Z', class: 'hut-door' }, gr);
+    return gr;
+  }
+  function person(x: number, y: number, parent: Element, i: number) {
+    const pos = el('g', { class: 'slot', transform: `translate(${x} ${y})` }, parent);
+    const gr = el('g', { class: 'person', style: `--d:${(i % 5) * 0.13}s` }, pos);
+    el('circle', { cx: 0, cy: -21, r: 4.2 }, gr);
+    el('path', { d: 'M0 -16 L0 -6 M0 -6 L-4 3 M0 -6 L4 3 M0 -13 L-5 -8 M0 -13 L5 -8' }, gr);
+    return pos;
+  }
+  function animal(x: number, y: number, parent: Element, i: number) {
+    const pos = el('g', { class: 'slot', transform: `translate(${x} ${y})` }, parent);
+    const gr = el('g', { class: 'animal', style: `--d:${(i % 4) * 0.2}s` }, pos);
+    const cow = el('g', { class: 'cow' }, gr);
+    el('path', { d: 'M-11 -2 L-11 6 M9 -2 L9 6', class: 'legs' }, cow);
+    el('ellipse', { cx: 0, cy: -6, rx: 14, ry: 7, class: 'hide' }, cow);
+    el('ellipse', { cx: -3, cy: -7, rx: 5, ry: 3.5, class: 'spot' }, cow);
+    el('ellipse', { cx: 16, cy: -10, rx: 5, ry: 4, class: 'spot' }, cow);
+    el('path', { d: 'M14 -13 Q12 -20 7 -19 M18 -13 Q22 -20 26 -18', class: 'horn' }, cow);
+    const camel = el('g', { class: 'camel' }, gr);
+    el('path', { d: 'M-10 -2 L-10 8 M8 -2 L8 8', class: 'legs' }, camel);
+    el('path', { d: 'M-14 -4 Q-12 -16 -3 -14 Q2 -22 8 -12 Q14 -12 14 -6 L20 -20 L25 -20 L24 -16 L18 -2 Z', class: 'hump' }, camel);
+    return pos;
+  }
+  function tree(x: number, y: number, sc: number, parent: Element) {
+    const gr = el('g', { class: 'tree', transform: `translate(${x} ${y}) scale(${sc})` }, parent);
+    el('rect', { x: -2, y: -34, width: 4, height: 34, class: 'trunk' }, gr);
+    el('ellipse', { cx: 0, cy: -38, rx: 30, ry: 8, class: 'crown' }, gr);
+    el('ellipse', { cx: -12, cy: -33, rx: 15, ry: 5.5, class: 'crown' }, gr);
+    return gr;
+  }
+  function palm(x: number, y: number, parent: Element) {
+    const gr = el('g', { class: 'palm', transform: `translate(${x} ${y})` }, parent);
+    el('path', { d: 'M0 0 Q3 -25 1 -48', class: 'palm-trunk' }, gr);
+    for (const a of [-60, -25, 15, 50, 160, 200]) el('path', { d: `M1 -48 q${Math.cos((a * Math.PI) / 180) * 14} ${-8 + Math.sin((a * Math.PI) / 180) * 6} ${Math.cos((a * Math.PI) / 180) * 26} ${4 + Math.sin((a * Math.PI) / 180) * 10}`, class: 'frond' }, gr);
+    return gr;
+  }
+
+  function buildScene() {
+    scene.innerHTML = '';
+    S.sky = el('rect', { width: 800, height: 380, class: 'sky' }, scene);
+    S.sun = el('circle', { cx: 670, cy: 70, r: 30, class: 'sun' }, scene);
+    S.clouds = el('g', { class: 'clouds' }, scene);
+    for (const [x, y, s] of [[150, 70, 1], [420, 50, 1.3], [560, 95, 0.8]]) {
+      const c = el('g', { transform: `translate(${x} ${y}) scale(${s})`, class: 'cloud' }, S.clouds);
+      el('ellipse', { cx: 0, cy: 0, rx: 40, ry: 14 }, c); el('ellipse', { cx: 22, cy: -8, rx: 24, ry: 13 }, c); el('ellipse', { cx: -20, cy: -5, rx: 20, ry: 10 }, c);
+    }
+    S.mountains = el('path', { d: 'M0 235 L70 160 L120 195 L190 130 L260 200 L330 165 L400 235 Z', class: 'mountains' }, scene);
+    S.far = el('path', { d: 'M0 250 C80 215 150 225 230 232 C310 240 380 214 470 222 C560 230 640 205 800 220 L800 260 L0 260 Z', class: 'far' }, scene);
+    S.dunes = el('path', { d: 'M0 252 Q90 214 180 246 Q270 222 360 248 Q470 210 580 246 Q690 220 800 244 L800 262 L0 262 Z', class: 'dunes' }, scene);
+    S.ground = el('rect', { y: 248, width: 800, height: 132, class: 'ground' }, scene);
+    // water
+    S.lake = el('g', { class: 'lake' }, scene);
+    el('ellipse', { cx: 0, cy: 0, rx: 230, ry: 20 }, S.lake);
+    S.lake.style.transform = 'translate(330px, 266px) scale(1, 1)';
+    S.river = el('path', { d: 'M-10 300 C160 282 300 296 450 286 C600 276 700 290 810 280 L810 300 C700 310 600 296 450 306 C300 316 160 302 -10 320 Z', class: 'river' }, scene);
+    S.pool = el('ellipse', { cx: 300, cy: 292, rx: 70, ry: 10, class: 'pool' }, scene);
+    S.boat = el('g', { class: 'boat', transform: 'translate(250 262)' }, scene);
+    el('path', { d: 'M-20 0 Q0 8 20 0 Z' }, S.boat); el('path', { d: 'M4 -2 L10 -20', class: 'oar' }, S.boat);
+    // vegetation
+    S.trees = el('g', {}, scene);
+    S.treeList = [[40, 262, 1.1], [120, 258, 0.8], [520, 258, 1], [600, 262, 0.75], [720, 258, 1.2], [460, 252, 0.6], [200, 254, 0.6], [760, 270, 0.9], [660, 252, 0.55]]
+      .map(([x, y, s], i) => ({ el: tree(x, y, s, S.trees), th: [0.25, 0.55, 0.35, 0.75, 0.45, 0.85, 0.65, 0.5, 0.9][i] }));
+    S.palms = el('g', { class: 'palms' }, scene);
+    for (const x of [210, 250, 380, 420, 640]) palm(x, 290, S.palms);
+    S.grass = el('g', {}, scene);
+    S.tufts = Array.from({ length: 46 }, (_, i) => {
+      const x = seeded(i) * 800, y = 270 + seeded(i + 50) * 105;
+      const t = el('path', { d: `M${x} ${y} l3 -10 l3 10 l3 -8 l2 8 Z`, class: 'tuft' }, S.grass);
+      return { el: t, th: seeded(i + 99) };
+    });
+    // fields
+    S.fields = el('g', { class: 'fields' }, scene);
+    S.fieldRows = [];
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 5; c++) {
+      const f = el('g', { transform: `translate(${470 + c * 62 - r * 14} ${312 + r * 20})`, class: 'field' }, S.fields);
+      el('rect', { x: 0, y: 0, width: 56, height: 14, rx: 2, class: 'soil' }, f);
+      for (let k = 0; k < 6; k++) el('path', { d: `M${5 + k * 9} 12 L${5 + k * 9} 1`, class: 'stalk' }, f);
+      S.fieldRows.push(f);
+    }
+    // camp, herd, people
+    S.camp = el('g', {}, scene);
+    S.huts = [[140, 318], [182, 312], [222, 320], [100, 330], [262, 314], [160, 340], [300, 322], [60, 318], [340, 330], [205, 346]].map(([x, y]) => hut(x, y, S.camp));
+    S.herd = el('g', { class: 'herd' }, scene);
+    S.animals = Array.from({ length: 12 }, (_, i) => animal(430 + (i % 6) * 52 + (i > 5 ? 22 : 0), 300 + (i > 5 ? 36 : 0) + seeded(i + 7) * 8, S.herd, i));
+    S.people = el('g', { class: 'people' }, scene);
+    S.persons = Array.from({ length: 14 }, (_, i) => person(110 + (i % 7) * 34 + (i > 6 ? 16 : 0), 362 - (i > 6 ? 14 : 0), S.people, i));
+    // weather overlays
+    S.rain = el('g', { class: 'rain' }, scene);
+    for (let i = 0; i < 60; i++) el('path', { d: `M${seeded(i + 300) * 820} ${seeded(i + 400) * 380 - 380} l-6 22`, style: `--d:${seeded(i + 500) * 1.2}s` }, S.rain);
+    S.haze = el('rect', { width: 800, height: 380, class: 'haze' }, scene);
+    S.locusts = el('g', { class: 'locusts' }, scene);
+    for (let i = 0; i < 90; i++) el('circle', { cx: 380 + seeded(i + 700) * 380, cy: 140 + seeded(i + 800) * 150, r: 1.6, style: `--d:${seeded(i) * 1.5}s` }, S.locusts);
+  }
+
+  const show = (e: Element, on: boolean) => e.classList.toggle('off', !on);
+
+  function paintScene(weather: E.Weather | null = null) {
+    const at = g.place, p = PLACES[at];
+    const o = E.offer(g, at, weather ?? 'normal');
+    const P = pal(), dry = 1 - Math.min(1, o.wet / 0.85);
+    S.sky.style.fill = mix(P.sky[0], P.sky[1], dry + (weather === 'drought' ? 0.2 : 0));
+    S.sun.style.fill = P.sun;
+    S.sun.setAttribute('r', String(night() ? 22 : weather === 'drought' || weather === 'dry' ? 36 : 28));
+    S.far.style.fill = mix(P.far[0], P.far[1], dry);
+    S.ground.style.fill = mix(P.ground[0], P.ground[1], dry);
+    S.dunes.style.opacity = String(Math.max(0, dry - 0.3) * 1.4);
+    show(S.mountains, p.kind === 'highlands' || at === 'oasis');
+    S.clouds.style.opacity = String(Math.min(0.9, o.wet * 1.1) * (weather === 'drought' ? 0.2 : 1));
+    // water
+    let lake = 0;
+    if (at === 'east' || at === 'lake') lake = Math.min(1, E.offer(g, at, weather ?? 'normal').fish);
+    S.lake.style.transform = `translate(330px, 266px) scale(${(0.15 + 0.85 * lake).toFixed(3)}, ${(0.3 + 0.7 * lake).toFixed(3)})`;
+    S.lake.style.opacity = lake > 0.03 ? '1' : '0';
+    show(S.river, p.kind === 'river');
+    show(S.pool, at === 'oasis');
+    show(S.palms, at === 'oasis' || (p.kind === 'river' && g.year > -4000));
+    show(S.boat, plan.fish > 0 && (lake > 0.15 || p.kind === 'river'));
+    S.boat.setAttribute('transform', p.kind === 'river' ? 'translate(560 292)' : 'translate(260 262)');
+    const treeCol = mix(P.tree[0], P.tree[1], dry);
+    for (const t of S.treeList) { t.el.style.opacity = o.wet * (g.land[at].health) > t.th * 0.85 ? '1' : '0'; t.el.querySelectorAll('.crown').forEach((c: any) => (c.style.fill = treeCol)); }
+    const grassCol = mix(P.grass[0], P.grass[1], dry);
+    for (const t of S.tufts) { t.el.style.opacity = o.plants > t.th * 0.8 ? '1' : '0'; t.el.style.fill = grassCol; }
+    // fields
+    const farming = plan.farm > 0 && E.canDo(g, 'farm');
+    const nFields = farming ? Math.max(2, Math.round(plan.farm * 1.5)) : 0;
+    S.fieldRows.forEach((f: SVGGElement, i: number) => show(f, i < nFields));
+    S.fields.classList.toggle('failed', weather === 'drought' || weather === 'dry' || o.farm < 0.3);
+    // camp
+    const huts = Math.max(1, Math.min(S.huts.length, Math.ceil(g.pop / 30)));
+    S.huts.forEach((h: SVGGElement, i: number) => show(h, i < huts));
+    // herd
+    const n = g.herd > 0 ? Math.max(1, Math.min(12, Math.round(g.herd / 30))) : 0;
+    S.herd.classList.toggle('camels', E.has(g, 'camels') && (p.kind === 'oasis' || o.wet < 0.4));
+    S.animals.forEach((a: SVGGElement, i: number) => show(a, i < n));
+    // people
+    const k = Math.max(1, Math.min(S.persons.length, Math.round(g.pop / 20)));
+    S.persons.forEach((h: SVGGElement, i: number) => show(h, i < k));
+    show(S.rain, weather === 'good' && o.wet > 0.4 && !reduce);
+    S.haze.style.opacity = weather === 'drought' ? '0.28' : weather === 'dry' ? '0.14' : '0';
+    show(S.locusts, false);
+    $('s-caption').textContent = sceneCaption(o);
+  }
+
+  function sceneCaption(o: E.Offer): string {
+    const at = g.place;
+    const bits: string[] = [];
+    if (at === 'east' || at === 'lake') bits.push(o.fish > 0.6 ? 'The lake is full.' : o.fish > 0.25 ? 'The lake is shrinking.' : o.fish > 0.05 ? 'Only a small pool is left.' : 'The lake has dried up.');
+    if (PLACES[at].kind === 'river') bits.push('The river flows all year.');
+    if (at === 'oasis') bits.push(o.water > 0.5 ? 'Springs feed the oasis.' : 'The springs are failing.');
+    bits.push(o.wet > 0.7 ? 'Grass and trees everywhere.' : o.wet > 0.4 ? 'Grassland with scattered trees.' : o.wet > 0.15 ? 'Dry, thin grass.' : 'Bare desert.');
+    if (g.land[at].health < 0.6) bits.push('The land is worn out.');
+    return bits.join(' ');
+  }
+
+  // ---------- map ----------
+  const map = $<SVGSVGElement>('map');
+  const M: Record<string, any> = {};
+  const latY = (lat: number) => ((33 - lat) / 25) * 300;
+  const visiblePlaces = () => (Object.keys(PLACES) as PlaceId[]).filter((id) => g.level === 2 || PLACES[id].kids);
+
+  const LABEL: Record<PlaceId, [number, number, string]> = {
+    east: [0, 26, 'middle'], nile: [-4, -12, 'end'], highlands: [-10, 4, 'end'], oasis: [0, -11, 'middle'],
+    niger: [0, 19, 'middle'], lake: [0, 20, 'middle'], sahel: [0, 19, 'middle'], savanna: [0, -11, 'middle'],
+  };
+
+  function buildMap() {
+    map.innerHTML = '';
+    const defs = el('defs', {}, map);
+    const lg = el('linearGradient', { id: 'belt', x1: 0, x2: 0, y1: 0, y2: 1 }, defs);
+    el('stop', { offset: '0', class: 'belt-top' }, lg); el('stop', { offset: '0.25', class: 'belt-mid' }, lg);
+    el('rect', { width: 300, height: 300, rx: 6, class: 'm-land' }, map);
+    M.belt = el('rect', { x: 0, y: 0, width: 300, height: 400, fill: 'url(#belt)', class: 'm-belt' }, map);
+    el('rect', { width: 300, height: 14, class: 'm-sea' }, map);
+    el('text', { x: 150, y: 10, class: 'm-label sea', 'text-anchor': 'middle' }, map).textContent = 'Mediterranean Sea';
+    el('path', { d: 'M282 300 C278 240 286 190 278 140 C272 100 284 60 276 14', class: 'm-river' }, map);
+    el('path', { d: 'M0 190 C30 175 50 150 72 150 C96 150 104 176 120 200 C130 216 128 250 140 300', class: 'm-river' }, map);
+    M.lake = el('ellipse', { cx: 168, cy: 180, rx: 16, ry: 10, class: 'm-lake' }, map);
+    if (g.level === 1) M.lake.style.display = 'none';
+    M.links = el('g', {}, map);
+    M.dots = el('g', {}, map);
+    M.me = el('g', { class: 'm-me' }, map);
+    el('circle', { r: 13, class: 'm-me-ring' }, M.me);
+    const fig = el('g', { class: 'm-me-fig' }, M.me);
+    el('circle', { cx: 0, cy: -4, r: 2.6 }, fig); el('path', { d: 'M0 -1 L0 5 M0 5 L-3 9 M0 5 L3 9 M0 1 L-3 4 M0 1 L3 4' }, fig);
+    M.places = {};
+    for (const id of visiblePlaces()) {
+      const p = PLACES[id];
+      const gr = el('g', { class: 'm-place', transform: `translate(${p.x * 3} ${p.y * 3})`, tabindex: 0, role: 'button', 'aria-label': p.name }, M.dots);
+      el('circle', { r: 6 }, gr);
+      const [lx, ly, anchor] = LABEL[id];
+      const t = el('text', { x: lx, y: ly, 'text-anchor': anchor, class: 'm-label' }, gr);
+      t.textContent = g.level === 1 ? p.kidName : p.name.replace(/^The /, '');
+      gr.addEventListener('click', () => pickMove(id));
+      gr.addEventListener('keydown', (e: Event) => { if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') { e.preventDefault(); pickMove(id); } });
+      M.places[id] = gr;
+    }
+  }
+
+  function paintMap() {
+    const edge = beltEdge(g.year);
+    M.belt.style.transform = `translateY(${latY(edge) - 20}px)`;
+    const lakeSize = 0.12 + 0.88 * wetness({ ...PLACES.lake, lat: 19.5 }, g.year);
+    M.lake.setAttribute('rx', (8 + 26 * lakeSize).toFixed(1)); M.lake.setAttribute('ry', (5 + 16 * lakeSize).toFixed(1));
+    M.links.innerHTML = '';
+    const near = E.links(g);
+    const drawn = new Set<string>();
+    for (const a of visiblePlaces()) for (const b of E.links(g, a)) {
+      const key = [a, b].sort().join('-'); if (drawn.has(key)) continue; drawn.add(key);
+      const on = (a === g.place && near.includes(b)) || (b === g.place && near.includes(a));
+      el('line', { x1: PLACES[a].x * 3, y1: PLACES[a].y * 3, x2: PLACES[b].x * 3, y2: PLACES[b].y * 3, class: on ? 'm-link on' : 'm-link' }, M.links);
+    }
+    for (const id of visiblePlaces()) {
+      const gr = M.places[id];
+      gr.classList.toggle('here', id === g.place);
+      gr.classList.toggle('near', near.includes(id) && !g.over);
+      gr.classList.toggle('target', id === move);
+    }
+    const p = PLACES[move ?? g.place];
+    M.me.style.transform = `translate(${p.x * 3}px, ${p.y * 3}px)`;
+    $('m-hint').textContent = g.over ? '' : g.level === 1 ? 'The ring shows where your people are.' : 'Tap a highlighted place to plan a move there.';
+  }
+
+  function pickMove(id: PlaceId) {
+    if (g.over || !E.links(g).includes(id)) return;
+    if (g.level === 1) return; // story mode moves through cards
+    move = move === id ? undefined : id;
+    paintMap(); renderPlan();
+  }
+
+  // ---------- HUD ----------
+  function paintHud() {
+    tween($('h-ago'), Math.max(0, NOW - g.year - (g.year < 0 ? 1 : 0)), (v) => `${fmt(v)} years ago`);
+    $('h-sub').textContent = `${dateText(g.year)}, ${(g.level === 1 ? PLACES[g.place].kidName : PLACES[g.place].name).replace(/^The /, 'the ')}`;
+    tween($('h-pop'), Math.round(g.pop), fmt);
+    const o = E.offer(g);
+    const cap = g.pop * (0.15 + (E.has(g, 'pots') ? 0.35 : 0) + (E.has(g, 'granary') ? 0.6 : 0));
+    $('h-store').style.width = `${Math.min(100, (g.store / Math.max(1, g.pop * 0.5)) * 100)}%`;
+    $('h-water').style.width = `${Math.round(Math.min(1, o.water) * 100)}%`;
+    $('h-water').parentElement!.classList.toggle('low', o.water < 0.25);
+    $('h-herd-wrap').hidden = g.herd <= 0;
+    $('h-herd').textContent = fmt(g.herd);
+    void cap;
+  }
+  function tween(node: HTMLElement, to: number, f: (v: number) => string) {
+    const from = Number(node.dataset.v ?? to);
+    node.dataset.v = String(to);
+    if (reduce || from === to) { node.textContent = f(to); return; }
+    const t0 = performance.now();
+    const stepF = (t: number) => { const k = Math.min(1, (t - t0) / 900); node.textContent = f(Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(stepF); };
+    requestAnimationFrame(stepF);
+  }
+
+  // ---------- panel: story mode ----------
+  const panel = $('panel');
+  const ICON: Record<string, string> = {
+    fish: '<path d="M4 12 Q12 4 20 12 Q12 20 4 12 Z M20 12 L26 7 L26 17 Z"/>',
+    gather: '<path d="M14 26 L14 6 M14 10 l-4 -3 M14 10 l4 -3 M14 15 l-4 -3 M14 15 l4 -3 M14 20 l-4 -3 M14 20 l4 -3"/>',
+    hunt: '<path d="M4 24 L24 4 M24 4 l-7 1 M24 4 l-1 7"/>',
+    herd: '<ellipse cx="13" cy="14" rx="9" ry="5"/><path d="M8 18 v6 M18 18 v6 M21 11 l4 -2"/>',
+    farm: '<path d="M4 24 h20 M8 24 V12 M14 24 V8 M20 24 V12"/><circle cx="8" cy="10" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="20" cy="10" r="2"/>',
+    trade: '<path d="M4 10 h16 l-4 -4 M24 18 H8 l4 4"/>',
+    ties: '<circle cx="9" cy="9" r="3"/><circle cx="19" cy="9" r="3"/><path d="M4 22 q5 -8 10 0 q5 -8 10 0"/>',
+    move: '<path d="M4 20 C10 8 18 22 24 8 M24 8 l-6 1 M24 8 l0 6"/>',
+    skill: '<path d="M14 4 l3 7 7 1 -5 5 1 7 -6 -3 -6 3 1 -7 -5 -5 7 -1 Z"/>',
+  };
+  const icon = (k: string) => `<svg class="ic" viewBox="0 0 28 28" aria-hidden="true">${ICON[k] ?? ICON.skill}</svg>`;
+
+  function renderCards() {
+    const cards = E.kidCards(g);
+    panel.innerHTML = `<h2 class="p-title">What should your people do now?</h2>
+      <div class="cards">${cards.map((c, i) => `<button type="button" class="card" data-i="${i}">${icon(c.kind === 'job' ? c.job! : c.kind)}<strong>${esc(c.title)}</strong><span>${esc(c.sub)}</span></button>`).join('')}</div>`;
+    panel.querySelectorAll<HTMLButtonElement>('.card').forEach((b) => b.addEventListener('click', () => {
+      const card = cards[Number(b.dataset.i)];
+      const choice = E.kidChoice(g, card);
+      plan = choice.plan;
+      go(choice);
+    }));
+  }
+
+  // ---------- panel: full game ----------
+  const STAR = ['Almost nothing here', 'Poor here', 'Good here', 'Very good here'];
+  const why: Partial<Record<JobId, string>> = { fish: 'No water to fish in here.', herd: 'You have no animals yet.', farm: 'You need a farming skill that works here.' };
+
+  function expectedFood(p: E.Plan): number {
+    const o = E.offer(g, move ?? g.place);
+    const r = E.jobRates(g, o);
+    let f = 0;
+    for (const j of ['fish', 'gather', 'hunt', 'farm', 'trade', 'ties'] as JobId[]) if (E.canDo(g, j, o)) f += Math.min(g.pop * (p[j] / 10) * r[j].per, r[j].cap);
+    if (g.herd) f += Math.min(g.herd, g.pop * (p.herd / 10) * E.herdPer(g)) * 0.32;
+    if (move) f *= g.borders ? 0.55 : E.has(g, 'camels') ? 0.8 : 0.7;
+    if (learn) f *= 0.9;
+    return f;
+  }
+
+  function renderPlan() {
+    const at = move ?? g.place;
+    const o = E.offer(g, at);
+    // people on jobs that are no longer possible here go back to gathering
+    for (const j of JOBS) if (!E.canDo(g, j.id, o) && plan[j.id]) { plan.gather += plan[j.id]; plan[j.id] = 0; }
+    const used = Object.values(plan).reduce((a, b) => a + b, 0);
+    const left = 10 - used;
+    const food = expectedFood(plan);
+    const enough = food >= g.pop;
+    const open = E.skillsOpen(g);
+    const near = E.links(g);
+    const len = E.turnLength(g);
+    panel.innerHTML = `
+      <div class="plan">
+        <div class="jobs">
+          <h2 class="p-title">Split your people</h2>
+          <p class="p-sub">Each block is a tenth of your ${fmt(g.pop)} people.${move ? ` Ratings are for ${esc(PLACES[move].name.replace(/^The /, 'the '))}.` : ''}</p>
+          ${JOBS.map((j) => {
+            const ok = E.canDo(g, j.id, o);
+            const st = ok ? E.stars(g, j.id, o) : 0;
+            return `<div class="job${ok ? '' : ' no'}" data-j="${j.id}">
+              ${icon(j.id)}
+              <span class="j-name">${j.name}</span>
+              <span class="j-rate" data-s="${st}">${ok ? (j.id === 'ties' ? 'Help in hard times' : STAR[st]) : why[j.id] ?? ''}</span>
+              <span class="blocks" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => `<i class="${i < plan[j.id] ? 'on' : ''}"></i>`).join('')}</span>
+              <span class="step"><button type="button" data-d="-1" aria-label="Fewer people ${j.name.toLowerCase()}" ${!ok || !plan[j.id] ? 'disabled' : ''}>−</button><b>${plan[j.id]}</b><button type="button" data-d="1" aria-label="More people ${j.name.toLowerCase()}" ${!ok || !left ? 'disabled' : ''}>+</button></span>
+            </div>`;
+          }).join('')}
+          <p class="verdict ${left ? 'warn' : food >= g.pop * 0.97 ? 'ok' : 'warn'}">${left ? `Place ${left} more block${left > 1 ? 's' : ''}.` : food >= g.pop * 0.97 && food < g.pop * 1.05 ? 'In a normal year this just about feeds everyone, with nothing to spare.' : enough ? `In a normal year this feeds everyone, with some to spare${food > g.pop * 1.3 ? ', so your group can grow' : ''}.` : `In a normal year this feeds about ${fmt(Math.min(g.pop, food))} of your ${fmt(g.pop)} people.`} <span class="muted">Dry years can cut it hard.</span></p>
+        </div>
+        <div class="side">
+          <h3>Move</h3>
+          <div class="chips">
+            <button type="button" class="chip ${!move ? 'sel' : ''}" data-move="">Stay ${esc(PLACES[g.place].short)}</button>
+            ${near.map((id) => `<button type="button" class="chip ${move === id ? 'sel' : ''}" data-move="${id}">${esc(PLACES[id].name.replace(/^The /, ''))}<small>${placeHint(id)}</small></button>`).join('')}
+          </div>
+          <h3>Learn something new</h3>
+          ${open.length ? `<div class="chips">${open.map((s) => `<button type="button" class="chip ${learn === s ? 'sel' : ''}" data-learn="${s}">${esc(skill(s).verb)}<small>${esc(skill(s).gives)}</small></button>`).join('')}</div><p class="muted small">Learning takes effort: a little less food this time.</p>` : '<p class="muted small">Nothing new to learn right now. New skills appear as time goes on.</p>'}
+          <div class="go">
+            <button type="button" id="next" class="btn" ${left ? 'disabled' : ''}>Next: ${len} years</button>
+            <button type="button" id="auto" class="btn-quiet" ${left ? 'disabled' : ''} title="Repeat this plan until something important happens">Keep going</button>
+          </div>
+        </div>
+      </div>`;
+    panel.querySelectorAll<HTMLElement>('.job').forEach((row) => row.querySelectorAll<HTMLButtonElement>('button[data-d]').forEach((b) => b.addEventListener('click', () => {
+      const j = row.dataset.j as JobId; plan[j] = Math.max(0, Math.min(10, plan[j] + Number(b.dataset.d)));
+      renderPlan(); paintScene(); (panel.querySelector(`.job[data-j="${j}"] button[data-d="${b.dataset.d}"]`) as HTMLButtonElement | null)?.focus();
+    })));
+    panel.querySelectorAll<HTMLButtonElement>('[data-move]').forEach((b) => b.addEventListener('click', () => { move = (b.dataset.move || undefined) as PlaceId | undefined; renderPlan(); paintMap(); }));
+    panel.querySelectorAll<HTMLButtonElement>('[data-learn]').forEach((b) => b.addEventListener('click', () => { const s = b.dataset.learn as SkillId; learn = learn === s ? undefined : s; renderPlan(); }));
+    $('next')?.addEventListener('click', () => go({ plan: { ...plan }, move, learn }));
+    $('auto')?.addEventListener('click', () => { auto = true; go({ plan: { ...plan }, move, learn }); });
+  }
+
+  function placeHint(id: PlaceId): string {
+    const o = E.offer(g, id);
+    const bits = [o.water > 0.6 ? 'plenty of water' : o.water > 0.3 ? 'some water' : 'little water', o.wet > 0.6 ? 'green' : o.wet > 0.3 ? 'some grass' : 'dry'];
+    if (PLACES[id].tsetse) bits.push('tsetse flies');
+    return bits.join(', ');
+  }
+
+  // ---------- a turn ----------
+  function go(c: E.Choice) {
+    const openBefore = E.skillsOpen(g).length;
+    const t = E.play(g, c);
+    lastTurn = t;
+    move = undefined; learn = undefined;
+    paintHud(); paintMap(); paintScene(t.weather);
+    if (t.lines.some((l) => l.text.startsWith('Locust') || l.text.startsWith('A locust'))) { show(S.locusts, !reduce); }
+    const evs = t.events.map((i) => HISTORY[i]);
+    const big = t.popAfter < t.pop * 0.92 || evs.length > 0 || t.learned || g.over;
+    if (auto && !big && E.skillsOpen(g).length <= openBefore && t.weather !== 'drought') {
+      result(t, true);
+      setTimeout(() => { if (auto && !g.over) go({ plan: { ...plan } }); }, reduce ? 300 : 900);
+      return;
+    }
+    auto = false;
+    result(t, false);
+  }
+
+  function factFor(t: E.Turn): string | undefined {
+    const tryF = (f?: string) => (f && !shownFacts.has(f) ? (shownFacts.add(f), f) : undefined);
+    if (t.learned) { const f = tryF(skill(t.learned).fact); if (f) return f; }
+    if (t.moved) { const f = tryF(PLACES[t.moved].fact); if (f) return f; }
+    if (g.turns.length === 1) { const f = tryF(PLACES[g.place].fact); if (f) return f; }
+    if (t.lines.some((l) => /[Ll]ocust/.test(l.text))) { const f = tryF('A desert locust swarm covering one square kilometre can eat as much food in a day as 35,000 people (FAO).'); if (f) return f; }
+    for (const e of ERA_FACTS) if (t.year >= e.from && t.year < e.to) { const f = tryF(e.text); if (f) return f; }
+    if (g.level === 1) for (const s of SKILLS) if (s.from <= t.end) { const f = tryF(s.fact); if (f) return f; }
+    return undefined;
+  }
+
+  function result(t: E.Turn, quick: boolean) {
+    const fact = quick ? undefined : factFor(t);
+    const dp = Math.round(t.popAfter - t.pop);
+    const evs = t.events.map((i) => HISTORY[i]);
+    const head = `${t.end - t.year} years later: ${agoText(t.end)}`;
+    panel.innerHTML = `
+      <div class="result${quick ? ' quick' : ''}">
+        <div class="r-main">
+          <p class="r-when">${head}</p>
+          <p class="r-pop"><span class="r-num">${fmt(t.popAfter)}</span> people <span class="r-d ${dp > 0 ? 'up' : dp < 0 ? 'down' : ''}">${dp > 0 ? `+${fmt(dp)}` : dp < 0 ? `−${fmt(-dp)}` : 'no change'}</span></p>
+          <ul class="r-lines">${t.lines.map((l) => `<li class="${l.tone}">${esc(l.text)}</li>`).join('')}</ul>
+        </div>
+        ${fact ? `<aside class="r-fact"><h3>Did you know?</h3><p>${esc(fact)}</p></aside>` : ''}
+      </div>
+      ${evs.map((e) => `<div class="event"><h3>${esc(e.title)}</h3><p>${esc(e.text)}</p>${e.effect ? `<p class="muted">${esc(e.effect)}</p>` : ''}</div>`).join('')}
+      <div class="r-actions">${quick ? '<button type="button" id="stop" class="btn-quiet">Stop and plan</button>' : evs.some((e) => e.offer === 'boreholes')
+        ? '<button type="button" class="btn" data-bh="1">Use the deep wells</button><button type="button" class="btn-quiet" data-bh="0">Keep using old wells and moving herds</button>'
+        : `<button type="button" id="cont" class="btn">${g.over ? 'See how it ended' : 'Continue'}</button>`}</div>`;
+    panel.querySelector('.result')?.animate?.([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: reduce ? 0 : 350, easing: 'ease-out' });
+    $('stop')?.addEventListener('click', () => { auto = false; nextDecision(); });
+    $('cont')?.addEventListener('click', () => nextDecision());
+    panel.querySelectorAll<HTMLButtonElement>('[data-bh]').forEach((b) => b.addEventListener('click', () => { g.boreholes = b.dataset.bh === '1'; nextDecision(); }));
+    if (!quick) ($('cont') ?? panel.querySelector<HTMLElement>('[data-bh]'))?.focus({ preventScroll: true });
+  }
+
+  function nextDecision() {
+    if (g.over) { finish(); return; }
+    paintScene(); paintHud(); paintMap();
+    if (g.level === 1) renderCards(); else renderPlan();
+  }
+
+  // ---------- start ----------
+  let level: E.Level = 1;
+  function start(lv: E.Level) {
+    level = lv;
+    g = E.newGame(lv);
+    plan = E.emptyPlan(); plan.fish = 6; plan.gather = 3; plan.hunt = 1;
+    move = undefined; learn = undefined; shownFacts = new Set(); auto = false;
+    $('s-start').hidden = true; $('s-end').hidden = true; $('s-game').hidden = false;
+    $('h-pop').dataset.v = '60'; delete $('h-ago').dataset.v;
+    buildScene(); buildMap();
+    paintHud(); paintMap(); paintScene();
+    if (lv === 1) {
+      panel.innerHTML = `<div class="intro"><h2 class="p-title">10,500 years ago</h2><p>Your group of 60 people lives by a big lake in the green Sahara. There are fish, wild grain and gazelles. Each turn is 500 years. Choose a card, and see what happens. Try to keep your people going until the Sahara becomes a desert.</p><button type="button" id="begin" class="btn">Begin</button></div>`;
+    } else {
+      panel.innerHTML = `<div class="intro"><h2 class="p-title">10,500 years ago</h2><p>Your group of 60 people lives by the lakes of the eastern Sahara, which is green. Each turn, split your people between jobs, decide whether to move, and learn new skills as they appear in history. Turns are 250 years at first, then shorter as you get closer to today.</p><button type="button" id="begin" class="btn">Begin</button></div>`;
+    }
+    $('begin').addEventListener('click', () => nextDecision());
+    $('s-game').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+  document.querySelectorAll<HTMLButtonElement>('.level').forEach((b) => b.addEventListener('click', () => start(Number(b.dataset.level) as E.Level)));
+
+  // ---------- end ----------
+  function finish() {
+    const st = E.story(g);
+    $('s-game').hidden = true; $('s-end').hidden = false;
+    const won = g.over === 'won';
+    const end = won ? E.endYear(g.level) : g.turns[g.turns.length - 1].end;
+    $('e-title').textContent = st.title;
+    const paras: string[] = [];
+    if (won) paras.push(g.level === 1 ? `Your people made it through 7,000 years, from the green Sahara to the desert, and number ${fmt(g.pop)}.` : `Your people made it all the way to today: ${fmt(g.pop)} of them, ${PLACES[g.place].short}.`);
+    else paras.push(`Your people lasted until about ${agoText(end)} (${dateText(end)}). Then the last families split up and joined other groups.`);
+    paras.push(`Your way of life looks most like ${st.like}.`);
+    if (g.skills.length) paras.push(`Your people learned: ${g.skills.map((s) => skill(s).name.toLowerCase()).join(', ')}.`);
+    $('e-text').innerHTML = paras.map((p) => `<p>${esc(p)}</p>`).join('');
+    $('e-turn').innerHTML = st.turning.length
+      ? st.turning.map((t) => `<li><strong>${agoText(t.year)}, ${esc(PLACES[t.place].short)}.</strong> ${esc(cap(t.cause))}. You lost ${Math.round(t.lost * 100)}% of your people.</li>`).join('')
+        + (st.best ? `<li class="good"><strong>Best moment: ${agoText(st.best.year)}, ${esc(PLACES[st.best.place].short)}.</strong> Your people grew by ${Math.round(st.best.gain * 100)}%.</li>` : '')
+      : '<li>No big losses. Your people never lost more than a tenth at once.</li>';
+    const storyItems: string[] = [];
+    let prevPlace = g.turns[0]?.place;
+    storyItems.push(`<li><span>${agoText(-8500)}</span> Your people live ${esc(PLACES[prevPlace].short)}.</li>`);
+    for (const t of g.turns) {
+      if (t.learned) storyItems.push(`<li><span>${agoText(t.year)}</span> Learned: ${esc(skill(t.learned).name.toLowerCase())}.</li>`);
+      if (t.moved && t.moved !== prevPlace) { storyItems.push(`<li><span>${agoText(t.year)}</span> Moved to ${esc(PLACES[t.moved].name.replace(/^The /, 'the '))}.</li>`); prevPlace = t.moved; }
+      for (const i of t.events) storyItems.push(`<li class="hist"><span>${agoText(HISTORY[i].year)}</span> ${esc(HISTORY[i].title)}.</li>`);
+    }
+    storyItems.push(`<li><span>${agoText(end)}</span> ${won ? `You reach ${g.level === 1 ? 'the desert age' : 'today'} with ${fmt(g.pop)} people.` : 'Your people scatter.'}</li>`);
+    $('e-story').innerHTML = storyItems.join('');
+    $('e-real').innerHTML = (g.level === 1 ? [
+      'The Sahara was green because a slow wobble in Earth’s orbit made the African monsoon stronger. As it weakened, the rains moved south.',
+      'People lived by the Saharan lakes from about 8500 BCE. As the land dried after about 5300 BCE, they moved to the Nile, the oases and the south.',
+      'In Africa, people herded cattle long before they farmed. Sorghum and millet were farmed only after the desert began to spread.',
+    ] : [
+      'The Green Sahara ended slowly, region by region, as the summer rains retreated south. People moved with them, to the Nile, the oases and the Sahel.',
+      'Herding came first in Africa, thousands of years before farming. Farming then fed far more people, but tied them to one place.',
+      'Camels, caravans and oasis channels let people live and trade across the desert for the last 2,000 years.',
+      'In the 20th century, cattle plague, borders, deep wells and the great droughts of the 1970s and 80s changed life in the Sahel. Since the 1980s, farmers have regreened millions of hectares.',
+    ]).map((x) => `<li>${esc(x)}</li>`).join('');
+    chart(end);
+    $('s-end').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+  const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
+
+  function chart(end: number) {
+    const svg = $<SVGSVGElement>('e-chart');
+    svg.innerHTML = '';
+    const L = 46, R = 744, T = 14, B = 200;
+    const n = g.turns.length;
+    const X = (i: number) => L + (i / Math.max(1, n)) * (R - L);
+    const maxP = Math.max(...g.turns.map((t) => Math.max(t.pop, t.popAfter)), 60);
+    const Y = (v: number) => B - (v / maxP) * (B - T);
+    el('rect', { x: L, y: T, width: R - L, height: B - T, class: 'c-bg' }, svg);
+    g.turns.forEach((t, i) => el('rect', { x: X(i), y: T, width: Math.max(1, X(i + 1) - X(i)), height: B - T, class: 'c-wet', style: `opacity:${(t.wet * 0.55).toFixed(2)}` }, svg));
+    const pts = [`${X(0)},${Y(g.turns[0]?.pop ?? 60)}`, ...g.turns.map((t, i) => `${X(i + 1).toFixed(1)},${Y(t.popAfter).toFixed(1)}`)];
+    el('polyline', { points: pts.join(' '), class: 'c-pop' }, svg);
+    g.turns.forEach((t, i) => { if (t.moved) el('circle', { cx: X(i), cy: Y(t.pop), r: 4, class: 'c-move' }, svg); });
+    const ticks = g.level === 1 ? [-8500, -6500, -4500, -2500] : [-8500, -5000, -2000, 0, 1000, 1900, 2000];
+    for (const y of ticks) {
+      const i = g.turns.findIndex((t) => t.year >= y);
+      if (i < 0) continue;
+      el('text', { x: X(i), y: B + 16, class: 'c-ax', 'text-anchor': 'middle' }, svg).textContent = dateText(y);
+    }
+    el('text', { x: L - 6, y: Y(maxP) + 4, class: 'c-ax', 'text-anchor': 'end' }, svg).textContent = fmt(maxP);
+    el('text', { x: L - 6, y: B + 4, class: 'c-ax', 'text-anchor': 'end' }, svg).textContent = '0';
+    el('text', { x: L, y: B + 36, class: 'c-ax' }, svg).textContent = 'Each step is one turn. Early turns are longer.';
+    void end;
+  }
+
+  $('again').addEventListener('click', () => start(level));
+  $('switch').addEventListener('click', () => start(level === 1 ? 2 : 1));
+  document.addEventListener('themechange', () => { if (g && !$('s-game').hidden) paintScene(lastTurn?.weather ?? null); });
+  (window as any).__sg = { get g() { return g; }, E, start, set: (c: E.Choice) => { plan = { ...c.plan }; move = c.move; learn = c.learn; renderPlan(); paintMap(); } };
+</script>
+
+<style>
+  .crumb { margin: 0 0 0.5rem; font-size: 0.92rem; }
+  .sg :global(.muted) { color: var(--muted); }
+  .sg :global(.small) { font-size: 0.85rem; }
+
+  /* start */
+  .start h2 { font-size: 1.35rem; }
+  .levels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 0.8rem 0 1.4rem; }
+  .level { display: grid; grid-template-columns: 8.5rem 1fr; grid-template-rows: auto 1fr; column-gap: 1rem; text-align: left; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; cursor: pointer; transition: border-color 0.2s, transform 0.2s; }
+  .level:hover, .level:focus-visible { border-color: var(--blue); outline: none; transform: translateY(-2px); }
+  .level svg { grid-row: 1 / 3; width: 100%; border-radius: 4px; }
+  .level strong { font-family: var(--serif); font-weight: 400; font-size: 1.3rem; }
+  .level span { color: var(--muted); font-size: 0.92rem; }
+  .lv-sky { fill: #bcdfe3; } .lv-water { fill: #3d8bbd; } .lv-ground { fill: #94ad64; } .lv-sun { fill: #f1b547; }
+  .lv-ink circle { fill: #11252b; } .lv-ink path { stroke: #11252b; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+  .lv-sand { fill: #e6cf9f; } .lv-green { fill: #9cbb72; opacity: 0.8; } .lv-river { stroke: #3d8bbd; stroke-width: 3; }
+  .lv-place { fill: var(--surface); stroke: #11252b; stroke-width: 1.6; } .lv-link { stroke: #11252b; stroke-dasharray: 3 3; fill: none; }
+  .how { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; font-size: 0.92rem; color: var(--muted); }
+  .how b { color: var(--ink); font-weight: 500; display: block; }
+
+  /* hud */
+  .hud { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 0.6rem 2rem; margin-bottom: 0.7rem; }
+  .when { display: flex; flex-direction: column; gap: 0.1rem; }
+  #s-game, #s-end { scroll-margin-top: 4.5rem; }
+  .ago { font-family: var(--serif); font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .sub { color: var(--muted); font-size: 0.9rem; }
+  .stats { display: flex; flex-wrap: wrap; gap: 0.4rem 1.6rem; margin: 0; }
+  .stats div { display: flex; flex-direction: column; min-width: 6rem; }
+  .stats dt { font-size: 0.8rem; color: var(--muted); }
+  .stats dd { margin: 0; font-family: var(--serif); font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+  .bar { display: block; width: 7rem; height: 10px; margin-top: 0.55rem; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 50%; background: var(--ochre-fill); transition: width 0.7s ease; }
+  .bar.water i { background: #2f7fb0; }
+  :global([data-theme='night']) .bar.water i { background: #7cc0ea; }
+  .bar.low { outline: 2px solid var(--ochre); outline-offset: 1px; }
+
+  /* views */
+  .views { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+  .scene-wrap, .map-wrap { margin: 0; }
+  .scene { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--line); }
+  .map { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+  .caption, .map-wrap figcaption { font-size: 0.85rem; color: var(--muted); margin: 0.35rem 0 0; }
+
+  .scene :global(*) { transition: opacity 0.9s ease, fill 1.2s ease; }
+  .scene :global(.lake) { transition: transform 1.4s ease, opacity 1s ease; }
+  .scene :global(.off) { opacity: 0 !important; }
+  .scene :global(.mountains) { fill: #9b8a72; opacity: 0.9; }
+  :global([data-theme='night']) .scene :global(.mountains) { fill: #4e4436; }
+  .scene :global(.dunes) { fill: #e2c38c; }
+  :global([data-theme='night']) .scene :global(.dunes) { fill: #6d5835; }
+  .scene :global(.cloud ellipse) { fill: #ffffff; opacity: 0.85; }
+  :global([data-theme='night']) .scene :global(.cloud ellipse) { fill: #3a4c50; }
+  .scene :global(.lake ellipse), .scene :global(.river), .scene :global(.pool) { fill: #3d8bbd; }
+  :global([data-theme='night']) .scene :global(.lake ellipse), :global([data-theme='night']) .scene :global(.river), :global([data-theme='night']) .scene :global(.pool) { fill: #3f7ea6; }
+  .scene :global(.boat path) { fill: #6b4a2c; } .scene :global(.boat .oar) { stroke: #6b4a2c; stroke-width: 2; fill: none; }
+  .scene :global(.trunk) { fill: #5c4630; }
+  .scene :global(.palm-trunk) { stroke: #6b5236; stroke-width: 4; fill: none; } .scene :global(.frond) { stroke: #4f7a37; stroke-width: 3; fill: none; stroke-linecap: round; }
+  .scene :global(.soil) { fill: #8e6a44; }
+  .scene :global(.stalk) { stroke: #6f8f2e; stroke-width: 2.2; stroke-linecap: round; }
+  .scene :global(.fields.failed .stalk) { stroke: #b08f52; }
+  .scene :global(.hut-body) { fill: #b98d58; stroke: #7a5833; stroke-width: 1.2; } .scene :global(.hut-door) { fill: #5a3f24; }
+  .scene :global(.person) { animation: bob 1.4s ease-in-out infinite; animation-delay: var(--d); }
+  .scene :global(.person circle) { fill: #11252b; } .scene :global(.person path) { stroke: #11252b; stroke-width: 2.6; stroke-linecap: round; fill: none; }
+  :global([data-theme='night']) .scene :global(.person circle) { fill: #e6ece4; }
+  :global([data-theme='night']) .scene :global(.person path) { stroke: #e6ece4; }
+  .scene :global(.hide) { fill: #f2ede2; stroke: #5a4434; stroke-width: 1.2; } .scene :global(.spot) { fill: #5a4434; }
+  .scene :global(.legs), .scene :global(.horn) { stroke: #5a4434; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+  .scene :global(.camel) { display: none; } .scene :global(.hump) { fill: #c39a63; stroke: #7a5833; stroke-width: 1.2; }
+  .scene :global(.herd.camels .camel) { display: inline; } .scene :global(.herd.camels .cow) { display: none; }
+  .scene :global(.animal) { animation: graze 3s ease-in-out infinite; animation-delay: var(--d); }
+  .scene :global(.rain path) { stroke: #6aa6c8; stroke-width: 1.6; opacity: 0.6; animation: rain 1.2s linear infinite; animation-delay: var(--d); }
+  .scene :global(.haze) { fill: #e3b46b; opacity: 0; pointer-events: none; }
+  .scene :global(.locusts circle) { fill: #4a3b22; animation: swarm 1.5s ease-in-out infinite alternate; animation-delay: var(--d); }
+  @keyframes bob { 50% { transform: translateY(-2px); } }
+  @keyframes graze { 50% { transform: translateX(3px); } }
+  @keyframes rain { from { transform: translate(0, 0); } to { transform: translate(-40px, 420px); } }
+  @keyframes swarm { from { transform: translate(-6px, 3px); } to { transform: translate(8px, -5px); } }
+  @media (prefers-reduced-motion: reduce) { .scene :global(*) { animation: none !important; transition: none !important; } }
+
+  /* map */
+  .map :global(.m-land) { fill: #ead6aa; } :global([data-theme='night']) .map :global(.m-land) { fill: #3c3322; }
+  .map :global(.belt-top) { stop-color: #8cb468; stop-opacity: 0; } .map :global(.belt-mid) { stop-color: #8cb468; stop-opacity: 0.75; }
+  :global([data-theme='night']) .map :global(.belt-top), :global([data-theme='night']) .map :global(.belt-mid) { stop-color: #4f7a43; }
+  .map :global(.m-belt) { transition: transform 1.4s ease; }
+  .map :global(.m-sea) { fill: #8fc0d8; } :global([data-theme='night']) .map :global(.m-sea) { fill: #2f5466; }
+  .map :global(.m-river) { stroke: #3d8bbd; stroke-width: 3; fill: none; }
+  .map :global(.m-lake) { fill: #3d8bbd; transition: rx 1.2s, ry 1.2s; }
+  .map :global(.m-link) { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 4; opacity: 0.6; }
+  .map :global(.m-link.on) { stroke: var(--ink); opacity: 1; }
+  .map :global(.m-place circle) { fill: var(--surface); stroke: var(--ink); stroke-width: 1.6; }
+  .map :global(.m-place.near) { cursor: pointer; }
+  .map :global(.m-place.near circle) { stroke: var(--blue); stroke-width: 3; }
+  .map :global(.m-place.near:hover circle), .map :global(.m-place.near:focus-visible circle), .map :global(.m-place.target circle) { fill: var(--blue); }
+  .map :global(.m-place:focus) { outline: none; }
+  .map :global(.m-label) { font: 500 10.5px var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+  .map :global(.m-label.sea) { stroke: none; fill: #24506a; font-size: 9px; }
+  :global([data-theme='night']) .map :global(.m-label.sea) { fill: #cfe6f2; }
+  .map :global(.m-me) { transition: transform 1s ease; pointer-events: none; }
+  .map :global(.m-me-ring) { fill: none; stroke: var(--ochre); stroke-width: 3; }
+  .map :global(.m-me-fig circle) { fill: var(--ink); } .map :global(.m-me-fig path) { stroke: var(--ink); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+
+  /* panel */
+  .panel { margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+  .panel :global(.p-title) { font-size: 1.35rem; margin: 0 0 0.3rem; }
+  .panel :global(.p-sub) { color: var(--muted); font-size: 0.9rem; margin: 0 0 0.7rem; }
+  .panel :global(.intro) { max-width: var(--measure); }
+  .panel :global(.ic) { width: 28px; height: 28px; flex: none; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .panel :global(.cards) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem; }
+  .panel :global(.card) { display: flex; flex-direction: column; gap: 0.35rem; text-align: left; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; cursor: pointer; transition: border-color 0.2s, transform 0.2s; }
+  .panel :global(.card:hover), .panel :global(.card:focus-visible) { border-color: var(--blue); transform: translateY(-2px); outline: none; }
+  .panel :global(.card strong) { font-family: var(--serif); font-weight: 400; font-size: 1.2rem; }
+  .panel :global(.card span) { color: var(--muted); font-size: 0.92rem; }
+
+  .panel :global(.plan) { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.5rem 2rem; }
+  .panel :global(.job) { display: grid; grid-template-columns: 28px 6.5rem 1fr auto auto; align-items: center; gap: 0.6rem; padding: 0.4rem 0; border-bottom: 1px dotted var(--line); }
+  .panel :global(.job.no) { opacity: 0.55; }
+  .panel :global(.j-name) { font-weight: 500; }
+  .panel :global(.j-rate) { font-size: 0.85rem; color: var(--muted); }
+  .panel :global(.j-rate[data-s='3']) { color: var(--moss); } .panel :global(.j-rate[data-s='0']) { color: var(--ochre); }
+  .panel :global(.blocks) { display: flex; gap: 2px; }
+  .panel :global(.blocks i) { width: 9px; height: 16px; border-radius: 1px; background: var(--line); transition: background-color 0.2s; }
+  .panel :global(.blocks i.on) { background: var(--blue); }
+  .panel :global(.step) { display: flex; align-items: center; gap: 0.25rem; }
+  .panel :global(.step b) { width: 1.4rem; text-align: center; font-variant-numeric: tabular-nums; }
+  .panel :global(.step button) { width: 2rem; height: 2rem; font: inherit; font-size: 1.1rem; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
+  .panel :global(.step button:disabled) { opacity: 0.35; cursor: default; }
+  .panel :global(.verdict) { margin: 0.8rem 0 0; font-size: 0.95rem; }
+  .panel :global(.verdict.ok) { color: var(--moss); } .panel :global(.verdict.warn) { color: var(--ochre); }
+  .panel :global(.side h3) { font-family: var(--sans); font-size: 0.9rem; font-weight: 500; margin: 0 0 0.4rem; }
+  .panel :global(.side h3 + .chips), .panel :global(.side .chips) { margin-bottom: 1rem; }
+  .panel :global(.chips) { display: flex; flex-direction: column; gap: 0.35rem; }
+  .panel :global(.chip) { text-align: left; font: inherit; font-size: 0.92rem; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 3px; padding: 0.45rem 0.6rem; cursor: pointer; }
+  .panel :global(.chip small) { display: block; color: var(--muted); font-size: 0.8rem; }
+  .panel :global(.chip.sel) { border-color: var(--blue); box-shadow: inset 3px 0 0 var(--blue); }
+  .panel :global(.go) { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
+  .sg :global(.btn-quiet) { font: inherit; font-size: 0.92rem; padding: 0.5rem 0.9rem; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
+  .sg :global(.btn-quiet:hover) { border-color: var(--ink); }
+  .sg :global(button:disabled) { opacity: 0.45; cursor: default; }
+
+  .panel :global(.result) { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.5rem 2rem; }
+  .panel :global(.result.quick) { grid-template-columns: 1fr; }
+  .panel :global(.r-when) { color: var(--muted); margin: 0; font-size: 0.92rem; }
+  .panel :global(.r-pop) { margin: 0.1rem 0 0.6rem; font-size: 1.05rem; }
+  .panel :global(.r-num) { font-family: var(--serif); font-size: 2rem; }
+  .panel :global(.r-d) { font-family: var(--mono); font-size: 0.8rem; margin-left: 0.4rem; color: var(--muted); }
+  .panel :global(.r-d.up) { color: var(--moss); } .panel :global(.r-d.down) { color: var(--ochre); }
+  .panel :global(.r-lines) { list-style: none; padding: 0; margin: 0; }
+  .panel :global(.r-lines li) { position: relative; padding: 0.2rem 0 0.2rem 1.3rem; }
+  .panel :global(.r-lines li::before) { position: absolute; left: 0; font-weight: 700; }
+  .panel :global(.r-lines li.good::before) { content: '+'; color: var(--moss); }
+  .panel :global(.r-lines li.bad::before) { content: '−'; color: var(--ochre); }
+  .panel :global(.r-lines li.info::before) { content: '•'; color: var(--muted); }
+  .panel :global(.r-fact) { background: var(--blue-soft); border-radius: 6px; padding: 0.9rem 1rem; align-self: start; }
+  .panel :global(.r-fact h3) { font-family: var(--sans); font-size: 0.85rem; font-weight: 500; margin: 0 0 0.3rem; }
+  .panel :global(.r-fact p) { margin: 0; font-size: 0.95rem; }
+  .panel :global(.event) { margin-top: 1rem; padding: 0.9rem 1rem; border: 1px solid var(--ochre); border-radius: 6px; background: color-mix(in srgb, var(--ochre-soft) 60%, var(--surface)); max-width: 44rem; }
+  .panel :global(.event h3) { margin: 0 0 0.3rem; }
+  .panel :global(.event p) { margin: 0 0 0.3rem; }
+  .panel :global(.r-actions) { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
+
+  /* end */
+  .end h2 { margin-bottom: 0.4rem; }
+  .e-text { max-width: var(--measure); }
+  .e-text :global(p) { margin: 0 0 0.6rem; }
+  .chart { margin: 1.2rem 0 1.5rem; }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .chart figcaption { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; }
+  .k { display: inline-block; width: 1.1rem; height: 3px; margin-left: 0.4rem; vertical-align: middle; }
+  .k-pop { background: var(--blue); } .k-wet { height: 0.7rem; width: 0.7rem; background: var(--moss); opacity: 0.45; } .k-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--ochre-fill); }
+  #e-chart :global(.c-bg) { fill: var(--surface); stroke: var(--line); }
+  #e-chart :global(.c-wet) { fill: var(--moss); }
+  #e-chart :global(.c-pop) { fill: none; stroke: var(--blue); stroke-width: 2.4; stroke-linejoin: round; }
+  #e-chart :global(.c-move) { fill: var(--ochre-fill); stroke: var(--surface); stroke-width: 1.5; }
+  #e-chart :global(.c-ax) { font: 10px var(--sans); fill: var(--muted); }
+  .end-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 3rem; }
+  .e-list { padding-left: 1.1rem; margin: 0 0 1rem; }
+  .e-list :global(li) { margin-bottom: 0.45rem; }
+  .e-list :global(li.good strong) { color: var(--moss); }
+  .story { list-style: none; padding: 0; }
+  .story :global(li) { display: grid; grid-template-columns: 9rem 1fr; gap: 0.6rem; font-size: 0.92rem; }
+  .story :global(li span) { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .story :global(li.hist) { color: var(--ochre); }
+  .real { max-width: var(--measure); }
+  .real ul { padding-left: 1.1rem; }
+  .end-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
+
+  .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 3rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .notes h2 { font-size: 1.35rem; }
+  .notes ol { padding-left: 1.2rem; margin: 0; }
+  .notes li { margin-bottom: 0.55rem; }
+  .sources { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .sources summary { font-family: var(--serif); font-size: 1.35rem; cursor: pointer; margin-bottom: 0.6rem; }
+  .sources ul { list-style: none; padding: 0; margin: 0 0 1.2rem; font-size: 0.9rem; }
+  .sources li { padding: 0.35rem 0; border-bottom: 1px dotted var(--line); }
+  .made { color: var(--muted); font-size: 0.92rem; }
+
+  @media (max-width: 860px) {
+    .views, .panel :global(.plan), .panel :global(.result), .end-grid, .notes, .levels, .how { grid-template-columns: 1fr; }
+    .panel :global(.cards) { grid-template-columns: 1fr; }
+    .map-wrap { max-width: 17rem; }
+    .scene { height: 240px; }
+    .stats div { min-width: 5rem; }
+    .panel :global(.job) { grid-template-columns: 28px 1fr auto; }
+    .panel :global(.j-rate) { grid-column: 2; grid-row: 2; }
+    .panel :global(.blocks) { display: none; }
+    .level { grid-template-columns: 6rem 1fr; }
+    .story :global(li) { grid-template-columns: 7.5rem 1fr; }
+  }
+</style>
