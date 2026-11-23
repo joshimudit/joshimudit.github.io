@@ -5,7 +5,7 @@
 // - It links to the original, and every fact in it was read in that original.
 // - Words are our own: a short summary, never copied paragraphs.
 // - `home: true` marks the "From home" item (tag reads "From home · Uttarakhand" and links to
-//   the official Uttarakhand Tourism site): Uttarakhand first, the wider Himalaya as fallback,
+//   Incredible India's Uttarakhand page): Uttarakhand first, the wider Himalaya as fallback,
 //   and skipped in weeks with nothing good. Other India news can sit among the regular items.
 // - `image` is the preview image the source itself publishes for the article (its og:image),
 //   shown as a thumbnail that links to the original.

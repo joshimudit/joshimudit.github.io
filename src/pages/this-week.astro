@@ -9,13 +9,13 @@ const sorted = [...issues].sort((a, b) => b.number - a.number);
 const [latest, ...past] = sorted;
 const pad = (n: number) => String(n).padStart(2, '0');
 // Where "home" is. The tag links to the official tourism site.
-const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
+const HOME = { name: 'Uttarakhand', url: 'https://www.incredibleindia.gov.in/en/uttarakhand' };
 ---
-<Base title="This Week" description="Five stories a week worth a minute each, from climate and ecosystems to food systems and AI agents.">
+<Base title="This Week" description="Climate, ecosystems and food systems are changing fast, and so are the AI agents and tools we use to understand them. A few stories each week, each worth a minute of your time.">
   <div class="wrap page">
     <header class="page-head">
       <h1>This Week</h1>
-      <p>Five stories worth a minute each, from climate and ecosystems to food systems and AI agents, chosen for what they reveal rather than how loudly they were reported.</p>
+      <p>Climate, ecosystems and food systems are changing fast, and so are the AI agents and tools we use to understand them. A few stories each week, each worth a minute of your time.</p>
     </header>
 
     {latest ? (
@@ -42,7 +42,7 @@ const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
                 <div class="text">
                 <span class="num" aria-hidden="true">{pad(i + 1)}</span>
                 {it.home && (
-                  <p class="home data">From home <span aria-hidden="true">·</span> <a href={HOME.url} target="_blank" rel="noopener">{HOME.name}<span class="sr-only"> (official tourism site, opens in a new tab)</span></a></p>
+                  <p class="home data">From home <span aria-hidden="true">·</span> <a href={HOME.url} target="_blank" rel="noopener">{HOME.name}<span class="sr-only"> (Incredible India, opens in a new tab)</span></a></p>
                 )}
                 <h2>{it.title}</h2>
                 <p>{it.summary}</p>
@@ -110,13 +110,13 @@ const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
   /* Rows alternate: text | image, then image | text. */
   .body {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
     grid-template-areas: 'text thumb' 'text credit' 'text .';
     grid-template-rows: auto auto 1fr;
     column-gap: 3rem;
     align-content: start;
   }
-  .flip .body { grid-template-areas: 'thumb text' 'credit text' '. text'; }
+  .flip .body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); grid-template-areas: 'thumb text' 'credit text' '. text'; }
   .text { grid-area: text; min-width: 0; }
 
   /* Image: the source's own preview image, linked to the original. If there is none,
@@ -149,7 +149,7 @@ const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
   .credit { grid-area: credit; margin: 0.45rem 0 0; color: var(--muted); font-size: 0.68rem; }
   @media (prefers-reduced-motion: reduce) { .thumb img { transition: none; } }
 
-  .body p { font-size: 0.95rem; }
+  .body p { font-size: 1.02rem; }
   .body .data { font-size: 0.72rem; }
   .body h2 { font-size: clamp(1.3rem, 2vw, 1.6rem); margin-bottom: 0.45em; max-width: 28ch; }
   .body p { max-width: var(--measure); }
