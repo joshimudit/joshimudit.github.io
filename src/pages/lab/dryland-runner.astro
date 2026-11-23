@@ -1,46 +1,64 @@
 ---
 import Base from '../../layouts/Base.astro';
 ---
-<Base title="Dryland Runner: 7,000 years in a drying Sahara" description="A one-button game about living through the end of the Green Sahara, 8500 to 1500 BCE. Every thousand years, choose how your people live. Built for teaching and outreach.">
+<Base title="Dryland Runner: 7,000 years in a drying Sahara" description="A one-button game: 10,500 years ago the Sahara was green. Choose how your people live as it slowly turns to desert, and see if they make it.">
   <div class="wrap page dr-page">
     <header class="page-head">
       <p class="crumb"><a href="/lab">Lab</a></p>
       <h1>Dryland Runner</h1>
-      <p>Ten thousand years ago the Sahara was green, with lakes, grassland and fish. Then it slowly turned to desert. Lead a group of people through those 7,000 years, and at five turning points decide how they live.</p>
+      <p>Ten thousand years ago the Sahara was green. Then, slowly, it turned to desert. Choose how your people live, and see if they make it.</p>
     </header>
 
-    <section class="game" aria-label="Dryland Runner game">
+    <section class="game" aria-label="The game">
       <div class="hud" aria-live="off">
         <div class="when">
-          <span id="h-year" class="year">8,500 BCE</span>
           <span id="h-ago" class="ago">10,525 years ago</span>
-          <span id="h-era" class="era">Green Sahara</span>
+          <span class="sub"><span id="h-year">8500 BCE</span>, <span id="h-era">the Green Sahara</span></span>
         </div>
         <div class="meters">
           <div class="meter m-water"><span class="lab">Water</span><div class="bar"><i id="b-water"></i></div><span id="n-water" class="num">80</span></div>
           <div class="meter m-food"><span class="lab">Food</span><div class="bar"><i id="b-food"></i></div><span id="n-food" class="num">80</span></div>
-          <div class="meter m-rain"><span class="lab">Rain</span><div class="bar"><i id="b-rain"></i></div><span id="n-rain" class="num">wet</span></div>
         </div>
       </div>
 
       <div class="stage" id="stage">
-        <canvas id="cv" width="960" height="400" aria-label="Side-scrolling landscape. Your group walks east to west through time." role="img"></canvas>
+        <canvas id="cv" width="960" height="400" aria-label="Your person walking through a changing landscape" role="img"></canvas>
         <p id="banner" class="banner" hidden></p>
-        <button id="pause" class="pause" type="button" aria-label="Pause" hidden>Pause</button>
+        <button id="pause" class="pause" type="button" hidden>Pause</button>
 
         <div id="ov-start" class="ov">
-          <div class="ov-box">
-            <h2>8500 BCE, the Green Sahara</h2>
-            <p>Rain falls every summer. There are lakes with fish and hippos, and grass as far as you can see. Over the next 7,000 years it will dry into desert. Nobody living then could see it coming.</p>
-            <p>Keep your people’s <strong class="t-water">water</strong> and <strong class="t-food">food</strong> above zero. Run into what you need, jump over rocks, thorns and dunes. Five times on the way, the group meets to decide how to live.</p>
-            <p class="keys">Jump: tap the scene, or press space or ↑. Pause: P.</p>
-            <button id="go" class="btn" type="button">Begin in 8500 BCE</button>
+          <div class="ov-box key-box">
+            <h2>The Sahara, 10,500 years ago</h2>
+            <p>It is green, with lakes and grassland. Over the next 7,000 years it will slowly dry into desert. Keep your people alive.</p>
+            <div class="key">
+              <div class="key-group">
+                <h3>Walk into these</h3>
+                <ul>
+                  <li><canvas data-icon="water"></canvas><span><strong class="t-water">Water</strong></span></li>
+                  <li><canvas data-icon="fish"></canvas><span><strong class="t-food">Food</strong>: fish</span></li>
+                  <li><canvas data-icon="grain"></canvas><span><strong class="t-food">Food</strong>: wild grain</span></li>
+                  <li><canvas data-icon="field"></canvas><span><strong class="t-food">Food</strong>: your fields, once you farm</span></li>
+                </ul>
+              </div>
+              <div class="key-group">
+                <h3>Jump to catch</h3>
+                <ul>
+                  <li><canvas data-icon="game"></canvas><span><strong class="t-food">Food</strong>: gazelle</span></li>
+                </ul>
+                <h3>Jump over</h3>
+                <ul>
+                  <li class="row3"><canvas data-icon="rock"></canvas><canvas data-icon="thorn"></canvas><canvas data-icon="dune"></canvas><span>Rocks, thorns and dunes cost water and food</span></li>
+                </ul>
+              </div>
+            </div>
+            <p class="keys"><span class="touch-only">Tap the game to jump.</span><span class="no-touch">Press space, or click the game, to jump.</span> A few times along the way, you’ll choose how your people live.</p>
+            <button id="go" class="btn" type="button">Start</button>
           </div>
         </div>
 
         <div id="ov-gate" class="ov" hidden>
           <div class="ov-box wide">
-            <h2 id="g-title">The council of 8500 BCE</h2>
+            <h2>What should your people do?</h2>
             <p id="g-sit" class="sit"></p>
             <div id="g-opts" class="opts"></div>
           </div>
@@ -52,23 +70,24 @@ import Base from '../../layouts/Base.astro';
       </div>
 
       <p class="turn">On a phone, turn it sideways for a bigger view.</p>
-      <p class="chosen-line"><span class="lab">How your people live:</span> <span id="h-chosen">nothing decided yet</span></p>
+      <p class="chosen-line"><span class="lab">Your way of life:</span> <span id="h-chosen">not chosen yet</span></p>
     </section>
 
     <section id="end" class="end" hidden aria-live="polite">
       <h2 id="e-title"></h2>
-      <p id="e-text" class="e-text"></p>
+      <div id="e-text" class="e-text"></div>
       <figure class="chart">
         <svg id="e-chart" viewBox="0 0 760 280" role="img" aria-label="Your water and food over time, with rainfall and your choices"></svg>
-        <figcaption><span class="k k-rain"></span>Rain <span class="k k-water"></span>Water <span class="k k-food"></span>Food <span class="k k-spell"></span>Dry spells. Ticks mark your choices.</figcaption>
+        <figcaption><span class="k k-rain"></span>Rain <span class="k k-water"></span>Your water <span class="k k-food"></span>Your food <span class="k k-spell"></span>Dry spells</figcaption>
       </figure>
       <div class="real">
-        <h3>What really happened</h3>
+        <h3>The real story behind your choices</h3>
+        <ul id="e-real"></ul>
+        <h3>The bigger picture</h3>
         <ul>
-          <li>The Green Sahara was driven by a slow wobble in Earth’s orbit that strengthened the African monsoon. As it weakened, the rains moved south.</li>
-          <li>The eastern Sahara was settled from about 8500 BCE. After about 5300 BCE it dried, and by 3500 BCE people had largely left for the Nile valley, the oases and the south.</li>
-          <li>In Africa, herding came before farming. Domesticated sorghum and pearl millet only appear after 3500 BCE, when the desert was already spreading.</li>
-          <li>No single strategy carried people through. They combined them, moved, and changed them as the climate changed.</li>
+          <li>The Sahara was green because of a slow wobble in Earth’s orbit that made the African monsoon stronger. As it weakened, the rains moved south.</li>
+          <li>The eastern Sahara was home to people from about 8500 BCE. After about 5300 BCE it dried, and by 3500 BCE most had left for the Nile valley, the oases and the south.</li>
+          <li>In Africa, herding came before farming. Sorghum and millet were only domesticated after 3500 BCE, when the desert was already spreading.</li>
         </ul>
       </div>
       <button id="again" class="btn" type="button">Play again</button>
@@ -76,18 +95,17 @@ import Base from '../../layouts/Base.astro';
 
     <section class="notes">
       <div>
-        <h2>What is real, and what is simplified</h2>
-        <p>The climate follows the reconstruction for the eastern Sahara by Kuper and Kröpelin: humid from about 8500 BCE, drying after 5300 BCE, desert by 3500 BCE. Each strategy is something people really did, and each card says when the evidence for it appears.</p>
-        <p>Everything else is a game. One second is 40 years. Dry spells come at random. The numbers for water, food and each strategy were chosen so that the choices matter, not measured. And the climate here doesn’t respond to people, which in reality it may have.</p>
+        <h2>Behind the game</h2>
+        <p>The climate follows a reconstruction of the eastern Sahara by Kuper and Kröpelin (2006). Every choice is something people really did, and the facts behind your choices appear when the game ends.</p>
+        <p>The numbers are made up so that choices matter. One second is 40 years, and dry spells come at random.</p>
       </div>
       <div>
-        <h2>For classes and discussions</h2>
+        <h2>After you play</h2>
         <ol>
-          <li>A strategy that worked for 2,000 years can turn into a trap. Did that happen to you? Where else do we see this kind of lock-in?</li>
-          <li>In the Near East, farming came first and herding followed. In Africa it was the other way round. Why might mobile herding suit a climate you can’t predict?</li>
-          <li>Sharing makes every find worth a bit less, but saves you in a crisis. Where do societies make that trade today?</li>
-          <li>Some researchers have argued that herders’ grazing helped end the Green Sahara, while most see the orbit as the main driver. How would the game change if the land responded to how you used it?</li>
-          <li>The Sahel faces drying and unreliable rain today. Which of these strategies are still in use, and what do people have now that they didn’t then?</li>
+          <li>Did a choice that worked early let you down later? Why?</li>
+          <li>In Africa, herding came before farming. Why might animals, which you can move, suit a climate you can’t predict?</li>
+          <li>Sharing costs a little every day but saves you in a crisis. Where do people make that trade today?</li>
+          <li>Which of these ways of living still exist in the Sahel today?</li>
         </ol>
       </div>
     </section>
@@ -101,7 +119,6 @@ import Base from '../../layouts/Base.astro';
         <li>Marshall, F. &amp; Hildebrand, E. (2002). Cattle before crops: the beginnings of food production in Africa. <em>Journal of World Prehistory</em> 16, 99–143.</li>
         <li>Winchell, F. et al. (2017). Evidence for sorghum domestication in fourth-millennium BC eastern Sudan. <em>Current Anthropology</em> 58, 673–683.</li>
         <li>Manning, K. et al. (2011). 4500-year old domesticated pearl millet from the Tilemsi Valley, Mali. <em>Journal of Archaeological Science</em> 38, 312–322.</li>
-        <li>Wright, D. K. (2017). Humans as agents in the termination of the African Humid Period. <em>Frontiers in Earth Science</em> 5, 4.</li>
       </ul>
       <p class="made">Made for outreach in the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, which studies farming in drylands past and present. Spotted something wrong? <a href="/#contact">Tell me</a>.</p>
     </section>
@@ -113,11 +130,13 @@ import Base from '../../layouts/Base.astro';
 
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
   const cv = $<HTMLCanvasElement>('cv');
-  const ctx = cv.getContext('2d')!;
+  let ctx = cv.getContext('2d')!;
   const W = 960, H = 400;
   let VW = 960; // visible width of the world; narrower on phones so things stay big
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const NOW = new Date().getFullYear();
+  const touch = window.matchMedia('(pointer: coarse)').matches;
+  document.documentElement.classList.toggle('is-touch', touch);
 
   let s = M.newState();
   let mode: 'start' | 'run' | 'gate' | 'pause' | 'end' = 'start';
@@ -349,58 +368,63 @@ import Base from '../../layouts/Base.astro';
     const ph = reduce ? 0 : s.t * 12;
     if (M.has(s, 'cattle')) {
       const n = Math.max(1, Math.ceil(s.herd * 3));
-      for (let i = 0; i < n; i++) cow(M.PLAYER_X - 62 - i * 44, M.GROUND, ph + i * 1.7, K, 0.9 - i * 0.06);
+      for (let i = 0; i < n; i++) cow(M.PLAYER_X - 40 - i * 44, M.GROUND, ph + i * 1.7, K, 0.9 - i * 0.06);
     }
-    person(M.PLAYER_X - 30, M.GROUND, ph + 2.1, K, M.has(s, 'harpoons') ? 'spear' : null, false);
     if (s.hurt > 0 && !reduce && Math.floor(s.hurt * 12) % 2) return;
-    person(M.PLAYER_X, s.y, ph, K, M.has(s, 'pottery') ? 'pot' : null, !s.onGround);
+    person(M.PLAYER_X, s.y, ph, K, M.has(s, 'pottery') ? 'pot' : M.has(s, 'harpoons') ? 'spear' : null, !s.onGround);
   }
 
   // ---------- HUD ----------
   const fmt = (n: number) => Math.round(n).toLocaleString('en-GB');
+  const ERA: Record<string, string> = { 'Green Sahara': 'the Green Sahara', 'The drying': 'the Sahara is drying', Desert: 'desert' };
+  const MILESTONES: [number, string][] = [
+    [5300, 'The rains are getting weaker'],
+    [4500, 'The lakes are drying up'],
+    [3500, 'The desert is spreading'],
+    [2500, 'Only rivers, oases and the south stay green'],
+  ];
+  let msg = '', msgUntil = 0;
+  function say(text: string, secs: number) { msg = text; msgUntil = s.t + secs; }
+
   function hud() {
     const b = Math.max(M.END_BCE, s.bce);
-    $('h-year').textContent = `${fmt(b)} BCE`;
     $('h-ago').textContent = `${fmt(b + NOW - 1)} years ago`;
-    $('h-era').textContent = M.era(b);
-    const r = M.localRain(s);
+    $('h-year').textContent = `${Math.round(b)} BCE`;
+    $('h-era').textContent = ERA[M.era(b)];
     for (const [k, v] of [['water', s.water], ['food', s.food]] as const) {
       $('b-' + k).style.width = `${Math.max(0, v)}%`;
-      $('n-' + k).textContent = v < 20 ? `${Math.round(v)} low` : `${Math.round(v)}`;
+      $('n-' + k).textContent = v < 20 ? 'low!' : `${Math.round(v)}`;
       $('b-' + k).parentElement!.parentElement!.classList.toggle('low', v < 20);
     }
-    $('b-rain').style.width = `${Math.round(r * 100)}%`;
-    $('n-rain').textContent = s.spellLeft > 0 ? 'dry spell' : r > 0.7 ? 'wet' : r > 0.4 ? 'drying' : 'arid';
-    $('h-chosen').textContent = s.chosen.length ? s.chosen.map((id) => M.byId(id).name).join(', ') : 'nothing decided yet';
+    $('h-chosen').textContent = s.chosen.length ? s.chosen.map((id) => M.byId(id).name).join(', ') : 'not chosen yet';
+    for (const [y, text] of MILESTONES) if (s.bce <= y && s.bce > y - M.YEARS_PER_SEC * 0.1) say(text, 3.5);
     const ban = $('banner');
-    if (s.spellLeft > 0) { ban.hidden = false; ban.textContent = 'Dry spell: years of failed rains'; }
-    else ban.hidden = true;
+    const text = s.spellLeft > 0 ? 'Dry spell: the rains fail for years' : s.t < msgUntil ? msg : '';
+    ban.hidden = !text; ban.textContent = text;
   }
 
   // ---------- councils ----------
   function situation(): string {
     const r = M.rainfall(s.bce);
-    if (s.bce >= 6500) return 'The lakes are full and the grass is tall. Life is good, for now.';
-    if (s.bce >= 5400) return 'Still green, but a few elders say the rains are less reliable than in their grandparents’ time.';
-    if (r > 0.55) return 'The rains are failing more often. Some lakes have turned to marsh.';
-    if (r > 0.3) return 'The lakes are drying up and the grassland is thinning. Families are leaving for the south and the Nile.';
-    return 'The desert is spreading. Only rivers, oases and the far south stay green.';
+    if (s.bce >= 6500) return 'The lakes are full and the grass is tall.';
+    if (s.bce >= 5000) return 'The rains are becoming less reliable.';
+    if (r > 0.3) return 'The lakes are drying up and the grass is thinning.';
+    return 'The desert is spreading. Only rivers, oases and the south stay green.';
   }
 
   function openGate() {
     mode = 'gate';
     const opts = M.council(s);
     if (!opts.length) { mode = 'run'; return; }
-    $('g-title').textContent = `The council of ${fmt(Math.round(s.bce / 100) * 100)} BCE`;
-    $('g-sit').dataset.n = String(s.chosen.length + 1);
-    $('g-sit').textContent = situation();
+    $('g-sit').textContent = `${fmt(Math.round((s.bce + NOW) / 100) * 100)} years ago. ${situation()}`;
     const box = $('g-opts');
     box.innerHTML = '';
     opts.forEach((id, i) => {
       const st = M.byId(id);
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'opt';
-      b.innerHTML = `<span class="o-key">${i + 1}</span><strong>${st.name}</strong><span class="o-gain">${st.gain}</span><span class="o-cost">${st.cost}</span><span class="o-real">${st.real}</span>`;
+      const but = st.cost[0].toLowerCase() + st.cost.slice(1);
+      b.innerHTML = `<span class="o-area">${st.area}</span><strong>${st.name}</strong><span class="o-gain">${st.gain}</span><span class="o-cost">But ${but}</span><span class="o-key" aria-hidden="true">${i + 1}</span>`;
       b.addEventListener('click', () => pick(id));
       box.appendChild(b);
     });
@@ -413,6 +437,7 @@ import Base from '../../layouts/Base.astro';
     $('ov-gate').hidden = true;
     hud();
     resume();
+    if (s.chosen.length === 1) say(touch ? 'Tap to jump' : 'Space or tap to jump', 4);
   }
 
   // ---------- loop ----------
@@ -449,25 +474,49 @@ import Base from '../../layouts/Base.astro';
   }
 
   // ---------- end ----------
+  function path(): { title: string; who: string } {
+    const h = (id: M.StrategyId) => M.has(s, id);
+    if (h('move') && h('cattle')) return { title: 'You took the herds south', who: 'the herders who moved south into the Sahel, where cattle herding is still a way of life' };
+    if (h('sow') && (h('move') || h('wells') || h('trade'))) return { title: 'You became farmers', who: 'the first sorghum and millet farmers on the southern edge of the Sahara' };
+    if (h('move')) return { title: 'You followed the rain', who: 'the groups who left for the Nile valley and the south as the desert grew' };
+    if (h('wells')) return { title: 'You dug in', who: 'the oasis communities who stayed by digging for water' };
+    if (h('cattle')) return { title: 'You lived by your herd', who: 'the Saharan herders who moved their animals between pastures' };
+    if (h('sow')) return { title: 'You became farmers', who: 'the first sorghum and millet farmers on the southern edge of the Sahara' };
+    if (h('harpoons') || h('wildgrain')) return { title: 'You lived off the lakes', who: 'the lakeside foragers of the Green Sahara' };
+    return { title: 'You found your own way', who: 'no single known group: a mix of ways of life' };
+  }
+
   function finish() {
     mode = 'end';
     $('pause').hidden = true;
-    const year = fmt(Math.max(M.END_BCE, s.bce));
-    const lasted = fmt(M.START_BCE - Math.max(M.END_BCE, s.bce));
-    const t = $('e-title'), p = $('e-text');
-    const fishy = (M.has(s, 'harpoons') || M.has(s, 'wildgrain')) && !M.has(s, 'cattle') && !M.has(s, 'move') && !M.has(s, 'wells');
+    const end = Math.max(M.END_BCE, s.bce);
+    const ago = fmt(Math.round((end + NOW) / 10) * 10);
+    const lasted = fmt(Math.round((M.START_BCE - end) / 10) * 10);
+    const pth = path();
+    const lock = (M.has(s, 'harpoons') || M.has(s, 'wildgrain')) && !M.has(s, 'cattle') && !M.has(s, 'move') && !M.has(s, 'wells') && !M.has(s, 'sow');
+    const spells = s.events.filter((e) => e.text === 'Dry spell').length;
+    const helped = s.events.filter((e) => e.text === 'Neighbours helped').length;
+    const lines: string[] = [];
     if (s.over === 'won') {
-      t.textContent = 'Your people made it to 1500 BCE';
-      p.textContent = `Seven thousand years, from a green Sahara to desert, living by: ${s.chosen.map((id) => M.byId(id).name.toLowerCase()).join(', ')}. Look at the chart: which choices carried you through the drying, and which stopped mattering?`;
+      $('e-title').textContent = `${pth.title}, and made it`;
+      lines.push(`Your people lasted all 7,000 years, to 1500 BCE (${ago} years ago).`);
+      if (lock) lines.push('Living off lakes and wild grain rarely survived the drying. You were lucky, or very good at jumping.');
     } else {
-      t.textContent = s.over === 'water' ? `The water ran out in ${year} BCE` : `Food ran out in ${year} BCE`;
-      const why = s.bce > 5300
-        ? 'This was still the Green Sahara. Hard times came from dry spells and stumbles, not the big drying.'
-        : fishy
-          ? 'Your way of life fitted a green Sahara perfectly. When the lakes and wild grasses went, it had nothing to fall back on.'
-          : 'The climate changed faster than your way of life did.';
-      p.textContent = `Your group lasted ${lasted} years before breaking up and moving on. ${why}`;
+      $('e-title').textContent = `${pth.title}, until the ${s.over} ran out`;
+      lines.push(`Your people lasted ${lasted} years, until about ${ago} years ago (${fmt(Math.round(end / 10) * 10)} BCE). Then the group broke up and joined others.`);
+      if (end > 5300) lines.push('The Sahara was still green. Dry spells and stumbles did it, not the big drying.');
+      else if (lock) lines.push('Your way of life fitted the Green Sahara. When the lakes and wild grass went, there was nothing to fall back on.');
+      else if (end > 3500) lines.push('The land dried faster than your way of life could change.');
+      else lines.push('You held on deep into the desert age, after most groups had already left.');
     }
+    lines.push(`Your choices look most like ${pth.who}.`);
+    const moments = [];
+    if (spells) moments.push(`went through ${spells} dry spell${spells > 1 ? 's' : ''}`);
+    if (helped) moments.push(`were rescued by neighbours ${helped} time${helped > 1 ? 's' : ''}`);
+    if (M.has(s, 'cattle') && s.herd < 0.5) moments.push('watched your herd shrink');
+    if (moments.length) lines.push(`Along the way you ${moments.join(', ').replace(/, ([^,]*)$/, ' and $1')}.`);
+    $('e-text').innerHTML = lines.map((l) => `<p>${l}</p>`).join('');
+    $('e-real').innerHTML = s.chosen.map((id) => `<li><strong>${M.byId(id).name}.</strong> ${M.byId(id).real}</li>`).join('');
     chart();
     $('end').hidden = false;
     $('end').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
@@ -521,7 +570,26 @@ import Base from '../../layouts/Base.astro';
   document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
   document.addEventListener('themechange', () => draw());
 
-  fit(); draw(); hud();
+  function icons() {
+    const saved = ctx;
+    document.querySelectorAll<HTMLCanvasElement>('canvas[data-icon]').forEach((c) => {
+      const kind = c.dataset.icon as M.Kind;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const bw = kind === 'field' ? 84 : 48, bh = 44;
+      c.width = bw * dpr; c.height = bh * dpr; c.style.width = `${bw}px`; c.style.height = `${bh}px`;
+      ctx = c.getContext('2d')!;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, bw, bh);
+      const sz: Record<string, [number, number]> = { water: [34, 16], fish: [30, 18], grain: [22, 34], game: [34, 28], field: [70, 34], rock: [30, 24], thorn: [40, 30], dune: [64, 30] };
+      const [w, h] = sz[kind];
+      const k = kind === 'dune' ? 0.7 : 1;
+      ctx.translate(bw / 2 - (w * k) / 2, 0); ctx.scale(k, k);
+      thing({ kind, x: 0, y: (bh / k) - h - 4, w, h }, ink());
+    });
+    ctx = saved;
+  }
+
+  fit(); draw(); hud(); icons();
+  document.addEventListener('themechange', icons);
   (window as any).__dr = { get s() { return s; }, get mode() { return mode; } };
 </script>
 
@@ -531,10 +599,10 @@ import Base from '../../layouts/Base.astro';
 
   .hud { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 0.75rem 2rem; margin-bottom: 0.7rem; }
   .when { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.3rem 0.9rem; }
-  .year { font-family: var(--serif); font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1; font-variant-numeric: tabular-nums; }
-  .ago { color: var(--muted); font-size: 0.9rem; }
-  .era { color: var(--ochre); font-size: 0.9rem; font-weight: 500; }
-  .meters { display: grid; grid-template-columns: repeat(3, minmax(8.5rem, 1fr)); gap: 0.4rem 1.1rem; flex: 1 1 26rem; max-width: 34rem; }
+  .when { flex-direction: column; align-items: start; gap: 0.15rem; }
+  .ago { font-family: var(--serif); font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .sub { color: var(--muted); font-size: 0.9rem; }
+  .meters { display: grid; grid-template-columns: repeat(2, minmax(10rem, 1fr)); gap: 0.4rem 1.4rem; flex: 1 1 22rem; max-width: 28rem; }
   .meter { display: grid; grid-template-columns: 3.1rem 1fr 4.2rem; align-items: center; gap: 0.45rem; font-size: 0.85rem; }
   .meter .lab { color: var(--muted); }
   .bar { height: 10px; background: var(--line); border-radius: 2px; overflow: hidden; }
@@ -560,12 +628,24 @@ import Base from '../../layouts/Base.astro';
   .ov-box.wide { max-width: 58rem; width: 100%; }
   .ov-box h2 { font-size: clamp(1.3rem, 2.6vw, 1.7rem); margin: 0 0 0.5rem; }
   .ov-box p { margin: 0 0 0.75rem; }
-  .keys { color: var(--muted); font-size: 0.88rem; }
+  .keys { color: var(--muted); font-size: 0.9rem; }
+  .touch-only { display: none; }
+  :global(.is-touch) .touch-only { display: inline; }
+  :global(.is-touch) .no-touch { display: none; }
+  .key-box { max-width: 44rem; }
+  .key { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1.5rem; margin: 0.4rem 0 0.9rem; }
+  .key h3 { font-family: var(--sans); font-size: 0.85rem; font-weight: 500; color: var(--muted); margin: 0.4rem 0 0.2rem; }
+  .key ul { list-style: none; padding: 0; margin: 0; }
+  .key li { display: flex; align-items: center; gap: 0.6rem; font-size: 0.92rem; padding: 0.1rem 0; }
+  .key li.row3 { flex-wrap: wrap; }
+  .key canvas { flex: none; }
+  .key .row3 span { flex-basis: 100%; }
   .sit { color: var(--muted); }
   .opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
   :global(.opt) { position: relative; display: flex; flex-direction: column; gap: 0.4rem; text-align: left; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0.85rem 0.9rem 0.9rem; cursor: pointer; }
   :global(.opt:hover), :global(.opt:focus-visible) { border-color: var(--blue); outline: none; box-shadow: inset 0 0 0 1px var(--blue); }
   :global(.opt strong) { font-family: var(--serif); font-weight: 400; font-size: 1.12rem; padding-right: 1.4rem; }
+  :global(.o-area) { font-size: 0.78rem; color: var(--muted); }
   :global(.o-key) { position: absolute; right: 0.7rem; top: 0.7rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
   :global(.o-gain) { font-size: 0.9rem; }
   :global(.o-cost) { font-size: 0.9rem; color: var(--ochre); }
@@ -579,6 +659,8 @@ import Base from '../../layouts/Base.astro';
   .end { scroll-margin-top: 5rem; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
   .end h2 { margin-bottom: 0.4rem; }
   .e-text { max-width: var(--measure); }
+  .e-text :global(p) { margin: 0 0 0.6rem; }
+  #e-real :global(strong) { font-weight: 500; }
   .chart { margin: 1.2rem 0 1.5rem; }
   .chart svg { width: 100%; height: auto; display: block; }
   .chart figcaption { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; }
@@ -614,7 +696,8 @@ import Base from '../../layouts/Base.astro';
   @media (max-width: 800px) {
     .opts { grid-template-columns: 1fr; }
     .notes { grid-template-columns: 1fr; }
-    .meters { grid-template-columns: 1fr; max-width: none; }
+    .meters { grid-template-columns: 1fr 1fr; max-width: none; }
+    .key { grid-template-columns: 1fr; }
     .ov { position: fixed; z-index: 50; place-items: start center; background: color-mix(in srgb, var(--bg) 94%, transparent); padding-top: 3rem; }
     .ov-box { padding: 1rem; }
   }
