@@ -4,11 +4,13 @@
 // Rules for every item:
 // - It links to the original, and every fact in it was read in that original.
 // - Words are our own: a short summary, never copied paragraphs.
-// - `home: true` marks the "From home" item: Uttarakhand first, the wider Himalaya as fallback,
+// - `home: true` marks the "From home" item (tag reads "From home · Uttarakhand" and links to
+//   the official Uttarakhand Tourism site): Uttarakhand first, the wider Himalaya as fallback,
 //   and skipped in weeks with nothing good. Other India news can sit among the regular items.
 // - `image` is the preview image the source itself publishes for the article (its og:image),
-//   shown as a thumbnail that links to the original. Leave it out if the source has none;
-//   the page then shows a plain text tile instead.
+//   shown as a thumbnail that links to the original.
+// - `illustration` is used only when the source has no usable image: the name of a small,
+//   minimal drawing made for that specific story, in src/assets/digest/<name>.svg.
 // - `take` is Mudit's one line. Leave it out until he writes it; the page hides it when empty.
 
 export type DigestItem = {
@@ -22,6 +24,7 @@ export type DigestItem = {
   take?: string;
   image?: string;
   imageAlt?: string;
+  illustration?: string;
 };
 
 export type Issue = {
@@ -56,6 +59,7 @@ export const issues: Issue[] = [
         source: 'allAfrica',
         url: 'https://allafrica.com/stories/202611200236.html',
         date: '2026-11-20',
+        illustration: 'kenya-plots',
       },
       {
         title: 'What happens when 936 AI scientists share a preprint server',
@@ -66,6 +70,7 @@ export const issues: Issue[] = [
         source: 'alphaXiv preprint, not yet peer reviewed',
         url: 'https://www.alphaxiv.org/abs/2611.society-ai-scientists.pdf',
         date: '2026-11-21',
+        illustration: 'ai-scientists',
       },
       {
         title: 'The mountains did not get their own agenda',

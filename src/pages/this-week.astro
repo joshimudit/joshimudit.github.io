@@ -2,15 +2,20 @@
 import Base from '../layouts/Base.astro';
 import { issues, formatDay, host } from '../data/digest';
 
+const drawings = import.meta.glob('../assets/digest/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const drawing = (name?: string) => (name ? drawings[`../assets/digest/${name}.svg`] : undefined);
+
 const sorted = [...issues].sort((a, b) => b.number - a.number);
 const [latest, ...past] = sorted;
 const pad = (n: number) => String(n).padStart(2, '0');
+// Where "home" is. The tag links to the official tourism site.
+const HOME = { name: 'Uttarakhand', url: 'https://uttarakhandtourism.gov.in/' };
 ---
-<Base title="This Week" description="Five things worth knowing each week from climate, ecosystems, food systems and the people living with them.">
+<Base title="This Week" description="Five stories a week worth a minute each, from climate and ecosystems to food systems and AI agents.">
   <div class="wrap page">
     <header class="page-head">
       <h1>This Week</h1>
-      <p>Five things from climate, ecosystems, food and the people in between that caught my attention this week. Found by an AI agent, chosen and checked by me.</p>
+      <p>Five stories worth a minute each, from climate and ecosystems to food systems and AI agents, chosen for what they reveal rather than how loudly they were reported.</p>
     </header>
 
     {latest ? (
@@ -21,22 +26,27 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
         <ol class="items">
           {latest.items.map((it, i) => (
-            <li class="item">
-              <span class="num" aria-hidden="true">{pad(i + 1)}</span>
+            <li class:list={['item', { flip: i % 2 === 1 }]}>
               <div class="body">
-                <a class:list={["thumb", { tile: !it.image }]} href={it.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                <a class="thumb" href={it.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
                   {it.image ? (
                     <img src={it.image} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"
-                      onerror="this.parentElement.classList.add('tile');this.remove()" />
+                      onerror="this.parentElement.classList.add('failed');this.remove()" />
+                  ) : drawing(it.illustration) ? (
+                    <span class="drawing" set:html={drawing(it.illustration)} />
                   ) : null}
-                  <span class="tile-text data">{host(it.url)}</span>
+                  <span class="fallback data">{host(it.url)}</span>
                 </a>
                 {it.image && <p class="credit data">Image via {host(it.url)}</p>}
+                {!it.image && drawing(it.illustration) && <p class="credit data">Illustration</p>}
                 <div class="text">
-                {it.home && <p class="home data">From home</p>}
+                <span class="num" aria-hidden="true">{pad(i + 1)}</span>
+                {it.home && (
+                  <p class="home data">From home <span aria-hidden="true">·</span> <a href={HOME.url} target="_blank" rel="noopener">{HOME.name}<span class="sr-only"> (official tourism site, opens in a new tab)</span></a></p>
+                )}
                 <h2>{it.title}</h2>
                 <p>{it.summary}</p>
-                <p class="why"><span class="label data">Why it matters</span> {it.why}</p>
+                <p class="why"><span class="label data">In context</span> {it.why}</p>
                 {it.take && (
                   <p class="take"><span class="label data">My take</span> {it.take}</p>
                 )}
@@ -68,7 +78,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <ol>
               {iss.items.map((it) => (
                 <li>
-                  {it.home && <span class="home data">From home</span>}
+                  {it.home && <span class="home data">From home · {HOME.name}</span>}
                   <a href={it.url} target="_blank" rel="noopener">{it.title}</a>
                   <span class="data"> · {it.source}</span>
                 </li>
@@ -85,34 +95,32 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .issue-line { margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; }
 
   .items { list-style: none; padding: 0; margin: 0; }
-  .item {
-    display: grid;
-    grid-template-columns: 5.5rem minmax(0, 1fr);
-    gap: 1.5rem;
-    padding-block: 2.25rem;
-    border-top: 1px solid var(--line);
-  }
+  .item { padding-block: 2.5rem; border-top: 1px solid var(--line); }
   .item:last-child { border-bottom: 1px solid var(--line); }
 
   .num {
+    display: block;
     font-family: var(--serif);
-    font-size: clamp(2.5rem, 5vw, 3.75rem);
+    font-size: clamp(1.9rem, 3.2vw, 2.5rem);
     line-height: 1;
     color: var(--ochre);
+    margin-bottom: 0.6rem;
   }
 
-
-  /* Thumbnail: the source's own preview image, linking to the original.
-     Sources without one get a plain text tile. */
+  /* Rows alternate: text | image, then image | text. */
   .body {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 15rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas: 'text thumb' 'text credit' 'text .';
     grid-template-rows: auto auto 1fr;
-    column-gap: 2rem;
+    column-gap: 3rem;
     align-content: start;
   }
+  .flip .body { grid-template-areas: 'thumb text' 'credit text' '. text'; }
   .text { grid-area: text; min-width: 0; }
+
+  /* Image: the source's own preview image, linked to the original. If there is none,
+     a small drawing made for that story. If an image fails to load, a quiet tile. */
   .thumb {
     grid-area: thumb;
     display: block;
@@ -120,26 +128,30 @@ const pad = (n: number) => String(n).padStart(2, '0');
     aspect-ratio: 3 / 2;
     overflow: hidden;
     border-radius: 6px;
-    background: var(--line);
-    margin-top: 0.35rem;
+    margin-top: 0.3rem;
+    background: color-mix(in srgb, var(--blue) 7%, var(--bg));
   }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
-  .thumb:hover img { transform: scale(1.03); }
-  .tile-text { display: none; }
   .thumb, .thumb:hover { text-decoration: none; }
-  .thumb.tile {
-    display: grid;
-    place-items: center;
-    background:
-      repeating-linear-gradient(135deg, transparent 0 9px, color-mix(in srgb, var(--ink) 7%, transparent) 9px 10px),
-      color-mix(in srgb, var(--blue) 8%, var(--bg));
-    border: 1px solid var(--line);
-  }
-  .thumb.tile .tile-text { display: block; color: var(--muted); padding: 0 1rem; text-align: center; }
-  .credit { grid-area: credit; margin: 0.4rem 0 0; color: var(--muted); font-size: 0.7rem; }
+  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+  .thumb:hover img { transform: scale(1.03); }
+  .fallback { display: none; position: absolute; inset: 0; place-items: center; }
+  .thumb.failed .fallback { display: grid; }
+  .drawing, .drawing :global(svg) { display: block; width: 100%; height: 100%; }
+  .drawing :global(.bg) { fill: color-mix(in srgb, var(--blue) 7%, var(--bg)); }
+  .drawing :global(.ln), .drawing :global(.crop), .drawing :global(.paper) { fill: none; stroke: var(--blue); stroke-width: 1.4; stroke-linecap: round; }
+  .drawing :global(.paper) { fill: var(--bg); stroke-width: 1.6; }
+  .drawing :global(.ground) { stroke: color-mix(in srgb, var(--ink) 25%, transparent); stroke-width: 1; }
+  .drawing :global(.link) { fill: none; stroke: color-mix(in srgb, var(--blue) 30%, transparent); stroke-width: 1; }
+  .drawing :global(.node) { fill: var(--bg); stroke: var(--blue); stroke-width: 1.4; }
+  .drawing :global(.coin) { fill: var(--bg); stroke: var(--blue); stroke-width: 1.4; }
+  .drawing :global(.acc) { stroke: var(--ochre); fill: color-mix(in srgb, var(--ochre) 18%, var(--bg)); }
+  .drawing :global(.lbl) { font-family: var(--mono); font-size: 15px; fill: var(--muted); letter-spacing: 0.03em; }
+  .credit { grid-area: credit; margin: 0.45rem 0 0; color: var(--muted); font-size: 0.68rem; }
   @media (prefers-reduced-motion: reduce) { .thumb img { transition: none; } }
 
-  .body h2 { font-size: clamp(1.45rem, 2.6vw, 1.95rem); margin-bottom: 0.5em; max-width: 30ch; }
+  .body p { font-size: 0.95rem; }
+  .body .data { font-size: 0.72rem; }
+  .body h2 { font-size: clamp(1.3rem, 2vw, 1.6rem); margin-bottom: 0.45em; max-width: 28ch; }
   .body p { max-width: var(--measure); }
 
   .label {
@@ -166,6 +178,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
+  .home a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
   .home::before {
     content: '';
     width: 0.5rem;
@@ -183,15 +196,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
   details ol { margin: 0.9rem 0 0.4rem; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
   details .home { margin: 0 0.5rem 0 0; }
 
-  @media (max-width: 960px) {
-    .body { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: 'thumb' 'credit' 'text'; }
-    .thumb { max-width: 32rem; margin-bottom: 0; }
-    .credit { margin-bottom: 1rem; }
-    .thumb.tile { display: none; }
-    .thumb:not(.tile) { margin-bottom: 0; }
-  }
-  @media (max-width: 760px) {
-    .item { grid-template-columns: 1fr; gap: 0.5rem; padding-block: 1.75rem; }
-    .num { font-size: 2.25rem; }
+  @media (max-width: 860px) {
+    .body, .flip .body { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: 'thumb' 'credit' 'text'; }
+    .credit { margin-bottom: 1.1rem; }
+    .item { padding-block: 1.9rem; }
   }
 </style>
