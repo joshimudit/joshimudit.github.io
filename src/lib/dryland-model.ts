@@ -120,16 +120,16 @@ export interface State {
   fx: { x: number; y: number; text: string; age: number; kind: 'water' | 'food' | 'hurt' }[];
   ledger: Partial<Record<StrategyId, Ledger>>; // what each choice has given (+) or cost (−)
   milkClock: number;
-  rng: () => number;
+  seed: number; // random-number state, kept in the state so a game can be copied and replayed
+  councils: { bce: number; options: StrategyId[]; snap: string; picked?: StrategyId }[];
 }
 
-export function mulberry(seed: number) {
-  return () => {
-    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+/** Mulberry32, with its state stored on the game state. */
+export function rand(s: { seed: number }) {
+  s.seed = (s.seed + 0x6d2b79f5) | 0;
+  let t = Math.imul(s.seed ^ (s.seed >>> 15), 1 | s.seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
 
 export function newState(seed = Date.now()): State {
@@ -139,7 +139,7 @@ export function newState(seed = Date.now()): State {
     things: [], spawnClock: 0.6, lastHazardX: 0,
     spellLeft: 0, nextSpell: 8500 - 700,
     shareReady: START_BCE, gate: 0, lastCouncil: START_BCE + 1,
-    over: false, log: [], events: [], fx: [], ledger: {}, milkClock: 0, rng: mulberry(seed),
+    over: false, log: [], events: [], fx: [], ledger: {}, milkClock: 0, seed: seed | 0, councils: [],
   };
 }
 
@@ -184,12 +184,12 @@ export function gateOptions(s: State): StrategyId[] {
   const open = STRATEGIES.filter((x) => x.from >= s.bce && !has(s, x.id));
   const fresh = open.filter((x) => x.from < s.lastCouncil);
   const out: Strategy[] = [];
-  if (fresh.length) out.push(fresh[Math.floor(s.rng() * fresh.length)]);
+  if (fresh.length) out.push(fresh[Math.floor(rand(s) * fresh.length)]);
   let rest = open.filter((x) => !out.includes(x));
   while (out.length < 3 && rest.length) {
     const newArea = rest.filter((x) => !out.some((o) => o.area === x.area));
     const pool = newArea.length ? newArea : rest;
-    const pick = pool[Math.floor(s.rng() * pool.length)];
+    const pick = pool[Math.floor(rand(s) * pool.length)];
     out.push(pick); rest = rest.filter((x) => x !== pick);
   }
   return out.map((x) => x.id);
@@ -197,6 +197,8 @@ export function gateOptions(s: State): StrategyId[] {
 
 export function choose(s: State, id: StrategyId) {
   s.chosen.push(id);
+  const c = s.councils[s.councils.length - 1];
+  if (c && !c.picked) c.picked = id;
   s.events.push({ bce: s.bce, text: byId(id).name });
 }
 
@@ -212,7 +214,7 @@ const HAZARD: Kind[] = ['rock', 'thorn', 'dune'];
 export const isHazard = (k: Kind) => HAZARD.includes(k);
 
 function spawn(s: State, worldX: number) {
-  const r = localRain(s), R = s.rng;
+  const r = localRain(s), R = () => rand(s);
   const aridity = 1 - rainfall(s.bce);
   const lake = lakeLevel(r);
   // hazards
@@ -284,10 +286,10 @@ export function step(s: State, dt: number) {
   // dry spells: runs of bad years, more frequent as the climate dries
   if (s.spellLeft > 0) s.spellLeft -= dt;
   else if (s.bce <= s.nextSpell) {
-    s.spellLeft = 3 + s.rng() * 2.5;
+    s.spellLeft = 3 + rand(s) * 2.5;
     s.events.push({ bce: s.bce, text: 'Dry spell' });
     const aridity = 1 - rainfall(s.bce);
-    s.nextSpell = s.bce - (900 - 600 * aridity) * (0.6 + s.rng() * 0.8);
+    s.nextSpell = s.bce - (900 - 600 * aridity) * (0.6 + rand(s) * 0.8);
   }
 
   // daily needs
@@ -332,7 +334,7 @@ export function step(s: State, dt: number) {
   for (const th of s.things) th.x -= dx;
   s.lastHazardX -= dx;
   s.spawnClock -= dt;
-  if (s.spawnClock <= 0) { spawn(s, 1000); s.spawnClock = 0.42 + s.rng() * 0.3; }
+  if (s.spawnClock <= 0) { spawn(s, 1000); s.spawnClock = 0.42 + rand(s) * 0.3; }
 
   // contact
   const px = PLAYER_X - 12, pw = 24, ph = 46, py = s.y - ph;
@@ -369,5 +371,58 @@ export function council(s: State): StrategyId[] {
   const opts = gateOptions(s);
   s.lastCouncil = s.bce;
   if (s.bce < START_BCE) s.gate++;
+  s.councils.push({ bce: s.bce, options: opts, snap: snapshot(s) });
   return opts;
+}
+
+function snapshot(s: State): string {
+  return JSON.stringify({ ...s, councils: [], log: [], fx: [], events: [] });
+}
+
+/** Play the rest of a game automatically: a steady jumper who makes the given later choices when offered. */
+export function playOut(snap: string, first: StrategyId, later: StrategyId[], variant = 0): { end: number; won: boolean; low: number } {
+  const s: State = JSON.parse(snap);
+  s.seed = (s.seed ^ Math.imul(variant + 1, 0x9e3779b1)) | 0;
+  choose(s, first);
+  const dt = 1 / 30;
+  while (!s.over) {
+    if (gateDue(s)) {
+      const opts = council(s);
+      const id = later.find((p) => opts.includes(p) && !has(s, p)) ?? opts[0];
+      if (id) choose(s, id);
+    }
+    for (const th of s.things) {
+      const d = th.x - (PLAYER_X + 12);
+      if (isHazard(th.kind) && d > 30 && d < 50) jump(s);
+      if (th.kind === 'game' && d > -5 && d < 15) jump(s);
+    }
+    step(s, dt);
+  }
+  return { end: Math.max(END_BCE, s.bce), won: s.over === 'won', low: Math.min(s.water, s.food) };
+}
+
+export interface Review { bce: number; picked: StrategyId; best: StrategyId; years: number; verdict: 'best' | 'close' | 'worse'; }
+export const REPLAYS = 4;
+
+/** For every council, replay the rest of history with each option on offer and compare. */
+export function hindsight(s: State): Review[] {
+  const picks = s.councils.map((c) => c.picked).filter(Boolean) as StrategyId[];
+  return s.councils.filter((c) => c.picked).map((c, i) => {
+    const later = picks.slice(i + 1);
+    const lasted: Record<string, number> = {};
+    const score: Record<string, number> = {};
+    for (const o of c.options) {
+      let y = 0, sc = 0;
+      for (let v = 0; v < REPLAYS; v++) {
+        const r = playOut(c.snap, o, later, v);
+        y += START_BCE - r.end; sc += (START_BCE - r.end) + (r.won ? r.low * 4 : 0);
+      }
+      lasted[o] = y / REPLAYS; score[o] = sc / REPLAYS;
+    }
+    const best = c.options.reduce((a, b) => (score[b] > score[a] ? b : a));
+    const picked = c.picked!;
+    const years = Math.round((lasted[best] - lasted[picked]) / 50) * 50; // years lost by not picking the best
+    const verdict = best === picked ? 'best' : score[best] - score[picked] < 80 ? 'close' : 'worse';
+    return { bce: c.bce, picked, best, years, verdict };
+  });
 }

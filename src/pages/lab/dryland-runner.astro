@@ -34,7 +34,8 @@ import Base from '../../layouts/Base.astro';
               <div class="key-group">
                 <h3>Walk into these</h3>
                 <ul>
-                  <li><canvas data-icon="water"></canvas><span><strong class="t-water">Water</strong></span></li>
+                  <li><canvas data-icon="water"></canvas><span><strong class="t-water">Water</strong>: a waterhole where your people drink</span></li>
+                  <li><canvas data-icon="well"></canvas><span><strong class="t-water">Water</strong>: a well, once you dig them</span></li>
                   <li><canvas data-icon="fish"></canvas><span><strong class="t-food">Food</strong>: fish</span></li>
                   <li><canvas data-icon="grain"></canvas><span><strong class="t-food">Food</strong>: wild grain</span></li>
                   <li><canvas data-icon="field"></canvas><span><strong class="t-food">Food</strong>: your fields, once you farm</span></li>
@@ -98,6 +99,7 @@ import Base from '../../layouts/Base.astro';
         <h2>Behind the game</h2>
         <p>The climate follows a reconstruction of the eastern Sahara by Kuper and Kröpelin (2006). Every choice is something people really did, and the facts behind your choices appear when the game ends.</p>
         <p>The numbers are made up so that choices matter. One second is 40 years, and dry spells come at random.</p>
+        <p>The hindsight at the end comes from replaying the rest of history four times with each option you could have picked, played by a steady computer player.</p>
       </div>
       <div>
         <h2>After you play</h2>
@@ -155,8 +157,8 @@ import Base from '../../layouts/Base.astro';
     ground: ['#334f2d', '#6e5633'], path: ['#4a3a26', '#5a4529'], tree: ['#5d9a5a', '#8d7a48'], trunk: ['#7a6248', '#7a6248'],
     lake: ['#3f7396', '#55707a'], tuft: ['#6c9e55', '#9a8046'], sun: ['#e8e4cf', '#e8d9b0'],
   };
-  const INK = { day: { ink: '#11252b', water: '#1f6fa3', food: '#a85a06', hurt: '#8a2b1a', rock: '#62574c', thorn: '#3c3a28', dune: '#c99a55', duneEdge: '#a77a3c', cow: '#f2ede2', cowSpot: '#5a4434', fish: '#2e5f73', grain: '#b0741b', stalk: '#6e7f3b', game: '#8a5a32', pot: '#b36a2b' },
-               night: { ink: '#e6ece4', water: '#7cc0ea', food: '#e8b25c', hurt: '#f08a6a', rock: '#8c8070', thorn: '#a7a07a', dune: '#a98049', duneEdge: '#7d5d33', cow: '#e9e3d4', cowSpot: '#4a382a', fish: '#8cc4d4', grain: '#e0a648', stalk: '#9fb06a', game: '#c39260', pot: '#d48a4b' } };
+  const INK = { day: { ink: '#11252b', water: '#1f6fa3', food: '#a85a06', hurt: '#8a2b1a', mud: '#7a6142', shine: '#cfe6f2', trunk: '#5c4630', rock: '#62574c', thorn: '#3c3a28', dune: '#c99a55', duneEdge: '#a77a3c', cow: '#f2ede2', cowSpot: '#5a4434', fish: '#2e5f73', grain: '#b0741b', stalk: '#6e7f3b', game: '#8a5a32', pot: '#b36a2b' },
+               night: { ink: '#e6ece4', water: '#7cc0ea', food: '#e8b25c', hurt: '#f08a6a', mud: '#4a3a26', shine: '#e2f2fb', trunk: '#8a7050', rock: '#8c8070', thorn: '#a7a07a', dune: '#a98049', duneEdge: '#7d5d33', cow: '#e9e3d4', cowSpot: '#4a382a', fish: '#8cc4d4', grain: '#e0a648', stalk: '#9fb06a', game: '#c39260', pot: '#d48a4b' } };
   const night = () => document.documentElement.dataset.theme === 'night';
   const hex = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
   const mix = (a: string, b: string, t: number) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`; };
@@ -270,13 +272,25 @@ import Base from '../../layouts/Base.astro';
     ctx.save();
     switch (th.kind) {
       case 'water': {
-        if (th.bonus === 'wells') {
-          ctx.strokeStyle = K.rock; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.ellipse(x + w / 2, y + h - 4, w / 2 + 5, 9, 0, 0, Math.PI * 2); ctx.stroke();
-        }
+        // a waterhole on the ground; a stone-lined well if you dug it
+        const cx = x + w / 2, cy = y + h - 3;
+        const wet = iconMode ? 1 : Math.min(1, M.localRain(s) / 0.7);
+        const rw = (w / 2 + 6) * (0.65 + 0.35 * wet);
+        ctx.fillStyle = K.mud;
+        ctx.beginPath(); ctx.ellipse(cx, cy, rw + 4, 7, 0, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = K.water;
-        ctx.beginPath(); ctx.ellipse(x + w / 2, y + h - 4, w / 2, 6, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(x + w / 2, y - 14); ctx.bezierCurveTo(x + w / 2 + 9, y - 2, x + w / 2 + 8, y + 6, x + w / 2, y + 6); ctx.bezierCurveTo(x + w / 2 - 8, y + 6, x + w / 2 - 9, y - 2, x + w / 2, y - 14); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(cx, cy, rw, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = K.shine; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(cx - rw * 0.4, cy - 1); ctx.lineTo(cx - rw * 0.1, cy - 1); ctx.stroke();
+        if (th.bonus === 'wells') {
+          ctx.fillStyle = K.rock;
+          for (let i = 0; i < 9; i++) { const a = Math.PI * (i / 8); ctx.beginPath(); ctx.arc(cx - Math.cos(a) * (rw + 4), cy - Math.sin(a) * 3 + 2, 3.2, 0, Math.PI * 2); ctx.fill(); }
+          ctx.strokeStyle = K.trunk; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(cx + rw + 2, cy); ctx.lineTo(cx + rw + 2, cy - 26); ctx.moveTo(cx + rw + 2, cy - 24); ctx.lineTo(cx - 4, cy - 30); ctx.stroke();
+        } else if (wet > 0.6) {
+          ctx.strokeStyle = K.stalk; ctx.lineWidth = 1.8;
+          ctx.beginPath(); ctx.moveTo(cx + rw - 2, cy - 1); ctx.lineTo(cx + rw, cy - 15); ctx.moveTo(cx + rw + 2, cy); ctx.lineTo(cx + rw + 6, cy - 11); ctx.stroke();
+        }
         break;
       }
       case 'fish': {
@@ -579,10 +593,27 @@ import Base from '../../layouts/Base.astro';
       const when = s.events.find((e) => e.text === M.byId(id).name)!.bce;
       const stopped = l && l.last > end + 500 && (l.food > 1 || l.water > 1) && id !== 'share'
         ? `, then stopped paying off around ${fmt(Math.round(l.last / 100) * 100)} BCE` : '';
-      return `<li><strong>${M.byId(id).name}</strong>, chosen ${fmt(Math.round((when + NOW) / 100) * 100)} years ago. ${gaveText(l)}${stopped}.<span class="fact">${M.byId(id).real}</span></li>`;
+      return `<li data-id="${id}"><strong>${M.byId(id).name}</strong>, chosen ${fmt(Math.round((when + NOW) / 100) * 100)} years ago. ${gaveText(l)}${stopped}.<span class="hind">Replaying history to check this choice…</span><span class="fact">${M.byId(id).real}</span></li>`;
     }).join('');
     chart();
     $('end').hidden = false;
+    setTimeout(() => {
+      const reviews = M.hindsight(s);
+      const best = reviews.filter((r) => r.verdict === 'best').length;
+      for (const r of reviews) {
+        const el = document.querySelector<HTMLElement>(`#e-real li[data-id="${r.picked}"] .hind`);
+        if (!el) continue;
+        const others = M.STRATEGIES.filter((x) => s.councils.find((c) => c.picked === r.picked)!.options.includes(x.id) && x.id !== r.picked).map((x) => x.name);
+        el.textContent = r.verdict === 'best' ? 'In hindsight: the best of the options you had.'
+          : r.verdict === 'close' ? `In hindsight: about as good as ${others.join(' or ')}.`
+          : r.years >= 100 ? `In hindsight: ${M.byId(r.best).name} would have kept your people going about ${fmt(r.years)} years longer.`
+          : `In hindsight: ${M.byId(r.best).name} would have left your people better off.`;
+        el.dataset.verdict = r.verdict;
+      }
+      const sum = document.createElement('p');
+      sum.innerHTML = `<strong>In hindsight, ${best} of your ${reviews.length} choices ${best === 1 ? 'was' : 'were'} the best on offer.</strong> Below, see which ones weren’t, and what would have done better.`;
+      $('e-text').appendChild(sum);
+    }, 60);
     $('end').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   }
 
@@ -638,7 +669,8 @@ import Base from '../../layouts/Base.astro';
   function icons() {
     const saved = ctx; iconMode = true;
     document.querySelectorAll<HTMLCanvasElement>('canvas[data-icon]').forEach((c) => {
-      const kind = c.dataset.icon as M.Kind;
+      const well = c.dataset.icon === 'well';
+      const kind = (well ? 'water' : c.dataset.icon) as M.Kind;
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       const bw = kind === 'field' ? 84 : 48, bh = 44;
       c.width = bw * dpr; c.height = bh * dpr; c.style.width = `${bw}px`; c.style.height = `${bh}px`;
@@ -648,7 +680,7 @@ import Base from '../../layouts/Base.astro';
       const [w, h] = sz[kind];
       const k = kind === 'dune' ? 0.7 : 1;
       ctx.translate(bw / 2 - (w * k) / 2, 0); ctx.scale(k, k);
-      thing({ kind, x: 0, y: (bh / k) - h - 4, w, h }, ink());
+      thing({ kind, x: well ? -4 : 0, y: (bh / k) - h - 4, w, h, bonus: well ? 'wells' : undefined }, ink());
     });
     ctx = saved; iconMode = false;
   }
@@ -729,6 +761,9 @@ import Base from '../../layouts/Base.astro';
   .ways :global(li.pulse) { animation: pulse 0.6s ease-out; }
   @keyframes pulse { from { background: var(--blue-soft); } to { background: var(--surface); } }
   @media (prefers-reduced-motion: reduce) { .ways :global(li.pulse) { animation: none; } }
+  .e-real :global(.hind) { display: block; margin-top: 0.15rem; }
+  .e-real :global(.hind[data-verdict='best']) { color: var(--moss); }
+  .e-real :global(.hind[data-verdict='worse']) { color: var(--ochre); }
   .e-real :global(.fact) { display: block; color: var(--muted); font-size: 0.9rem; margin-top: 0.15rem; }
   .e-real :global(li) { margin-bottom: 0.7rem; }
 
