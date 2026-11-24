@@ -1,94 +1,196 @@
 ---
-// Map of current and past collaborations, drawn at build time (no runtime JS).
+// Map of current and past collaborations, drawn at build time.
+// Main map: Europe to southern Africa and India. Europe is crowded, so it gets its own inset
+// in the empty Indian Ocean corner. Below the map, logo tiles link to each institution.
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import land110 from 'world-atlas/land-110m.json';
+import land50 from 'world-atlas/land-50m.json';
 import { collaborations } from '../data/profile';
 
 const W = 960, H = 620;
-const extent = {
-  type: 'Feature',
-  geometry: { type: 'MultiPoint', coordinates: [[-14, 62], [88, 62], [-14, -36], [88, -36]] },
-};
-const projection = geoNaturalEarth1().fitExtent([[10, 10], [W - 10, H - 10]], extent as any);
-const path = geoPath(projection);
+const mp = (coords: number[][]) => ({ type: 'Feature', geometry: { type: 'MultiPoint', coordinates: coords } }) as any;
+
+// main map
+const proj = geoNaturalEarth1().fitExtent([[10, 10], [W - 10, H - 10]], mp([[-14, 62], [88, 62], [-14, -36], [88, -36]]));
+const path = geoPath(proj);
 const land = path(feature(land110 as any, (land110 as any).objects.land) as any);
-const graticule = Array.from({ length: 9 }, (_, i) => -30 + i * 15).map((lat) =>
-  path({ type: 'LineString', coordinates: Array.from({ length: 61 }, (_, j) => [-40 + j * 2.2, lat]) } as any),
-);
-const pins = collaborations.map((c) => {
-  const [x, y] = projection([c.lon, c.lat])!;
-  return { ...c, x, y };
+
+// Europe box on the main map
+const EU = { w: -9, e: 22, s: 38.5, n: 59 };
+const euRing = [[EU.w, EU.s], ...Array.from({ length: 32 }, (_, i) => [EU.w + ((EU.e - EU.w) * i) / 31, EU.n]), [EU.e, EU.s], ...Array.from({ length: 32 }, (_, i) => [EU.e - ((EU.e - EU.w) * i) / 31, EU.s])];
+const euBox = path({ type: 'LineString', coordinates: euRing } as any);
+const inEU = (c: { lat: number; lon: number }) => c.lon > EU.w && c.lon < EU.e && c.lat > EU.s && c.lat < EU.n;
+
+// inset, placed in the Indian Ocean corner
+const I = { x: 640, y: 352, w: 300, h: 250 };
+const iproj = geoNaturalEarth1().fitExtent([[I.x + 8, I.y + 8], [I.x + I.w - 8, I.y + I.h - 8]], mp([[EU.w, EU.n], [EU.e, EU.n], [EU.w, EU.s], [EU.e, EU.s]]))
+  .clipExtent([[I.x, I.y], [I.x + I.w, I.y + I.h]]);
+const ipath = geoPath(iproj);
+const iland = ipath(feature(land50 as any, (land50 as any).objects.land) as any);
+const [euCx, euCy] = proj([EU.e, EU.s])!;
+
+const pins = collaborations.map((c, i) => {
+  const [x, y] = proj([c.lon, c.lat])!;
+  const [ix, iy] = inEU(c) ? iproj([c.lon, c.lat])! : [0, 0];
+  return { ...c, id: `c${i}`, x, y, ix, iy, eu: inEU(c) };
 });
-const agridry = collaborations.filter((c) => c.group === 'agridry');
-const past = collaborations.filter((c) => c.group === 'past');
+// Pantnagar and Almora are 90 km apart: nudge so both stay visible
+for (const p of pins) if (p.short === 'INHERE') { p.x += 7; p.y -= 9; }
+
+// network lines from the PhD host to the other AGRI-DRY partners
+const host = pins.find((p) => p.short === 'Aarhus')!;
+const arc = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+  const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y;
+  const k = 0.18;
+  return `M${a.x.toFixed(1)} ${a.y.toFixed(1)} Q${(mx - dy * k).toFixed(1)} ${(my + dx * k).toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+};
+const hostI = { x: host.ix, y: host.iy };
+const arcs = pins.filter((p) => p.group === 'agridry' && p !== host).map((p) => (p.eu ? { d: arc(hostI, { x: p.ix, y: p.iy }), id: p.id } : { d: arc(host, p), id: p.id }));
+
+// labels outside Europe
+const LABEL: Record<string, [number, number, string]> = {
+  Botswana: [-12, 4, 'end'], Wits: [12, 4, 'start'], Pantnagar: [-12, 10, 'end'], INHERE: [10, -6, 'start'],
+};
+// labels inside the inset
+const ILABEL: Record<string, [number, number, string]> = {
+  Aarhus: [10, -6, 'start'], Kiel: [10, 12, 'start'], Glasgow: [-10, 4, 'end'], ETH: [-10, 10, 'end'],
+  AMU: [0, 22, 'middle'], UPF: [10, 4, 'start'], Salento: [-10, 14, 'end'],
+};
+
+const agridry = pins.filter((c) => c.group === 'agridry');
+const past = pins.filter((c) => c.group === 'past');
+const LOGO: Record<string, string> = {
+  Aarhus: 'aarhus', Glasgow: 'glasgow', UPF: 'upf', Salento: 'salento', Botswana: 'botswana', Wits: 'wits',
+  ETH: 'eth', Kiel: 'kiel', AMU: 'amu', Pantnagar: 'pantnagar', INHERE: 'inhere',
+};
+
+const pin = (p: typeof pins[number], x: number, y: number, small = false) =>
+  p.group === 'agridry'
+    ? `<circle cx="${x}" cy="${y}" r="${small ? 4.5 : 7}" class="pin agridry" />`
+    : `<rect x="${x - (small ? 4 : 6)}" y="${y - (small ? 4 : 6)}" width="${small ? 8 : 12}" height="${small ? 8 : 12}" transform="rotate(45 ${x} ${y})" class="pin past" />`;
 ---
 <div class="collab">
   <figure class="map">
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="map-title">
-      <title id="map-title">Map of current and past collaborations across Europe, Africa and India</title>
-      {graticule.map((g) => <path d={g} class="grat" />)}
+      <title id="map-title">Map of current and past collaborations across Europe, Africa and India, with a close-up of Europe</title>
+      <defs><clipPath id="inset-clip"><rect x={I.x} y={I.y} width={I.w} height={I.h} rx="6" /></clipPath></defs>
       <path d={land} class="land" />
+      <path d={euBox} class="eu-box" />
+      <path d={`M${euCx} ${euCy} L${I.x + 18} ${I.y}`} class="leader" />
+      {arcs.filter((a) => !pins.find((p) => p.id === a.id)!.eu).map((a) => <path d={a.d} class="arc" data-for={a.id} />)}
+
       {pins.map((p) => (
-        <a href={p.href} aria-label={`${p.name}, ${p.place}`}>
-          {p.group === 'agridry'
-            ? <circle cx={p.x} cy={p.y} r="7" class="pin agridry" />
-            : <rect x={p.x - 6} y={p.y - 6} width="12" height="12" transform={`rotate(45 ${p.x} ${p.y})`} class="pin past" />}
-          <title>{p.name}, {p.place}</title>
-        </a>
+        <a href={p.href} aria-label={`${p.name}, ${p.place}`} data-id={p.id} class="pin-link" set:html={pin(p, p.x, p.y, p.eu) + `<title>${p.name}, ${p.place}</title>`} />
       ))}
+      {pins.filter((p) => !p.eu && LABEL[p.short]).map((p) => {
+        const [dx, dy, anchor] = LABEL[p.short];
+        return <text x={p.x + dx} y={p.y + dy} text-anchor={anchor} class="lbl" data-for={p.id}>{p.place.replace(', Almora', '')}</text>;
+      })}
+
+      <g class="inset">
+        <rect x={I.x} y={I.y} width={I.w} height={I.h} rx="6" class="inset-bg" />
+        <g clip-path="url(#inset-clip)"><path d={iland} class="land" /></g>
+        <text x={I.x + 12} y={I.y + I.h - 12} class="inset-title">Europe</text>
+        {arcs.filter((a) => pins.find((p) => p.id === a.id)!.eu).map((a) => <path d={a.d} class="arc" data-for={a.id} />)}
+        {pins.filter((p) => p.eu).map((p) => {
+          const [dx, dy, anchor] = ILABEL[p.short] ?? [10, 4, 'start'];
+          return (
+            <a href={p.href} aria-label={`${p.name}, ${p.place}`} data-id={p.id} class="pin-link">
+              <Fragment set:html={pin(p, p.ix, p.iy)} />
+              <text x={p.ix + dx} y={p.iy + dy} text-anchor={anchor} class="lbl">{p.place}</text>
+              <title>{p.name}, {p.place}</title>
+            </a>
+          );
+        })}
+      </g>
     </svg>
     <figcaption>
-      <span class="key"><span class="k agridry"></span>AGRI-DRY network</span>
+      <span class="key"><span class="k agridry"></span>AGRI-DRY network, linked to my host university</span>
       <span class="key"><span class="k past"></span>Earlier studies and work</span>
     </figcaption>
   </figure>
 
-  <div class="lists">
-    <div>
-      <h3>AGRI-DRY network</h3>
-      <ul>
-        {agridry.map((c) => (
-          <li><a href={c.href}><span class="mark agridry">{c.short}</span><span class="n">{c.name}<small>{c.role}, {c.country}</small></span></a></li>
+  {[['AGRI-DRY network', agridry, 'agridry'], ['Earlier studies and work', past, 'past']].map(([title, list, group]) => (
+    <div class={`group ${group}`}>
+      <h3>{title as string}</h3>
+      <ul class="logos">
+        {(list as typeof pins).map((c) => (
+          <li>
+            <a href={c.href} data-id={c.id} class="tile">
+              <img src={`/logos/${LOGO[c.short]}.webp`} alt={c.name} width="200" height="80" loading="lazy" decoding="async" />
+              <span class="role">{c.role}</span>
+              <span class="where">{c.place}, {c.country}</span>
+            </a>
+          </li>
         ))}
       </ul>
     </div>
-    <div>
-      <h3>Earlier studies and work</h3>
-      <ul>
-        {past.map((c) => (
-          <li><a href={c.href}><span class="mark past">{c.short}</span><span class="n">{c.name}<small>{c.role}, {c.country}</small></span></a></li>
-        ))}
-      </ul>
-    </div>
-  </div>
+  ))}
 </div>
 
+<script>
+  // hovering a logo lights up its place on the map, and the other way round
+  const root = document.querySelector('.collab');
+  if (root) {
+    const set = (id: string | null) => {
+      root.querySelectorAll<HTMLElement | SVGElement>('[data-id], [data-for]').forEach((el) => {
+        const own = el.getAttribute('data-id') ?? el.getAttribute('data-for');
+        el.classList.toggle('lit', !!id && own === id);
+      });
+      root.classList.toggle('focusing', !!id);
+    };
+    root.querySelectorAll<HTMLElement>('[data-id]').forEach((el) => {
+      const id = el.getAttribute('data-id');
+      el.addEventListener('pointerenter', () => set(id));
+      el.addEventListener('pointerleave', () => set(null));
+      el.addEventListener('focus', () => set(id));
+      el.addEventListener('blur', () => set(null));
+    });
+  }
+</script>
+
 <style>
-  .collab { display: grid; grid-template-columns: 1.3fr 1fr; gap: 2rem 3rem; align-items: start; }
+  .collab { display: grid; gap: 2rem; }
   .map { margin: 0; }
   .map svg { width: 100%; height: auto; display: block; }
-  .land { fill: var(--blue-soft); stroke: var(--line); stroke-width: 0.8; }
-  .grat { fill: none; stroke: var(--line); stroke-width: 0.6; stroke-dasharray: 2 4; }
-  .pin { stroke: var(--bg); stroke-width: 2.5; transition: r 0.15s ease; }
-  .pin.agridry { fill: var(--blue); }
-  .pin.past { fill: var(--ochre-fill); }
-  a:hover .pin, a:focus .pin { stroke: var(--ink); }
-  figcaption { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 0.75rem; font-size: 0.88rem; color: var(--muted); }
+  .land { fill: var(--blue-soft); stroke: color-mix(in srgb, var(--blue) 25%, var(--line)); stroke-width: 0.7; }
+  .eu-box { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+  .leader { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+  .inset-bg { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+  .inset-title { font: 500 13px var(--sans); fill: var(--muted); }
+  .arc { fill: none; stroke: var(--blue); stroke-width: 1.4; opacity: 0.45; transition: opacity 0.2s, stroke-width 0.2s; }
+  .arc.lit { opacity: 1; stroke-width: 2.4; }
+
+  .map :global(.pin) { stroke: var(--bg); stroke-width: 2.5; }
+  .map :global(circle.pin) { transition: transform 0.15s ease; transform-box: fill-box; transform-origin: center; }
+  .inset :global(.pin) { stroke: var(--surface); }
+  .map :global(.pin.agridry) { fill: var(--blue); }
+  .map :global(.pin.past) { fill: var(--ochre-fill); }
+  .pin-link:hover :global(.pin), .pin-link:focus :global(.pin), .pin-link.lit :global(.pin) { stroke: var(--ink); }
+  .pin-link.lit :global(circle.pin) { transform: scale(1.35); }
+  .pin-link:focus { outline: none; }
+  .lbl { font: 500 12.5px var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+  .inset .lbl { stroke: var(--surface); }
+  .lbl.lit, .pin-link.lit .lbl { font-weight: 700; }
+
+  figcaption { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 0.6rem; font-size: 0.88rem; color: var(--muted); }
   .key { display: inline-flex; align-items: center; gap: 0.45rem; }
   .k { width: 0.7rem; height: 0.7rem; border-radius: 50%; }
   .k.agridry { background: var(--blue); }
   .k.past { background: var(--ochre-fill); border-radius: 1px; transform: rotate(45deg) scale(0.85); }
 
-  .lists { display: grid; gap: 1.75rem; }
-  .lists h3 { font-family: var(--sans); font-weight: 500; font-size: 1rem; margin-bottom: 0.75rem; color: var(--muted); }
-  .lists ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
-  .lists a { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.85rem; align-items: center; text-decoration: none; color: var(--ink); padding: 0.35rem; border-radius: 4px; }
-  .lists a:hover { background: var(--surface); }
-  .mark { display: grid; place-items: center; height: 2.6rem; border-radius: 3px; font-family: var(--serif); font-size: 0.95rem; }
-  .mark.agridry { background: var(--blue-soft); color: var(--blue); }
-  .mark.past { background: var(--ochre-soft); color: var(--ochre); }
-  .n { display: grid; font-size: 0.95rem; line-height: 1.3; }
-  .n small { color: var(--muted); font-size: 0.82rem; }
-  @media (max-width: 860px) { .collab { grid-template-columns: 1fr; } }
+  .group h3 { font-family: var(--sans); font-weight: 500; font-size: 1rem; color: var(--muted); margin: 0 0 0.8rem; }
+  .logos { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr)); gap: 1rem; }
+  .tile { display: flex; flex-direction: column; gap: 0.15rem; text-decoration: none; color: var(--ink); }
+  .tile img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 2; border-radius: 6px; border: 1px solid var(--line); margin-bottom: 0.45rem; transition: border-color 0.15s, transform 0.15s; }
+  .group.agridry .tile:hover img, .group.agridry .tile:focus-visible img, .group.agridry .tile.lit img { border-color: var(--blue); }
+  .group.past .tile:hover img, .group.past .tile:focus-visible img, .group.past .tile.lit img { border-color: var(--ochre-fill); }
+  .tile:hover img, .tile:focus-visible img, .tile.lit img { transform: translateY(-2px); }
+  .tile:focus-visible { outline: none; }
+  .role { font-size: 0.9rem; font-weight: 500; }
+  .where { font-size: 0.82rem; color: var(--muted); }
+  :global([data-theme='night']) .tile img { filter: brightness(0.92); }
+  @media (prefers-reduced-motion: reduce) { .tile img, .map :global(.pin), .arc { transition: none; } }
+  @media (max-width: 560px) { .logos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem; } .lbl { font-size: 24px; } .inset-title { font-size: 22px; } }
 </style>
