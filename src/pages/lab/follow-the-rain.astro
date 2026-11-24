@@ -1,0 +1,1077 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="Follow the rain" description="A playable explanation of why herders in dry lands keep moving, and what happens when they can't. Built on a small model of the Sahel and a century of real rainfall.">
+  <article class="ftr">
+    <header class="top">
+      <h1>Follow the rain</h1>
+      <p class="lede">For about 7,000 years, people have kept cattle on the dry edge of the Sahara. Nobody there can say where next year's rain will fall. So how do they manage? Play and find out.</p>
+      <p class="howlong">The main idea takes five minutes. The whole page takes about fifteen.</p>
+      <figure class="play hero">
+        <canvas class="map" id="hero-map" role="img" aria-label="A map of grassland seen from above. Storms cross it and fifteen herds walk to wherever the grass has grown."></canvas>
+        <figcaption>Fifteen herds following fifty years of storms.</figcaption>
+      </figure>
+    </header>
+
+    <!-- 1 ─────────────────────────────────────────────── -->
+    <section>
+      <h2>First, the rain</h2>
+      <p>This is a piece of the Sahel, the dry grassland south of the Sahara, seen from above. Every square is pasture. Press the button to let one rainy season pass.</p>
+      <figure class="play" id="p-rain">
+        <canvas class="map" role="img" aria-label="Map of 135 squares of pasture. Greener squares have more grass."></canvas>
+        <div class="bar">
+          <button class="btn go" type="button">Let it rain</button>
+          <p class="say" aria-live="polite">No rain yet. The ground is bare.</p>
+        </div>
+        <ul class="key" aria-label="Map key">
+          <li><span class="sw ramp"></span>bare ground to thick grass</li>
+          <li><span class="sw rainsw"></span>a storm passing</li>
+        </ul>
+      </figure>
+      <p>Press it a few more times. Every year the grass grows in different places. That is because the rain comes in big storms, and a storm can soak one valley and miss the next.</p>
+      <p>In some years the storms hardly come at all. This is the real record:</p>
+      <figure class="play" id="p-record">
+        <div class="chart-host"></div>
+        <figcaption>Rain in the Sahel in each rainy season, 1901 to 2017. Blue bars are wetter years than usual, brown bars are drier. Touch a bar to see the year. Data: NOAA.</figcaption>
+      </figure>
+      <p>Look at 1968 to 1993. In those 26 years, only four were wetter than usual. About 100,000 people died in the famines of that time.</p>
+      <aside class="fact">
+        <p><strong>The good years set the trap.</strong> The 1950s were very wet. Harvests were good, so farms spread north into the grazing land. Then the rain left.</p>
+      </aside>
+    </section>
+
+    <!-- 2 ─────────────────────────────────────────────── -->
+    <section>
+      <h2>Now you have a herd</h2>
+      <p>You have 40 cattle, and you can walk. Your neighbour also has 40, but stays by a well all year. Each year, look where the rain fell. Then tap where your herd should go.</p>
+      <figure class="play" id="p-herd">
+        <div class="tally">
+          <div class="who move"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 16 10 3l8 13z"/></svg><span>You, walking</span><b class="n" data-n="you">40</b><i class="d" data-d="you"></i></div>
+          <div class="who stay"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.2 9.6h9.6v6.2H5.2zM2.5 10 10 2.6 17.5 10z"/></svg><span>Neighbour, at the well</span><b class="n" data-n="nb">40</b><i class="d" data-d="nb"></i></div>
+        </div>
+        <p class="say" aria-live="polite">Ten years. The rain is the same for both of you.</p>
+        <canvas class="map tap" role="img" aria-label="Map with your herd, marked by a tent, and your neighbour's herd, marked by a hut. Use the buttons below the map if you cannot tap it."></canvas>
+        <div class="bar">
+          <button class="btn go" type="button">Start</button>
+          <button class="btn quiet best" type="button" hidden>Go to the best grass</button>
+          <button class="btn quiet stayput" type="button" hidden>Stay here</button>
+        </div>
+        <div class="chart-host after" hidden></div>
+      </figure>
+      <p>The rule behind this is simple, and it is the same in everything that follows.</p>
+      <p class="principle">A herd that eats well grows. A hungry herd shrinks, and it shrinks faster than it grew.</p>
+      <p>Walking costs you a few animals every year. Staying by the well costs nothing, and the well even gives a little extra feed. But your neighbour has to live on the same nine squares, whatever the rain does.</p>
+    </section>
+
+    <!-- 3 ─────────────────────────────────────────────── -->
+    <section>
+      <h2>Two villages, fifty years</h2>
+      <p>You had the whole plain to yourself. Real herders share it. So here are 15 families and 50 years of rain, played twice.</p>
+      <div class="versus">
+        <div class="stay"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.2 9.6h9.6v6.2H5.2zM2.5 10 10 2.6 17.5 10z"/></svg><p><strong>The village that stays.</strong> Each family keeps to the nine squares around its own well.</p></div>
+        <div class="move"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 16 10 3l8 13z"/></svg><p><strong>The village that moves.</strong> The families share all the land and go wherever the grass is best.</p></div>
+      </div>
+      <figure class="play" id="p-bet">
+        <fieldset class="bet">
+          <legend>Place your bet first. After 50 years, which village has more families still living from their herds?</legend>
+          <button type="button" class="choice" data-bet="stay">The one that stays</button>
+          <button type="button" class="choice" data-bet="move">The one that moves</button>
+          <button type="button" class="choice" data-bet="same">About the same</button>
+        </fieldset>
+        <div class="stage" hidden>
+          <div class="pair">
+            <div><p class="cap stay">Stays <b data-c="stay">15</b></p><canvas class="map" data-m="stay" role="img" aria-label="The village that stays: fifteen huts, each with its own block of nine squares."></canvas></div>
+            <div><p class="cap move">Moves <b data-c="move">15</b></p><canvas class="map" data-m="move" role="img" aria-label="The village that moves: fifteen tents walking to wherever the grass is."></canvas></div>
+          </div>
+          <p class="capnote">The big numbers count the families still herding.</p>
+          <div class="bar">
+            <p class="clock"><b class="yr">Year 0</b> <span class="wx"></span></p>
+            <button class="btn quiet skip" type="button">Skip to the end</button>
+          </div>
+          <div class="chart-host"></div>
+          <p class="say verdict" aria-live="polite"></p>
+          <div class="bar ends" hidden>
+            <button class="btn quiet again" type="button">Watch again</button>
+            <button class="btn quiet fresh" type="button">Try a different fifty years</button>
+          </div>
+        </div>
+      </figure>
+      <p class="pause"><strong>That is the main idea.</strong> If you only have five minutes, stop here and talk it over: why did the village that stays lose? The rest of the page shows why, and what can go wrong for the village that moves.</p>
+    </section>
+
+    <!-- 4 ─────────────────────────────────────────────── -->
+    <section>
+      <h2>Winning most years and losing anyway</h2>
+      <p>A simpler game shows how this can happen. You start with 100 cattle. Every year you flip a coin. Heads is a good year, and your herd grows by half. Tails is a drought, and you lose 40%.</p>
+      <p>That sounds like a good deal. A good year gives you more than a bad year takes. Try it a few times.</p>
+      <figure class="play" id="p-coin1">
+        <div class="bar">
+          <button class="btn go" type="button">Flip 20 years</button>
+          <p class="say" aria-live="polite"></p>
+        </div>
+        <p class="strip" aria-hidden="true"></p>
+        <p class="tries"></p>
+      </figure>
+      <p>One herd can just be unlucky. So let a thousand families play, twenty years each, and line them up from the unluckiest to the luckiest.</p>
+      <figure class="play" id="p-coin2">
+        <div class="seg" role="group" aria-label="How families play">
+          <button type="button" class="on" data-mode="alone">Every family on its own</button>
+          <button type="button" data-mode="share">Families share their luck</button>
+        </div>
+        <canvas class="fan" role="img" aria-label="Bars showing how many cattle each family has after twenty years, from the unluckiest family on the left to the luckiest on the right."></canvas>
+        <div class="readout">
+          <p>Families that ended with fewer than 100 cattle <b data-r="down">–</b></p>
+          <p>The family in the middle has <b data-r="mid">–</b></p>
+          <p>The average herd is <b data-r="avg">–</b></p>
+        </div>
+        <div class="bar"><button class="btn quiet go" type="button">Flip again</button></div>
+      </figure>
+      <p>A few families got very rich, and they pull the average up. But most families ended with less than they started with.</p>
+      <p>Why? Because herds multiply. Grow by half and then lose 40%, and your 100 cattle are 90, not 110.</p>
+      <p class="principle">One terrible year costs more than one great year gives back.</p>
+      <p>Now press <em>Families share their luck</em>. Each family gets the average of 15 coins every year, instead of its own coin. The coins are no better than before, but now almost everyone ends up ahead.</p>
+      <p>That is what walking does. On your own nine squares, rain is a coin flip. Across the whole map it is much steadier, and a herd that walks gets something close to the average.</p>
+      <aside class="fact">
+        <p><strong>Where the coin comes from.</strong> The physicist Ole Peters used this coin in 2019 to show that the average result of a gamble can tell you very little about what happens to one player over time.</p>
+      </aside>
+    </section>
+
+    <!-- 5 ─────────────────────────────────────────────── -->
+    <section>
+      <h2>How wild does the rain have to be?</h2>
+      <p>Walking is not free. And a well, a market and a school nearby are worth a lot. So staying must win somewhere. Drag the dial from steady rain to wild rain.</p>
+      <figure class="play" id="p-dial">
+        <div class="chart-host"></div>
+        <label class="dial"><span>Steady</span><input type="range" min="0" max="10" step="1" value="7" aria-label="How much the rain changes from year to year" /><span>Wild</span></label>
+        <p class="say" aria-live="polite"></p>
+      </figure>
+      <p>When the rain is steady, staying wins. No one drops out, no one has to walk, and the village ends up with more cattle. The wilder the rain, the more families the village that stays loses.</p>
+      <p>Where exactly the two lines part depends on numbers we chose for the model. That they part does not.</p>
+      <aside class="fact">
+        <p><strong>Rain or cattle?</strong> For a long time, herders were blamed for wearing out the land. In 1988 the ecologists Jim Ellis and David Swift argued that where rain changes by more than about a third from year to year, drought cuts the herds down before they can do that. Later studies from around the world mostly agree.</p>
+      </aside>
+    </section>
+
+    <!-- 6 ─────────────────────────────────────────────── -->
+    <section>
+      <h2>So why doesn't everyone move?</h2>
+      <p>Because moving needs somewhere to go. For a hundred years, fields, fences, parks and borders have been closing the open land. Here every family moves. Pick a layout and run 50 years. You can also tap squares to add or remove fields.</p>
+      <figure class="play" id="p-fence">
+        <div class="seg multi" role="group" aria-label="Field layouts">
+          <button type="button" class="on" data-lay="open">Open land</button>
+          <button type="button" data-lay="block">31 fields in a block</button>
+          <button type="button" data-lay="walls">31 fields in strips</button>
+          <button type="button" data-lay="gates">Strips with gaps</button>
+        </div>
+        <canvas class="map tap" role="img" aria-label="Map of the land with fifteen moving herds. Fields are drawn as ploughed squares."></canvas>
+        <div class="bar">
+          <button class="btn go" type="button">Run 50 years</button>
+          <button class="btn quiet skip" type="button" hidden>Skip to the end</button>
+          <p class="say" aria-live="polite"></p>
+        </div>
+        <ul class="key" aria-label="Map key">
+          <li><span class="sw fieldsw"></span>field: no grazing, no way through</li>
+          <li><svg viewBox="0 0 20 20" aria-hidden="true" class="ic move"><path d="M2 16 10 3l8 13z"/></svg>family still herding</li>
+          <li><svg viewBox="0 0 20 20" aria-hidden="true" class="ic gone"><path d="M2 16 10 3l8 13z"/></svg>family that gave up</li>
+        </ul>
+        <table class="scores" hidden>
+          <caption>Families still herding after 50 years, out of 15. Each number is the average of eight different runs of rain.</caption>
+          <tbody></tbody>
+        </table>
+      </figure>
+      <p>Try the block, then the strips. Both use 31 squares. The block does little harm. The strips ruin most families, because they cut the land into pens, and a herd in a pen cannot follow the rain. Leave a few gaps and most of the harm is gone.</p>
+      <p class="principle">It matters less how much land is taken than whether a herd can still get through.</p>
+      <aside class="fact">
+        <p><strong>Written into law.</strong> Niger's law on herding, passed in 2010, says that "mobility is a fundamental right of herders". Mali's law of 2001 forbids blocking a cattle track.</p>
+      </aside>
+    </section>
+
+    <!-- 7 ─────────────────────────────────────────────── -->
+    <section>
+      <h2>If the herds can't walk, the cows can</h2>
+      <p>There is an old answer for families who cannot follow the rain: let the animals change hands. Among the Wodaabe herders of Niger, a family with cattle to spare lends a young cow to a friend who has lost theirs. The friend keeps her until she has had three calves, keeps the calves, and gives the cow back. This is called <em>habbanae</em>.</p>
+      <p>Here is the village that stays again, with the same rain as before. On the right, the families lend.</p>
+      <figure class="play" id="p-lend">
+        <div class="pair">
+          <div><p class="cap stay">No lending <b data-c="a">15</b></p><canvas class="map" data-m="a" role="img" aria-label="The village that stays, without lending."></canvas></div>
+          <div><p class="cap stay">Lending <b data-c="b">15</b></p><canvas class="map" data-m="b" role="img" aria-label="The village that stays, with lending. Dotted lines show cattle being lent from one family to another."></canvas></div>
+        </div>
+        <div class="bar">
+          <button class="btn go" type="button">Run 50 years</button>
+          <button class="btn quiet skip" type="button" hidden>Skip to the end</button>
+          <p class="clock"><b class="yr"></b></p>
+        </div>
+        <p class="say" aria-live="polite"></p>
+      </figure>
+      <p>Lending shares out luck, just like the 15 coins. It has a limit, though. When a drought hits every square at once, nobody has a cow to spare.</p>
+      <aside class="fact">
+        <p><strong>Older than farming.</strong> In a rock shelter in the Libyan Sahara, 7,000-year-old pots still hold traces of milk fat. In much of Africa, people herded cattle long before anyone grew crops. And when the Sahara dried out about 5,000 years ago, its herders did on a grand scale what this page describes: they moved south with the rain.</p>
+      </aside>
+    </section>
+
+    <!-- 8 ─────────────────────────────────────────────── -->
+    <section>
+      <h2>Your turn: 1950 to 2000</h2>
+      <p>This is the real rain of the Sahel, year by year: twenty wet years, then the long drought. Fields cut across the land, and nine of the 15 families have settled. Left like this, only about five families are still herding in 2000.</p>
+      <p>Change it. Tap a family to make it stay or move. The towns need their 31 fields, and crops only grow on the wetter side of the dotted line. Can you bring 12 families through?</p>
+      <figure class="play" id="p-own">
+        <canvas class="map tap" role="img" aria-label="Map you can edit. Huts are families that stay, tents are families that move, ploughed squares are fields."></canvas>
+        <p class="status"></p>
+        <div class="chart-host rainbar"></div>
+        <div class="bar">
+          <button class="btn go" type="button">Run 1950 to 2000</button>
+          <button class="btn quiet skip" type="button" hidden>Skip to the end</button>
+          <p class="clock"><b class="yr"></b> <span class="wx"></span></p>
+        </div>
+        <p class="say" aria-live="polite"></p>
+        <div class="controls">
+          <div class="ctl">
+            <span class="lab">A tap on the map changes</span>
+            <div class="seg" role="group" aria-label="What a tap changes">
+              <button type="button" class="on" data-tap="family">a family</button>
+              <button type="button" data-tap="field">a field</button>
+            </div>
+          </div>
+          <div class="ctl">
+            <span class="lab">Or change many things at once</span>
+            <div class="seg multi" role="group" aria-label="Quick changes">
+              <button type="button" data-set="allmove">Everyone moves</button>
+              <button type="button" data-set="block">Fields in a block</button>
+              <button type="button" data-set="gates">Strips with gaps</button>
+              <button type="button" data-set="reset">Start again</button>
+            </div>
+          </div>
+          <label class="check"><input type="checkbox" class="lend" /> Families lend cattle to each other</label>
+        </div>
+      </figure>
+    </section>
+
+    <!-- 9 ─────────────────────────────────────────────── -->
+    <section class="close">
+      <h2>Three things to remember</h2>
+      <ol class="take">
+        <li><strong>Herds multiply, so bad years count more than good ones.</strong> To last in a dry land, you mostly have to avoid the terrible year.</li>
+        <li><strong>Walking and lending both share out patchy rain.</strong> They are not old-fashioned. They are answers to rain that nobody can predict.</li>
+        <li><strong>Both need a way through.</strong> Cutting up the land can break them, and a few open paths can keep them working.</li>
+      </ol>
+      <p>This does not mean settled life is a mistake. Where the rain is steady, staying wins, and a school and a clinic are worth more than cattle. It means that where rain is a gamble, the freedom to move helps keep people fed.</p>
+      <p>Herding is also only one way to live from dry land. People there farm, trade, store grain and work in town, and most families mix several of these. This page follows one thread of that bigger story.</p>
+      <aside class="fact">
+        <p><strong>Not a small matter.</strong> Grazing lands cover about half of the world's land. The United Nations has named 2026 the International Year of Rangelands and Pastoralists.</p>
+      </aside>
+
+      <details class="more">
+        <summary>How the model works</summary>
+        <div>
+          <p>The map is 15 by 9 squares, enough for 15 families with nine squares each. Every year a number of storms cross it. In dry years there are fewer storms, so the rain is also patchier. Grass grows with the rain, and a fifth of what is not eaten is still there next year. Land that is grazed almost bare year after year grows a little less until it has rested.</p>
+          <p>A herd that finds all the grass it needs grows by 16% in a year. A herd that finds half loses about a quarter. A herd that finds nothing loses three animals in four. A family with fewer than eight animals gives up herding.</p>
+          <p>A family that stays grazes its own nine squares and gets 25% extra feed from the well, crop stubble and a market close by. A family that moves makes three camps a year, each time where there is the most grass for each animal, and shares that place with whoever else comes. It pays 6% of its herd a year for the walking. It cannot graze another family's home squares or cross a field.</p>
+          <p>Lending follows habbanae loosely. A family with more than 28 animals lends up to six to a family with fewer than 13, and gets them back once the borrower has more than 30.</p>
+          <p>For the real rain, each year's June to September total makes the whole map wetter or drier. Where the storms land inside the map is still invented, so the last game is played five times and averaged.</p>
+          <p>A lot is left out: seasons within the year, the price of grain and cattle, milk, goats and camels, disease, conflict, and work in town. Real herders also walk much further than this map is wide. In the droughts of the 1970s and 1980s many took their animals far to the south.</p>
+          <p>The real world is also messier. Moving does not always help: a study in East Africa's Maasailand found that where the land was already cut into small plots, moving more went with being hit harder by drought, not less. And the old claim that herds turned the Sahel into desert has not held up well. A satellite study around 20 deep wells in Senegal found that rain explained most of the differences in plant growth, and when the rain came back after the 1980s, much of the Sahel turned green again.</p>
+          <p>The code is open: <a href="https://github.com/joshimudit/joshimudit.github.io/tree/main/src/lib/range">model and data on GitHub</a>.</p>
+        </div>
+      </details>
+
+      <details class="more">
+        <summary>Sources</summary>
+        <div>
+          <ul class="src">
+            <li>Rainfall record: NOAA Physical Sciences Laboratory, <a href="https://psl.noaa.gov/data/correlation/sahelrain.long.csv">Sahel Precipitation Index</a>, 20–8°N, 20°W–10°E, doi:10.6069/H5MW2F2Q. Summed here over June to September.</li>
+            <li>Storms and the long drought: M. Biasutti (2019), <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6617823">Rainfall trends in the African Sahel</a>, <em>WIREs Climate Change</em> 10: e591.</li>
+            <li>How much rain changes from year to year (10–20% near the coast, over 40% in the northern Sahel), and farms spreading north in the wet 1950s: U.S. Geological Survey, EROS Center, <a href="https://www.usgs.gov/centers/eros/science/climate">climate of West Africa</a>.</li>
+            <li>Famine deaths: <a href="https://en.wikipedia.org/wiki/Droughts_in_the_Sahel">Droughts in the Sahel</a>, Wikipedia, and the sources given there.</li>
+            <li>The coin: O. Peters (2019), <a href="https://www.nature.com/articles/s41567-019-0732-0">The ergodicity problem in economics</a>, <em>Nature Physics</em> 15: 1216–1221.</li>
+            <li>Rain or cattle: J. E. Ellis and D. M. Swift (1988), Stability of African pastoral ecosystems, <em>Journal of Range Management</em> 41: 450–459; H. von Wehrden and others (2012), Global assessment of the non-equilibrium concept in rangelands, <em>Ecological Applications</em> 22: 393–399.</li>
+            <li>Mobility among the Wodaabe: S. Krätli (2008), Cattle breeding, complexity and mobility in a structurally unpredictable environment, <em>Nomadic Peoples</em> 12: 11–41.</li>
+            <li>Habbanae: Cultural Survival, <a href="https://www.culturalsurvival.org/node/4800">project descriptions from Niger</a>; UN News (2006), <a href="https://news.un.org/en/story/2006/06/183012-un-backed-jury-honours-traditional-lending-pregnant-cows-niger">UN-backed jury honours traditional lending of pregnant cows in Niger</a>.</li>
+            <li>Law: Niger, Ordonnance 2010-29 relative au pastoralisme, article 3, and Loi 61-05 of 1961 setting the northern limit of crops, as described in <a href="https://www.agter.org/bdf/en/corpus_chemin/fiche-chemin-91.html">Lessons learned from Niger's Rural Code</a>; Mali, <a href="https://faolex.fao.org/docs/pdf/mli25376.pdf">Loi 01-004 portant charte pastorale</a>, article 17.</li>
+            <li>Early herding and milk: J. Dunne and others (2012), <a href="https://www.nature.com/articles/nature11186">First dairying in green Saharan Africa in the fifth millennium BC</a>, <em>Nature</em> 486: 390–394; F. Marshall and E. Hildebrand (2002), Cattle before crops, <em>Journal of World Prehistory</em> 16: 99–143; R. Kuper and S. Kröpelin (2006), Climate-controlled Holocene occupation in the Sahara, <em>Science</em> 313: 803–807.</li>
+            <li>Deep wells and regreening: N. P. Hanan and others (1991), Assessment of desertification around deep wells in the Sahel using satellite imagery, <em>Journal of Applied Ecology</em> 28: 173–186; A. T. Kaptué, L. Prihodko and N. P. Hanan (2015), <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4593076">On regreening and degradation in Sahelian watersheds</a>, <em>PNAS</em> 112: 12133–12138.</li>
+            <li>When moving does not help: <a href="https://doi.org/10.1186/2041-7136-1-17">a study from Maasailand</a> in <em>Pastoralism</em> 1: 17 (2011).</li>
+            <li>Grazing lands: UN Convention to Combat Desertification, Global Land Outlook thematic report on rangelands and pastoralists (2024); FAO, International Year of Rangelands and Pastoralists 2026.</li>
+          </ul>
+        </div>
+      </details>
+
+      <p class="credit">Made by Mudit Joshi as outreach for the Marie Skłodowska-Curie doctoral network <a href="https://agri-dry.org">AGRI-DRY</a>. The way this page explains by playing owes a lot to <a href="https://ncase.me/polygons/">Parable of the Polygons</a> by Vi Hart and Nicky Case.</p>
+    </section>
+  </article>
+</Base>
+
+<script>
+  import { W, H, N, K, climate, gradient, rainSeries, rainFromZ, makeWorld, rainYear, grazeYear, simulate, reachable, pieces, rng, type Snap, type Strategy, type World } from '../../lib/range/model';
+  import { draw, geo, pal, sceneAt, sceneEnd, playYears, squareAt, type Clock } from '../../lib/range/draw';
+  import { lineChart, barChart } from '../../lib/range/charts';
+  import { SAHEL_Z } from '../../lib/range/sahel';
+  import { CURVE } from '../../lib/range/curve';
+
+  const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector(sel) as T;
+  const $$ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => [...root.querySelectorAll(sel)] as T[];
+  const STAY = 'var(--stay)', MOVE = 'var(--move)';
+  const SEED = 23;                 // the fifty years of rain most of this page uses
+  const SAHEL = climate(0.7);      // "Sahel-like": rain swings by roughly 40% a year
+  const rainA = rainSeries(50, SAHEL.cv, SEED, 0.2);
+  const mask = (rows: string[]) => { const m = new Uint8Array(N); rows.forEach((r, y) => [...r].forEach((ch, x) => { if (ch === '#') m[y * W + x] = 1; })); return m; };
+  const count = (m: ArrayLike<number>) => { let n = 0; for (let i = 0; i < m.length; i++) n += m[i] ? 1 : 0; return n; };
+  const wxWord = (R: number) => (R > 1.5 ? 'a very wet year' : R > 1.12 ? 'a wet year' : R > 0.85 ? 'an ordinary year' : R > 0.6 ? 'a dry year' : 'a drought');
+
+  // every map registers how to repaint itself, for resizes and theme changes
+  const repaint: (() => void)[] = [];
+  const onRepaint = (fn: () => void) => { repaint.push(fn); fn(); };
+  let rz = 0;
+  window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => repaint.forEach((f) => f())); });
+  document.addEventListener('themechange', () => repaint.forEach((f) => f()));
+
+  // an even, average-year carpet of grass for maps that have not been run yet
+  const calm = new Float64Array(N);
+  for (let i = 0; i < N; i++) calm[i] = K.grassA * (gradient(Math.floor(i / W)) - K.r0) * 0.8;
+
+  // run a history; for drawing, year 0 shows the average carpet instead of bare ground
+  const sim50 = (setup: Parameters<typeof simulate>[0], rain: number[], storms: number) => {
+    const r = simulate(setup, rain, storms);
+    r.snaps[0].grass = calm; r.snaps[0].left = calm;
+    return r;
+  };
+
+  // ───────────── hero ─────────────
+  {
+    const c = $<HTMLCanvasElement>('#hero-map');
+    const { snaps } = sim50({ seed: SEED, strategies: 'move' }, rainA, SAHEL.storms);
+    let clock: Clock | null = null, visible = false, at = { t: 6, p: 1 };
+    const still = () => draw(c, sceneEnd(snaps, at.t));
+    const loop = () => {
+      clock = playYears(50, 1700, (t, p) => { at = { t, p }; draw(c, sceneAt(snaps, t, p)); }, () => { if (visible) loop(); });
+    };
+    onRepaint(() => { if (!clock?.running) still(); });
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      new IntersectionObserver((es) => {
+        visible = es[0].isIntersecting;
+        if (visible && !clock?.running) loop();
+        if (!visible && clock?.running) { clock.stop(); }
+      }, { threshold: 0.2 }).observe(c);
+    }
+  }
+
+  // ───────────── 1. the rain ─────────────
+  {
+    const root = $('#p-rain'), c = $<HTMLCanvasElement>('canvas', root), say = $('.say', root), go = $<HTMLButtonElement>('.go', root);
+    const w = makeWorld({ seed: 5, strategies: 'move' });
+    const first = [1.05, 0.62, 1.45, 0.34];
+    const r = rng(77);
+    let year = 0, prev = new Float64Array(N), clock: Clock | null = null;
+    const paint = () => draw(c, { grass: year ? w.grass : prev });
+    onRepaint(() => { if (!clock?.running) paint(); });
+    go.addEventListener('click', () => {
+      if (clock?.running) return;
+      prev = Float64Array.from(year ? w.grass : prev);
+      w.left.fill(0);
+      const R = year < first.length ? first[year] : Math.exp(0.42 * r.normal() - 0.09);
+      rainYear(w, R, SAHEL.storms);
+      year++;
+      let good = 0;
+      for (let i = 0; i < N; i++) if (w.grass[i] >= K.grassA * 0.55) good++;
+      go.textContent = 'Another year';
+      say.textContent = `Year ${year}…`;
+      clock = playYears(1, 1500, (_t, p) => {
+        const g = new Float64Array(N), a = Math.max(0, Math.min(1, (p - 0.25) / 0.5));
+        for (let i = 0; i < N; i++) g[i] = prev[i] + (w.grass[i] - prev[i]) * a;
+        draw(c, { grass: g, rain: w.rain, rainAlpha: p < 0.2 ? p / 0.2 : p < 0.6 ? 1 : Math.max(0, 1 - (p - 0.6) / 0.3) });
+      }, () => {
+        paint();
+        say.textContent = `Year ${year} was ${wxWord(R)}. Good grass on ${good} of the 135 squares.`;
+      });
+    });
+  }
+
+  // ───────────── the real record ─────────────
+  const yearsAll = Object.keys(SAHEL_Z).map(Number).sort((a, b) => a - b);
+  const zWord = (z: number) => (z > 1.5 ? 'much wetter than average' : z > 0.5 ? 'wetter than average' : z > -0.5 ? 'close to average' : z > -1.5 ? 'drier than average' : 'much drier than average');
+  {
+    barChart($('#p-record .chart-host'), {
+      x0: yearsAll[0], values: yearsAll.map((y) => SAHEL_Z[y]), yMax: 3,
+      xTicks: [1910, 1930, 1950, 1970, 1990, 2010],
+      pos: 'var(--wet)', neg: 'var(--dry)',
+      topLabel: 'wetter', bottomLabel: 'drier',
+      tip: (x, v) => `<b>${x}</b><span>${zWord(v)}</span>`,
+      notes: [
+        { x: 1955, y: 2.45, text: 'the wet 1950s' },
+        { x: 1984, y: -2.95, text: '1984, the driest year' },
+      ],
+    });
+  }
+
+  // ───────────── 2. your herd ─────────────
+  {
+    const root = $('#p-herd'), c = $<HTMLCanvasElement>('canvas', root), say = $('.say', root);
+    const go = $<HTMLButtonElement>('.go', root), best = $<HTMLButtonElement>('.best', root), stayput = $<HTMLButtonElement>('.stayput', root);
+    const chartHost = $('.chart-host', root);
+    const YEARS = 10, YOU = 6, NB = 7, REACH = 4;
+    const wild = climate(0.75);
+    let seed = 25, w: World, rain: number[], year = 0, phase: 'idle' | 'rain' | 'pick' | 'walk' | 'done' = 'idle';
+    let ring: Set<number> | null = null, cursor: number | null = null, clock: Clock | null = null;
+    let hist: { you: number[]; nb: number[] };
+    const set = (k: string, v: number, d?: number) => {
+      $(`[data-n="${k}"]`, root).textContent = String(Math.round(v));
+      const el = $(`[data-d="${k}"]`, root);
+      if (d == null || Math.round(d) === 0) { el.textContent = ''; return; }
+      el.textContent = (d > 0 ? '+' : '−') + Math.abs(Math.round(d));
+      el.className = 'd ' + (d > 0 ? 'up' : 'down');
+    };
+    const herds = (yx?: number, yy?: number) => [YOU, NB].map((id) => {
+      const f = w.families[id];
+      return { id, strategy: f.strategy, x: id === YOU && yx != null ? yx : f.x, y: id === YOU && yy != null ? yy! : f.y, herd: f.herd, out: f.out, you: id === YOU };
+    });
+    const paint = () => draw(c, { grass: phase === 'idle' ? calm : phase === 'pick' ? w.grass : w.left, owned: w.owned, herds: herds(), ring: phase === 'pick' ? ring : null, cursor: phase === 'pick' ? cursor : null });
+    const reset = (s: number) => {
+      seed = s;
+      const st: Strategy[] = Array(15).fill('move'); st[NB] = 'stay';
+      w = makeWorld({ seed, strategies: st });
+      for (const f of w.families) if (f.id !== YOU && f.id !== NB) { f.out = true; f.herd = 0; }
+      rain = rainSeries(YEARS, wild.cv, seed, 0.2);
+      year = 0; phase = 'idle'; ring = null; cursor = null;
+      hist = { you: [40], nb: [40] };
+      set('you', 40); set('nb', 40);
+      chartHost.hidden = true;
+      best.hidden = stayput.hidden = true; go.hidden = false; go.textContent = 'Start';
+      say.textContent = 'Ten years. The rain is the same for both of you.';
+    };
+    const options = () => {
+      const you = w.families[YOU];
+      const out = new Set<number>();
+      for (const i of reachable(you.x, you.y, w.closed, REACH)) if (w.owned[i] < 0) out.add(i);
+      return out;
+    };
+    const zoneGrass = (i: number) => {
+      const x = i % W, y = Math.floor(i / W); let g = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if (xx < 0 || xx >= W || yy < 0 || yy >= H) continue;
+        const j = yy * W + xx;
+        if (w.owned[j] < 0) g += w.grass[j];
+      }
+      return g;
+    };
+    const nextYear = () => {
+      if (year >= YEARS) return finish();
+      year++;
+      phase = 'rain';
+      go.hidden = true; best.hidden = stayput.hidden = true;
+      const before = Float64Array.from(w.left);
+      rainYear(w, rain[year - 1], wild.storms);
+      say.textContent = `Year ${year} of ${YEARS}: ${wxWord(rain[year - 1])}.`;
+      clock = playYears(1, 900, (_t, p) => {
+        const g = new Float64Array(N), a = Math.max(0, Math.min(1, (p - 0.25) / 0.5));
+        for (let i = 0; i < N; i++) g[i] = before[i] + (w.grass[i] - before[i]) * a;
+        draw(c, { grass: g, owned: w.owned, herds: herds(), rain: w.rain, rainAlpha: p < 0.2 ? p / 0.2 : p < 0.55 ? 1 : Math.max(0, 1 - (p - 0.55) / 0.3) });
+      }, () => {
+        phase = 'pick'; ring = options(); cursor = null;
+        best.hidden = stayput.hidden = false;
+        say.textContent = `Year ${year} of ${YEARS}, ${wxWord(rain[year - 1])}. Tap where your herd should go. The bright part is as far as you can walk.`;
+        paint();
+      });
+    };
+    const choose = (i: number) => {
+      if (phase !== 'pick' || !ring || !ring.has(i)) return;
+      phase = 'walk';
+      best.hidden = stayput.hidden = true;
+      const you = w.families[YOU], nb = w.families[NB];
+      const from = { x: you.x, y: you.y }, to = { x: i % W, y: Math.floor(i / W) };
+      const y0 = you.herd, n0 = nb.herd;
+      const grassBefore = Float64Array.from(w.grass);
+      // you choose the first camp; your herders make two more close by as the grass runs down
+      const reach0 = K.reach; K.reach = 2;
+      grazeYear(w, (f, stop) => (f.id === YOU && stop === 0 ? to : null));
+      K.reach = reach0;
+      hist.you.push(you.herd); hist.nb.push(nb.herd);
+      clock = playYears(1, 1300, (_t, p) => {
+        const g = new Float64Array(N), b = Math.max(0, (p - 0.4) / 0.6);
+        for (let k = 0; k < N; k++) g[k] = grassBefore[k] + (w.left[k] - grassBefore[k]) * b;
+        const path = [from, ...you.camps], seg = Math.min(path.length - 2, Math.floor(Math.min(0.999, p / 0.75) * (path.length - 1)));
+        const fr = Math.min(1, Math.min(0.999, p / 0.75) * (path.length - 1) - seg), q = fr * fr * (3 - 2 * fr);
+        const hs = herds(path[seg].x + (path[seg + 1].x - path[seg].x) * q, path[seg].y + (path[seg + 1].y - path[seg].y) * q);
+        hs[0].herd = y0 + (you.herd - y0) * b; hs[1].herd = n0 + (nb.herd - n0) * b;
+        if (hs[0].out) hs[0].out = b > 0.9; if (hs[1].out) hs[1].out = b > 0.9;
+        draw(c, { grass: g, owned: w.owned, herds: hs });
+      }, () => {
+        set('you', you.herd, you.herd - y0); set('nb', nb.herd, nb.herd - n0);
+        paint();
+        const moved = from.x !== to.x || from.y !== to.y;
+        const bits = [`You ${moved ? 'walked and' : 'stayed and'} ${you.herd >= y0 ? 'gained' : 'lost'} ${Math.abs(Math.round(you.herd - y0))}.`, `Your neighbour ${nb.out ? 'lost the herd and gave up herding' : (nb.herd >= n0 ? 'gained ' : 'lost ') + Math.abs(Math.round(nb.herd - n0))}.`];
+        say.textContent = bits.join(' ');
+        if (you.out) return finish();
+        setTimeout(() => (year >= YEARS ? finish() : nextYear()), 1100);
+      });
+    };
+    const finish = () => {
+      phase = 'done';
+      const you = w.families[YOU], nb = w.families[NB];
+      const a = Math.round(you.herd), b = Math.round(nb.herd);
+      const peak = Math.round(Math.max(...hist.nb));
+      let text: string;
+      if (you.out) text = `Your herd fell below eight animals, too few to live on. Your neighbour has ${b}. Try again, and this time go where the grass is greenest.`;
+      else if (a > b) text = `After ten years you have ${a} cattle and your neighbour has ${b}${nb.out ? ', having given up herding' : ''}. ${peak > a ? `Your neighbour was ahead for much of that time, and reached ${peak} before the dry years came.` : 'Walking cost you something every year and still came out ahead.'}`;
+      else text = `After ten years your neighbour has ${b} cattle and you have ${a}. That can happen. When the rain is kind, the well is the easier life. Play again and follow the green, or read on to see what fifty years do.`;
+      say.textContent = text;
+      go.hidden = false; go.textContent = 'Play again with new rain';
+      best.hidden = stayput.hidden = true;
+      while (hist.you.length < YEARS + 1) { hist.you.push(0); hist.nb.push(hist.nb[hist.nb.length - 1]); }
+      chartHost.hidden = false;
+      lineChart(chartHost, {
+        x0: 0, x1: YEARS, yMax: Math.max(60, Math.ceil(Math.max(...hist.you, ...hist.nb) / 20) * 20), xTicks: [0, 2, 4, 6, 8, 10], yTicks: [0, 40, 80, 120].filter((v) => v <= Math.max(60, Math.ceil(Math.max(...hist.you, ...hist.nb) / 20) * 20)),
+        xLabel: 'year', yLabel: 'cattle', height: 220,
+        yFmt: (v) => String(Math.round(v)), xFmt: (v) => 'Year ' + v,
+        series: [
+          { key: 'you', label: 'You', color: MOVE, values: hist.you },
+          { key: 'nb', label: 'Neighbour', color: STAY, dash: '6 4', values: hist.nb },
+        ],
+      });
+      paint();
+    };
+    go.addEventListener('click', () => {
+      if (clock?.running) return;
+      if (phase === 'done') { reset(seed === 25 ? 16 : Math.floor(Math.random() * 9000) + 30); paint(); }
+      nextYear();
+    });
+    best.addEventListener('click', () => {
+      if (!ring) return;
+      let bi = -1, bg = -1;
+      for (const i of ring) { const g = zoneGrass(i); if (g > bg) { bg = g; bi = i; } }
+      choose(bi);
+    });
+    stayput.addEventListener('click', () => { const f = w.families[YOU]; choose(f.y * W + f.x); });
+    c.addEventListener('pointermove', (e) => { if (phase !== 'pick') return; const i = squareAt(c, e); const nc = ring?.has(i) ? i : null; if (nc !== cursor) { cursor = nc; paint(); } });
+    c.addEventListener('pointerleave', () => { if (cursor != null) { cursor = null; paint(); } });
+    c.addEventListener('click', (e) => {
+      const i = squareAt(c, e);
+      if (phase === 'pick' && ring && !ring.has(i)) { say.textContent = w.owned[i] >= 0 ? 'That is your neighbour\'s land. Pick a square in the bright part.' : 'Too far to walk in a year. Pick a square in the bright part.'; return; }
+      choose(i);
+    });
+    reset(25);
+    onRepaint(() => { if (!clock?.running) paint(); });
+  }
+
+  // ───────────── a paired run on two maps (used by the bet and by lending) ─────────────
+  function totalsOf(snaps: Snap[]) { return snaps.map((s) => s.animals); }
+  function drawLoans(c: HTMLCanvasElement, snap: Snap, p: number) {
+    if (!snap.loans.length || p < 0.7) return;
+    const g = geo(c), cell = g.cell, ctx = c.getContext('2d')!, P = pal();
+    const q = Math.min(1, (p - 0.7) / 0.28);
+    for (const l of snap.loans) {
+      const a = snap.fams[l.from].camps.at(-1)!, b = snap.fams[l.to].camps.at(-1)!;
+      const ax = g.sx(a.x + 0.5, a.y + 0.5), ay = g.sy(a.x + 0.5, a.y + 0.5), bx = g.sx(b.x + 0.5, b.y + 0.5), by = g.sy(b.x + 0.5, b.y + 0.5);
+      const mx = (ax + bx) / 2, my = (ay + by) / 2 - cell * 1.2;
+      ctx.strokeStyle = P.ink; ctx.lineWidth = 1.6; ctx.setLineDash([3, 4]);
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.quadraticCurveTo(mx, my, bx, by); ctx.stroke(); ctx.setLineDash([]);
+      const x = (1 - q) * (1 - q) * ax + 2 * (1 - q) * q * mx + q * q * bx, y = (1 - q) * (1 - q) * ay + 2 * (1 - q) * q * my + q * q * by;
+      ctx.fillStyle = P.ink; ctx.beginPath(); ctx.arc(x, y, Math.max(3, cell * 0.14), 0, 7); ctx.fill();
+    }
+  }
+
+  // ───────────── 3. the bet ─────────────
+  {
+    const root = $('#p-bet'), stage = $('.stage', root), verdict = $('.verdict', root), ends = $('.ends', root);
+    const cs = $<HTMLCanvasElement>('[data-m="stay"]', root), cm = $<HTMLCanvasElement>('[data-m="move"]', root);
+    const yr = $('.yr', root), wx = $('.wx', root), skip = $<HTMLButtonElement>('.skip', root);
+    let bet = '', seed = SEED, A: Snap[], B: Snap[], owned: Int16Array, rain = rainA, clock: Clock | null = null, shown = 0, chart: ReturnType<typeof lineChart> | null = null;
+    const sim = () => {
+      rain = seed === SEED ? rainA : rainSeries(50, SAHEL.cv, seed, 0.2);
+      const a = sim50({ seed, strategies: 'stay' }, rain, SAHEL.storms), b = sim50({ seed, strategies: 'move' }, rain, SAHEL.storms);
+      A = a.snaps; B = b.snaps; owned = a.world.owned;
+      chart = lineChart($('.chart-host', root), {
+        x0: 0, x1: 50, yMax: 15, xTicks: [0, 10, 20, 30, 40, 50], yTicks: [0, 5, 10, 15], step: true, height: 230,
+        xLabel: 'year', yLabel: 'families still herding', xFmt: (v) => 'Year ' + v, yFmt: (v) => String(Math.round(v)),
+        series: [
+          { key: 'stay', label: 'Stays', color: STAY, dash: '6 4', values: A.map((s) => s.herding) },
+          { key: 'move', label: 'Moves', color: MOVE, values: B.map((s) => s.herding) },
+        ],
+      });
+    };
+    const counts = (t: number) => { $('[data-c="stay"]', root).textContent = String(A[t].herding); $('[data-c="move"]', root).textContent = String(B[t].herding); };
+    const still = (t: number) => { draw(cs, sceneEnd(A, t, { owned })); draw(cm, sceneEnd(B, t)); counts(t); chart?.reveal(t); yr.textContent = `Year ${t}`; };
+    const finish = () => {
+      shown = 50; still(50);
+      wx.textContent = ''; skip.hidden = true; ends.hidden = false;
+      const s = A[50].herding, m = B[50].herding, ta = totalsOf(A), tb = totalsOf(B);
+      let sy = 0;
+      for (let t = 1; t <= 50; t++) if (ta[t - 1] > 0 && tb[t - 1] > 0 && ta[t] / ta[t - 1] > tb[t] / tb[t - 1]) sy++;
+      const won = m > s + 1 ? 'move' : s > m + 1 ? 'stay' : 'same';
+      const name: Record<string, string> = { stay: 'the village that stays', move: 'the village that moves', same: 'about the same' };
+      let text = `You bet on ${name[bet]}. After 50 years, ${s} of the 15 families that stayed still live from their herds. Of the families that moved, ${m} do.`;
+      text += bet === won ? ' You called it.' : ' Not this time.';
+      if (won === 'move' && sy > 25) text += ` Now the strange part. In ${sy} of those 50 years, the herds that stayed grew faster than the herds that moved. The village that stays won most of the years, and still lost.`;
+      else if (won === 'move') text += ' The village that stays did not lose slowly. It lost in a few terrible years.';
+      else text += ' This was an unusually kind fifty years. Try a different fifty.';
+      verdict.textContent = text;
+    };
+    const run = () => {
+      clock?.stop();
+      verdict.textContent = ''; ends.hidden = true; skip.hidden = false;
+      clock = playYears(50, 250, (t, p) => {
+        draw(cs, sceneAt(A, t, p, { owned })); draw(cm, sceneAt(B, t, p));
+        if (t !== shown) { shown = t; counts(t - 1); chart?.reveal(t - 1); yr.textContent = `Year ${t}`; wx.textContent = wxWord(rain[t - 1]); }
+      }, finish);
+    };
+    $$<HTMLButtonElement>('.choice', root).forEach((b) => b.addEventListener('click', () => {
+      bet = b.dataset.bet!;
+      $$('.choice', root).forEach((x) => { x.classList.toggle('on', x === b); (x as HTMLButtonElement).disabled = true; });
+      stage.hidden = false;
+      sim(); chart?.reveal(0); still(0);
+      setTimeout(run, 500);
+    }));
+    skip.addEventListener('click', () => clock?.finish());
+    $('.again', root).addEventListener('click', () => { shown = 0; chart?.reveal(0); run(); });
+    $('.fresh', root).addEventListener('click', () => { seed = Math.floor(Math.random() * 9000) + 100; sim(); shown = 0; chart?.reveal(0); run(); });
+    onRepaint(() => { if (!stage.hidden && !clock?.running && A) still(shown); });
+  }
+
+  // ───────────── 4. the coin ─────────────
+  {
+    const root = $('#p-coin1'), say = $('.say', root), strip = $('.strip', root), tries = $('.tries', root);
+    const results: number[] = [];
+    $('.go', root).addEventListener('click', () => {
+      let h = 100, heads = 0, s = '';
+      for (let t = 0; t < 20; t++) { const up = Math.random() < 0.5; h *= up ? 1.5 : 0.6; heads += up ? 1 : 0; s += `<i class="${up ? 'up' : 'down'}">${up ? '▲' : '▼'}</i>`; }
+      strip.innerHTML = s;
+      const end = h < 10 ? h.toFixed(1) : Math.round(h).toLocaleString('en');
+      say.textContent = `${heads} good years and ${20 - heads} droughts. Your 100 cattle became ${end}.`;
+      results.push(h);
+      const below = results.filter((v) => v < 100).length;
+      tries.textContent = results.length > 1 ? `Your tries so far: ${results.slice(-8).map((v) => (v < 10 ? v.toFixed(1) : Math.round(v).toLocaleString('en'))).join(', ')}. Below 100 in ${below} of ${results.length}.` : '';
+    });
+  }
+  {
+    const root = $('#p-coin2'), c = $<HTMLCanvasElement>('canvas', root);
+    const FAM = 1000, YEARS = 20, GROUP = 15, CAP = 500;
+    let mode: 'alone' | 'share' = 'alone', ends: number[] = [], seed = 4, prog = 1, clock: Clock | null = null;
+    const fmt = (v: number) => (v < 10 ? v.toFixed(1) : Math.round(v).toLocaleString('en'));
+    const sim = () => {
+      const r = rng(seed), h = new Float64Array(FAM).fill(100);
+      for (let t = 0; t < YEARS; t++) {
+        if (mode === 'alone') for (let f = 0; f < FAM; f++) h[f] *= r.next() < 0.5 ? 1.5 : 0.6;
+        else for (let g = 0; g < FAM; g += GROUP) {
+          let m = 0; const n = Math.min(GROUP, FAM - g);
+          for (let k = 0; k < n; k++) m += r.next() < 0.5 ? 1.5 : 0.6;
+          for (let k = 0; k < n; k++) h[g + k] *= m / n;
+        }
+      }
+      ends = [...h].sort((a, b) => a - b);
+      $('[data-r="down"]', root).textContent = `${ends.filter((v) => v < 100).length.toLocaleString('en')} of 1,000`;
+      $('[data-r="mid"]', root).textContent = fmt((ends[FAM / 2 - 1] + ends[FAM / 2]) / 2) + ' cattle';
+      $('[data-r="avg"]', root).textContent = fmt(ends.reduce((a, b) => a + b, 0) / FAM) + ' cattle';
+    };
+    const paint = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2.5), wd = c.clientWidth, ht = Math.round(Math.min(300, Math.max(220, wd * 0.5)));
+      c.style.height = ht + 'px';
+      c.width = Math.round(wd * dpr); c.height = Math.round(ht * dpr);
+      const ctx = c.getContext('2d')!, P = pal(), css = getComputedStyle(root);
+      const wet = css.getPropertyValue('--wet').trim(), dry = css.getPropertyValue('--dry').trim();
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, wd, ht);
+      const m = { l: 4, r: 4, t: 30, b: 26 }, BARS = 100, bw = (wd - m.l - m.r) / BARS;
+      const Y = (v: number) => ht - m.b - (Math.min(v, CAP) / CAP) * (ht - m.t - m.b);
+      ctx.font = `12px ${getComputedStyle(document.body).fontFamily}`;
+      ctx.textBaseline = 'alphabetic';
+      for (let k = 0; k < BARS; k++) {
+        let v = 0;
+        for (let j = 0; j < FAM / BARS; j++) v += ends[k * (FAM / BARS) + j];
+        v = (v / (FAM / BARS)) * prog + 100 * (1 - prog);
+        ctx.fillStyle = v < 100 ? dry : wet;
+        const y = Y(v);
+        ctx.fillRect(m.l + k * bw + 0.5, y, Math.max(1, bw - 1), ht - m.b - y);
+        if (v > CAP && prog >= 1) { // taller than the chart: a small arrow on top
+          ctx.beginPath(); ctx.moveTo(m.l + (k + 0.5) * bw - 3, m.t - 3); ctx.lineTo(m.l + (k + 0.5) * bw, m.t - 9); ctx.lineTo(m.l + (k + 0.5) * bw + 3, m.t - 3); ctx.fill();
+        }
+      }
+      // the line everyone started on
+      ctx.strokeStyle = P.ink; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(m.l, Y(100)); ctx.lineTo(wd - m.r, Y(100)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = P.ink; ctx.textAlign = 'left';
+      ctx.fillText('everyone started with 100', m.l + 2, Y(100) - 6);
+      ctx.fillStyle = P.muted;
+      ctx.fillText('unluckiest', m.l, ht - 8);
+      ctx.textAlign = 'right'; ctx.fillText('luckiest', wd - m.r, ht - 8);
+      if (prog >= 1 && ends[FAM - 1] > CAP) { ctx.fillStyle = P.ink; ctx.fillText(`the luckiest family has ${fmt(ends[FAM - 1])}`, wd - m.r, 12); }
+    };
+    const run = () => {
+      clock?.stop(); sim(); prog = 0;
+      clock = playYears(1, 900, (_t, p) => { prog = p * p * (3 - 2 * p); paint(); }, () => { prog = 1; paint(); });
+    };
+    $$<HTMLButtonElement>('.seg button', root).forEach((b) => b.addEventListener('click', () => {
+      mode = b.dataset.mode as 'alone' | 'share';
+      $$('.seg button', root).forEach((x) => x.classList.toggle('on', x === b));
+      run();
+    }));
+    $('.go', root).addEventListener('click', () => { seed = Math.floor(Math.random() * 1e6) + 1; run(); });
+    sim();
+    onRepaint(() => { if (!clock?.running) paint(); });
+  }
+
+  // ───────────── 5. the dial ─────────────
+  {
+    const root = $('#p-dial'), host = $('.chart-host', root), dial = $<HTMLInputElement>('input', root), say = $('.say', root);
+    const NSVG = 'http://www.w3.org/2000/svg';
+    const chart = lineChart(host, {
+      x0: 0, x1: 10, yMax: 15, xTicks: [0, 10], yTicks: [0, 5, 10, 15], height: 270,
+      xFmt: (v) => (v === 0 ? 'steady rain' : v === 10 ? 'wild rain' : ''), yFmt: (v) => v.toFixed(1), yTickFmt: (v) => String(Math.round(v)),
+      yLabel: 'families still herding after 50 years',
+      marks: [{ x: 1.7, label: 'West African coast' }, { x: 6.5, label: 'northern Sahel' }],
+      series: [
+        { key: 'stay', label: 'Stays', color: STAY, dash: '6 4', values: CURVE.map((r) => r.stayFamilies) },
+        { key: 'move', label: 'Moves', color: MOVE, values: CURVE.map((r) => r.moveFamilies) },
+      ],
+      tip: (_x, vals) => vals.map((q) => `<span><i style="background:${q.s.color}"></i>${q.s.label}: ${q.v.toFixed(1)} families</span>`).join(''),
+    });
+    const marker = document.createElementNS(NSVG, 'g') as SVGGElement;
+    marker.setAttribute('class', 'pick');
+    chart.svg.insertBefore(marker, chart.svg.querySelector('.hover'));
+    const update = () => {
+      const u = +dial.value, r = CURVE[u];
+      const x = chart.X(u), ys = chart.Y(r.stayFamilies), ym = chart.Y(r.moveFamilies);
+      marker.innerHTML = `<line x1="${x}" x2="${x}" y1="30" y2="${chart.Y(0)}" class="cross"/><circle cx="${x}" cy="${ys}" r="6" fill="${STAY}" class="dot"/><circle cx="${x}" cy="${ym}" r="6" fill="${MOVE}" class="dot"/>`;
+      const regime = u <= 2 ? 'Steady rain. Staying works. Almost every family is still there after 50 years, and nobody had to walk.'
+        : u <= 4 ? 'In between. The village that stays has started to lose families.'
+        : 'Wild rain. The village that stays loses most of its families. The village that moves keeps nearly all of them.';
+      say.innerHTML = `${regime} <span class="nums">Families left, out of 15: ${r.stayFamilies.toFixed(1)} if they stay, ${r.moveFamilies.toFixed(1)} if they move. Each number is the average of 60 different runs of rain.</span>`;
+    };
+    dial.addEventListener('input', update);
+    update();
+  }
+
+  // ───────────── 6. fences ─────────────
+  const LAY: Record<string, Uint8Array> = {
+    open: new Uint8Array(N),
+    block: (() => { const m = new Uint8Array(N); for (let i = N - 31; i < N; i++) m[i] = 1; return m; })(),
+    walls: mask(['.....#...#.....', '.....#...#.....', '.....#...#.....', '###############', '.....#...#.....', '.....#...#.....', '.....#...#.....', '.....#...#.....', '.....#...#.....']),
+    gates: mask(['.....#...#.....', '...............', '.....#...#.....', '##.####.####.##', '.....#...#.....', '.....#...#.....', '...............', '.....#...#.....', '####.#...#.###.']),
+  };
+  const LAYNAME: Record<string, string> = { open: 'Open land', block: '31 fields in a block', walls: '31 fields in strips', gates: 'Strips with gaps' };
+  const eightRains = [SEED, 31, 32, 33, 34, 35, 36, 37].map((s) => ({ seed: s, rain: s === SEED ? rainA : rainSeries(50, SAHEL.cv, s, 0.2) }));
+  {
+    const root = $('#p-fence'), c = $<HTMLCanvasElement>('canvas', root), say = $('.say', root), go = $<HTMLButtonElement>('.go', root), skip = $<HTMLButtonElement>('.skip', root);
+    const table = $<HTMLTableElement>('.scores', root), tbody = $('tbody', table);
+    let closed = Uint8Array.from(LAY.open), lay = 'open', snaps: Snap[] | null = null, clock: Clock | null = null, shown = 0;
+    const scores = new Map<string, { name: string; v: number; fields: number }>();
+    const startHerds = () => makeWorld({ seed: SEED, strategies: 'move' }).families.map((f) => ({ id: f.id, strategy: f.strategy, x: f.x, y: f.y, herd: f.herd }));
+    const describe = () => {
+      const n = count(closed), p = pieces(closed);
+      say.textContent = n === 0 ? 'No fields. All the land is open.' : `${n} field${n === 1 ? '' : 's'}. The open land is in ${p === 1 ? 'one piece' : p + ' separate pieces'}.`;
+    };
+    const paint = () => { if (snaps) draw(c, sceneEnd(snaps, shown, { closed })); else draw(c, { grass: calm, closed, herds: startHerds() }); };
+    const setLay = (k: string) => {
+      clock?.stop(); snaps = null; lay = k; closed = Uint8Array.from(LAY[k]);
+      $$('.seg button', root).forEach((x) => x.classList.toggle('on', (x as HTMLElement).dataset.lay === k));
+      go.hidden = false; skip.hidden = true; go.textContent = 'Run 50 years';
+      describe(); paint();
+    };
+    $$<HTMLButtonElement>('.seg button', root).forEach((b) => b.addEventListener('click', () => setLay(b.dataset.lay!)));
+    c.addEventListener('click', (e) => {
+      if (clock?.running) return;
+      const i = squareAt(c, e); if (i < 0) return;
+      snaps = null; closed[i] = closed[i] ? 0 : 1;
+      lay = Object.keys(LAY).find((k) => LAY[k].every((v, j) => v === closed[j])) ?? 'custom';
+      $$('.seg button', root).forEach((x) => x.classList.toggle('on', (x as HTMLElement).dataset.lay === lay));
+      go.textContent = 'Run 50 years';
+      describe(); paint();
+    });
+    const renderScores = () => {
+      table.hidden = false;
+      tbody.innerHTML = [...scores.values()].map((s) => `<tr><th scope="row">${s.name}</th><td class="barcell"><span style="width:${(s.v / 15) * 100}%"></span></td><td class="num">${s.v.toFixed(1)}</td></tr>`).join('');
+    };
+    go.addEventListener('click', () => {
+      if (clock?.running) return;
+      const mine = Uint8Array.from(closed);
+      snaps = sim50({ seed: SEED, strategies: 'move', closed: mine }, rainA, SAHEL.storms).snaps;
+      let sum = snaps[50].herding;
+      for (const r of eightRains.slice(1)) sum += simulate({ seed: r.seed, strategies: 'move', closed: mine }, r.rain, SAHEL.storms).snaps[50].herding;
+      const avg = sum / eightRains.length, n = count(mine), p = pieces(mine);
+      const key = lay === 'custom' ? [...mine].join('') : lay;
+      scores.delete(key);
+      scores.set(key, { name: lay === 'custom' ? `Your layout: ${n} fields, ${p} piece${p === 1 ? '' : 's'}` : LAYNAME[lay], v: avg, fields: n });
+      while (scores.size > 6) scores.delete(scores.keys().next().value!);
+      go.hidden = true; skip.hidden = false; shown = 0;
+      c.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      clock = playYears(50, 190, (t, p2) => {
+        draw(c, sceneAt(snaps!, t, p2, { closed: mine }));
+        if (t !== shown) { shown = t; say.textContent = `Year ${t}: ${snaps![t - 1].herding} of 15 families still herding.`; }
+      }, () => {
+        shown = 50; paint(); go.hidden = false; skip.hidden = true; go.textContent = 'Run it again';
+        say.textContent = `This time, ${snaps![50].herding} of 15 families were still herding after 50 years. The average of eight different runs of rain is ${avg.toFixed(1)}.`;
+        renderScores();
+      });
+    });
+    skip.addEventListener('click', () => clock?.finish());
+    describe();
+    onRepaint(() => { if (!clock?.running) paint(); });
+  }
+
+  // ───────────── 7. lending ─────────────
+  {
+    const root = $('#p-lend'), ca = $<HTMLCanvasElement>('[data-m="a"]', root), cb = $<HTMLCanvasElement>('[data-m="b"]', root);
+    const say = $('.say', root), go = $<HTMLButtonElement>('.go', root), skip = $<HTMLButtonElement>('.skip', root), yr = $('.yr', root);
+    const a = sim50({ seed: SEED, strategies: 'stay' }, rainA, SAHEL.storms), b = sim50({ seed: SEED, strategies: 'stay', lend: true }, rainA, SAHEL.storms);
+    const A = a.snaps, B = b.snaps, owned = a.world.owned;
+    let shown = 0, clock: Clock | null = null;
+    const counts = (t: number) => { $('[data-c="a"]', root).textContent = String(A[t].herding); $('[data-c="b"]', root).textContent = String(B[t].herding); };
+    const still = (t: number) => { draw(ca, sceneEnd(A, t, { owned })); draw(cb, sceneEnd(B, t, { owned })); counts(t); };
+    go.addEventListener('click', () => {
+      if (clock?.running) return;
+      go.hidden = true; skip.hidden = false; say.textContent = ''; shown = 0;
+      clock = playYears(50, 230, (t, p) => {
+        draw(ca, sceneAt(A, t, p, { owned })); draw(cb, sceneAt(B, t, p, { owned })); drawLoans(cb, B[t], p);
+        if (t !== shown) { shown = t; counts(t - 1); yr.textContent = `Year ${t}`; }
+      }, () => {
+        shown = 50; still(50); yr.textContent = 'Year 50'; go.hidden = false; skip.hidden = true; go.textContent = 'Watch again';
+        const lent = Math.round(b.world.lentTotal);
+        say.textContent = `Without lending, ${A[50].herding} families are left. With lending, ${B[50].herding}. In 50 years, ${lent} cattle were lent. That is only two or three a year.`;
+      });
+    });
+    skip.addEventListener('click', () => clock?.finish());
+    onRepaint(() => { if (!clock?.running) still(shown); });
+  }
+
+  // ───────────── 8. your turn ─────────────
+  {
+    const root = $('#p-own'), c = $<HTMLCanvasElement>('canvas', root), say = $('.say', root), status = $('.status', root);
+    const go = $<HTMLButtonElement>('.go', root), skip = $<HTMLButtonElement>('.skip', root), yr = $('.yr', root), wx = $('.wx', root), lendBox = $<HTMLInputElement>('.lend', root);
+    const LIMIT = 3, NEED = 31, GOAL = 12, REPLAYS = [201, 202, 203, 204, 205], STORMS = 13;
+    const START = mask(['...............', '...............', '...............', '###############', '.....#...#.....', '.....#...#....#', '#####....#.....', '.....#...#....#', '.....#...#.....']);
+    const BLOCK = (() => { const m = new Uint8Array(N); for (let i = N - 30; i < N; i++) m[i] = 1; m[6 * W] = 1; return m; })();
+    const GATES = mask(['...............', '...............', '...............', '##.####.####.##', '.....#...#.....', '...............', '###............', '#....#...#....#', '####.#...#.####']);
+    const startStrat = (): Strategy[] => Array.from({ length: 15 }, (_, i) => (i >= 6 ? 'stay' : 'move'));
+    const realYears = Array.from({ length: 51 }, (_, k) => 1950 + k);
+    const realRain = rainFromZ(realYears.map((y) => SAHEL_Z[y]), 0.3);
+    let closed = Uint8Array.from(START), strat = startStrat(), tapMode: 'family' | 'field' = 'family';
+    let snaps: Snap[] | null = null, shown = 0, clock: Clock | null = null;
+    const bars = barChart($('.rainbar', root), {
+      x0: 1950, values: realYears.map((y) => SAHEL_Z[y]), yMax: 3, xTicks: [1950, 1960, 1970, 1980, 1990, 2000], height: 110,
+      pos: 'var(--wet)', neg: 'var(--dry)', tip: (x, v) => `<b>${x}</b><span>${zWord(v)}</span>`,
+    });
+    const ownedOf = () => { const o = new Int16Array(N).fill(-1); strat.forEach((s, t) => { if (s !== 'stay') return; const x = (t % 5) * 3 + 1, y = Math.floor(t / 5) * 3 + 1; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) o[(y + dy) * W + x + dx] = t; }); return o; };
+    const limitLine = () => {
+      const g = geo(c), ctx = c.getContext('2d')!, P = pal();
+      ctx.strokeStyle = P.ink; ctx.lineWidth = 2; ctx.setLineDash([2, 5]);
+      ctx.beginPath(); ctx.moveTo(g.sx(0, LIMIT), g.sy(0, LIMIT)); ctx.lineTo(g.sx(W, LIMIT), g.sy(W, LIMIT)); ctx.stroke(); ctx.setLineDash([]);
+    };
+    const paint = () => {
+      const owned = ownedOf();
+      if (snaps) draw(c, sceneEnd(snaps, shown, { closed, owned }));
+      else draw(c, { grass: calm, closed, owned, herds: strat.map((s, t) => ({ id: t, strategy: s, x: (t % 5) * 3 + 1, y: Math.floor(t / 5) * 3 + 1, herd: K.start })) });
+      limitLine();
+    };
+    const describe = () => {
+      const n = count(closed), st = strat.filter((s) => s === 'stay').length;
+      status.innerHTML = `<b>${n}</b> of ${NEED} fields. <b>${st}</b> ${st === 1 ? 'family stays' : 'families stay'}, <b>${15 - st}</b> move.`;
+    };
+    const edited = () => { clock?.stop(); snaps = null; go.hidden = false; skip.hidden = true; go.textContent = 'Run 1950 to 2000'; yr.textContent = ''; wx.textContent = ''; say.textContent = ''; bars.at(null); describe(); paint(); };
+    $$<HTMLButtonElement>('[data-tap]', root).forEach((b) => b.addEventListener('click', () => {
+      $$('[data-tap]', root).forEach((x) => x.classList.toggle('on', x === b));
+      tapMode = b.dataset.tap as typeof tapMode;
+    }));
+    $$<HTMLButtonElement>('[data-set]', root).forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.set;
+      if (v === 'allmove') strat = Array(15).fill('move');
+      if (v === 'block') closed = Uint8Array.from(BLOCK);
+      if (v === 'gates') closed = Uint8Array.from(GATES);
+      if (v === 'reset') { closed = Uint8Array.from(START); strat = startStrat(); lendBox.checked = false; }
+      edited();
+      c.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }));
+    lendBox.addEventListener('change', edited);
+    c.addEventListener('click', (e) => {
+      if (clock?.running) return;
+      const i = squareAt(c, e); if (i < 0) return;
+      const x = i % W, y = Math.floor(i / W);
+      if (tapMode === 'family') { const t = Math.floor(y / 3) * 5 + Math.floor(x / 3); strat[t] = strat[t] === 'stay' ? 'move' : 'stay'; edited(); }
+      else if (y < LIMIT && !closed[i]) { edited(); say.textContent = 'Too dry for crops on that side of the dotted line.'; }
+      else { closed[i] = closed[i] ? 0 : 1; edited(); }
+    });
+    go.addEventListener('click', () => {
+      if (clock?.running) return;
+      const mine = Uint8Array.from(closed), st = [...strat], lend = lendBox.checked, owned = ownedOf();
+      const runs = REPLAYS.map((seed) => sim50({ seed, strategies: st, closed: mine, lend }, realRain, STORMS).snaps);
+      snaps = runs[0];
+      const T = snaps.length - 1, avg = runs.reduce((a, r) => a + r[T].herding, 0) / runs.length;
+      go.hidden = true; skip.hidden = false; say.textContent = ''; shown = 0;
+      c.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      clock = playYears(T, 190, (t, p) => {
+        draw(c, sceneAt(snaps!, t, p, { closed: mine, owned })); if (lend) drawLoans(c, snaps![t], p); limitLine();
+        if (t !== shown) { shown = t; yr.textContent = String(1949 + t); wx.textContent = `${snaps![t - 1].herding} families herding`; bars.at(1949 + t); }
+      }, () => {
+        shown = T; paint(); go.hidden = false; skip.hidden = true; go.textContent = 'Run it again';
+        yr.textContent = '2000'; wx.textContent = '';
+        const n = count(mine), settled = st.filter((x) => x === 'stay').length;
+        let text = `Storms land in different places each time, so the 50 years were played five times. On average, ${avg.toFixed(1)} of 15 families were still herding in 2000.`;
+        if (n < NEED) text += ` But the towns need ${NEED} fields, and you left them ${n}.`;
+        else if (avg >= GOAL && settled >= 3) text += ' You did the hard version: the towns have their fields, some families have their wells, and the herders are still there.';
+        else if (avg >= GOAL) text += ' You did it. The fields are all still there, and so are the herders. Now try the hard version: reach 12 with three families settled. Which three, and where?';
+        else if (avg >= 9) text += ' Close. Look for families that are fenced in, or settled where there is little rain.';
+        else text += ' Most families did not make it through the drought. Give the herds a way through, or let more families move.';
+        say.textContent = text;
+      });
+    });
+    skip.addEventListener('click', () => clock?.finish());
+    describe();
+    onRepaint(() => { if (!clock?.running) paint(); });
+  }
+</script>
+
+<style is:global>
+  .ftr {
+    --stay: #a85a06; --move: #00789a; --wet: #3f6fb0; --dry: #b0813a;
+    width: min(100% - 2rem, 46rem); margin-inline: auto; padding-block: clamp(2rem, 6vw, 4.5rem) 4rem;
+  }
+  [data-theme='night'] .ftr { --stay: #c98427; --move: #2a9cba; --wet: #8fb4e8; --dry: #c9a05a; }
+
+  .ftr h1 { font-size: clamp(2.6rem, 9vw, 4.6rem); margin-bottom: 0.35em; }
+  .ftr .lede { font-size: clamp(1.1rem, 2.6vw, 1.3rem); line-height: 1.5; max-width: 38rem; }
+  .ftr .howlong { color: var(--muted); font-size: 0.95rem; }
+  .ftr .pause { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding-block: 1rem; margin-top: 2rem; }
+  .ftr .capnote { margin: 0.4rem 0 0; font-size: 0.86rem; color: var(--muted); }
+  .ftr section { padding-top: clamp(2.5rem, 7vw, 4.5rem); }
+  .ftr h2 { font-size: clamp(1.6rem, 4.6vw, 2.3rem); margin-bottom: 0.7em; }
+  .ftr p, .ftr li { max-width: 40rem; }
+  .ftr .principle { font-family: var(--serif); font-size: clamp(1.25rem, 3.4vw, 1.6rem); line-height: 1.3; margin-block: 1.6rem; max-width: 36rem; }
+
+  .ftr .play { margin: 1.6rem 0 2rem; padding: 0; }
+  .ftr .play.hero { margin-top: 2rem; }
+  .ftr figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 0.6rem; max-width: 40rem; }
+  .ftr canvas.map { display: block; width: 100%; aspect-ratio: 15 / 9; border-radius: 3px; background: var(--line); touch-action: manipulation; }
+  .ftr canvas.map.tap { cursor: pointer; }
+  .ftr canvas.fan { display: block; width: 100%; height: 260px; }
+
+  .ftr .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.9rem; margin-top: 0.8rem; }
+  .ftr .say { margin: 0; flex: 1 1 16rem; font-size: 0.98rem; line-height: 1.45; min-height: 2.9em; }
+  .ftr .say .nums { display: block; color: var(--muted); font-size: 0.92rem; margin-top: 0.2rem; }
+  .ftr .verdict { margin-top: 0.9rem; min-height: 0; font-size: 1.05rem; }
+  .ftr .btn { min-height: 2.75rem; padding-inline: 1.15rem; font-size: 1rem; }
+  .ftr .btn.quiet { background: none; color: var(--ink); box-shadow: inset 0 0 0 1px var(--muted); }
+  .ftr .btn.quiet:hover { box-shadow: inset 0 0 0 1px var(--ink); filter: none; }
+  .ftr [hidden] { display: none !important; }
+
+  .ftr .key { list-style: none; display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; padding: 0; margin: 0.8rem 0 0; font-size: 0.88rem; color: var(--muted); }
+  .ftr .key li { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .ftr .sw { width: 2.2rem; height: 0.8rem; border-radius: 2px; display: inline-block; }
+  .ftr .sw.ramp { background: linear-gradient(90deg, #e6dfd0, #d3cf9c, #8fae5c, #3c7a3e); }
+  [data-theme='night'] .ftr .sw.ramp { background: linear-gradient(90deg, #2b2a24, #4a4a2c, #5f7a3c, #a9cf7c); }
+  .ftr .sw.rainsw { background: var(--wet); opacity: 0.7; width: 0.9rem; height: 0.9rem; border-radius: 50%; }
+  .ftr .sw.fieldsw { width: 0.95rem; height: 0.95rem; background: repeating-linear-gradient(0deg, #cdb98a 0 3px, #8a6f33 3px 4.5px); }
+  [data-theme='night'] .ftr .sw.fieldsw { background: repeating-linear-gradient(0deg, #3a3020 0 3px, #7d6a3f 3px 4.5px); }
+  .ftr .ic { width: 1.05rem; height: 1.05rem; }
+  .ftr .ic.move path { fill: var(--move); }
+  .ftr .ic.gone path { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 2 2; }
+
+  .ftr .fact { border-left: 3px solid var(--line); padding: 0.15rem 0 0.15rem 1rem; margin: 1.8rem 0; }
+  .ftr .fact p { margin: 0; font-size: 0.97rem; color: var(--muted); max-width: 37rem; }
+  .ftr .fact strong { color: var(--ink); font-weight: 600; }
+
+  .ftr .rules { padding-left: 1.1rem; }
+  .ftr .rules li { margin-bottom: 0.5rem; }
+
+  .ftr .tally { display: flex; flex-wrap: wrap; gap: 0.4rem 2rem; margin-bottom: 0.5rem; }
+  .ftr #p-herd > .say { margin-bottom: 0.7rem; min-height: 3em; }
+  .ftr .who { display: grid; grid-template-columns: auto auto; column-gap: 0.45rem; align-items: center; }
+  .ftr .who svg { width: 1.1rem; height: 1.1rem; }
+  .ftr .who span { font-size: 0.9rem; color: var(--muted); }
+  .ftr .who .n { grid-column: 1 / -1; font-family: var(--serif); font-weight: 400; font-size: 2.1rem; line-height: 1.05; }
+  .ftr .who .n::after { content: ' cattle'; font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
+  .ftr .who .d { grid-column: 1 / -1; font-style: normal; font-size: 0.9rem; min-height: 1.3em; color: var(--muted); }
+  .ftr .who .d.up::after { content: ' this year'; } .ftr .who .d.down::after { content: ' this year'; }
+  .ftr .stay svg path, .ftr .who.stay svg path { fill: var(--stay); }
+  .ftr .move svg path, .ftr .who.move svg path { fill: var(--move); }
+
+  .ftr .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem 2rem; margin: 1.4rem 0; }
+  .ftr .versus > div { display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.6rem; align-items: start; }
+  .ftr .versus svg { width: 1.6rem; height: 1.6rem; margin-top: 0.15rem; }
+  .ftr .versus p { margin: 0; font-size: 0.98rem; }
+
+  .ftr .bet { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .ftr .bet legend { padding: 0; margin-bottom: 0.8rem; font-weight: 500; max-width: 38rem; }
+  .ftr .choice, .ftr .seg button {
+    font: inherit; font-size: 0.95rem; color: var(--ink); background: none; cursor: pointer;
+    border: 1px solid var(--muted); border-radius: 3px; padding: 0.55rem 0.95rem; min-height: 2.75rem;
+  }
+  .ftr .choice:hover:not(:disabled), .ftr .seg button:hover { border-color: var(--ink); }
+  .ftr .choice.on, .ftr .seg button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ftr .choice:disabled:not(.on) { opacity: 0.45; cursor: default; }
+  .ftr .stage { margin-top: 1.2rem; }
+  .ftr .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .ftr .cap { margin: 0 0 0.35rem; font-size: 0.92rem; display: flex; align-items: baseline; gap: 0.4rem; font-weight: 500; }
+  .ftr .cap b { font-family: var(--serif); font-weight: 400; font-size: 1.5rem; line-height: 1; margin-left: auto; }
+  .ftr .cap::before { content: ''; width: 0.7rem; height: 0.7rem; border-radius: 1px; align-self: center; }
+  .ftr .cap.stay::before { background: var(--stay); } .ftr .cap.move::before { background: var(--move); }
+  .ftr .clock { margin: 0; flex: 1 1 12rem; font-size: 0.95rem; color: var(--muted); }
+  .ftr .clock b { color: var(--ink); font-weight: 600; margin-right: 0.4rem; }
+
+  .ftr .seg { display: flex; gap: 0.4rem; margin-bottom: 0.8rem; }
+  .ftr .seg.multi { flex-wrap: wrap; }
+  .ftr .controls { display: grid; gap: 0.2rem; margin-top: 0.9rem; }
+  .ftr .ctl .lab { display: block; font-size: 0.86rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .ftr .check { display: flex; align-items: center; gap: 0.55rem; font-size: 0.98rem; min-height: 2.75rem; cursor: pointer; }
+  .ftr .check input { width: 1.2rem; height: 1.2rem; accent-color: var(--move); }
+  .ftr .status { margin: 0.7rem 0 0; font-size: 0.95rem; color: var(--muted); }
+  .ftr .status b { color: var(--ink); }
+  .ftr .rainbar { margin-top: 0.5rem; }
+
+  .ftr .strip { margin: 0.7rem 0 0; min-height: 1.6em; letter-spacing: 0.12em; font-size: 1.05rem; line-height: 1.5; }
+  .ftr .strip i { font-style: normal; }
+  .ftr .strip .up { color: var(--wet); } .ftr .strip .down { color: var(--dry); }
+  .ftr .tries { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.92rem; min-height: 1.4em; }
+  .ftr .readout { display: grid; gap: 0.15rem; margin-top: 0.6rem; }
+  .ftr .readout p { margin: 0; display: flex; align-items: baseline; gap: 0.5rem; font-size: 0.95rem; }
+  .ftr .readout b { margin-left: auto; font-weight: 600; white-space: nowrap; }
+
+  .ftr .dial { display: grid; grid-template-columns: auto 1fr auto; gap: 0.8rem; align-items: center; margin-top: 0.4rem; font-size: 0.9rem; color: var(--muted); }
+  .ftr .dial input { width: 100%; accent-color: var(--ink); height: 2.2rem; }
+
+  .ftr .scores { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.93rem; }
+  .ftr .scores caption { text-align: left; color: var(--muted); font-size: 0.88rem; margin-bottom: 0.4rem; caption-side: top; }
+  .ftr .scores th { text-align: left; font-weight: 400; padding: 0.35rem 0.6rem 0.35rem 0; width: 44%; }
+  .ftr .scores td { padding: 0.35rem 0; }
+  .ftr .scores tr + tr { border-top: 1px solid var(--line); }
+  .ftr .scores .barcell span { display: block; height: 0.7rem; background: var(--move); border-radius: 0 3px 3px 0; min-width: 2px; }
+  .ftr .scores .num { text-align: right; width: 3rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .ftr .take { padding-left: 1.3rem; }
+  .ftr .take li { margin-bottom: 0.8rem; padding-left: 0.2rem; }
+  .ftr .more { border-top: 1px solid var(--line); padding-block: 0.9rem; }
+  .ftr .more:last-of-type { border-bottom: 1px solid var(--line); }
+  .ftr .more summary { cursor: pointer; font-weight: 500; }
+  .ftr .more > div { padding-top: 0.8rem; }
+  .ftr .more p, .ftr .src li { font-size: 0.95rem; }
+  .ftr .src { padding-left: 1.1rem; }
+  .ftr .src li { margin-bottom: 0.45rem; }
+  .ftr .credit { color: var(--muted); font-size: 0.95rem; margin-top: 1.6rem; }
+
+  /* charts */
+  .ftr .chart { position: relative; margin-top: 0.9rem; }
+  .ftr .chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .ftr .chart text { font: 11px var(--sans); fill: var(--muted); }
+  .ftr .chart .lab { font-size: 11px; }
+  .ftr .chart .end { font-size: 12px; fill: var(--ink); font-weight: 500; }
+  .ftr .chart .note { font-size: 11.5px; fill: var(--ink); }
+  .ftr .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .ftr .chart .zero { stroke: var(--muted); stroke-width: 1; }
+  .ftr .chart .mark { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 4; }
+  .ftr .chart .cross { stroke: var(--muted); stroke-width: 1; }
+  .ftr .chart .dot { stroke: var(--bg); stroke-width: 2; }
+  .ftr .chart .playhead { fill: var(--ink); opacity: 0.16; }
+  .ftr .chart .tip {
+    position: absolute; top: 0; pointer-events: none; background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 3px; padding: 0.35rem 0.55rem; font-size: 0.82rem; line-height: 1.35; white-space: nowrap; z-index: 2;
+  }
+  .ftr .chart .tip b { display: block; font-weight: 600; }
+  .ftr .chart .tip span { display: flex; align-items: center; gap: 0.35rem; }
+  .ftr .chart .tip i { width: 0.6rem; height: 0.6rem; border-radius: 1px; display: inline-block; }
+
+  @media (max-width: 560px) {
+    .ftr .versus { grid-template-columns: 1fr; }
+    /* on a phone the map stands upright, 9 squares wide and 15 tall, so the squares are big enough to tap */
+    .ftr canvas.map { aspect-ratio: 9 / 15; width: min(100%, calc(62svh * 0.6)); margin-inline: auto; }
+    .ftr .pair { gap: 0.6rem; }
+    .ftr .pair canvas.map { width: 100%; }
+    .ftr .btn, .ftr .choice, .ftr .seg button { font-size: 1rem; }
+    .ftr .bet .choice { flex: 1 1 100%; }
+  }
+</style>
