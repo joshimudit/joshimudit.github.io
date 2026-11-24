@@ -9,6 +9,29 @@ import Base from '../layouts/Base.astro';
     </header>
 
     <article class="feature">
+      <a class="preview" href="/lab/follow-the-rain" aria-label="Open Follow the rain">
+        <svg viewBox="0 0 400 230" aria-hidden="true">
+          <rect class="fr-ground" width="400" height="230" />
+          {Array.from({ length: 15 * 9 }, (_, i) => {
+            const x = i % 15, y = Math.floor(i / 15);
+            const d1 = Math.hypot(x - 4.5, y - 3.5), d2 = Math.hypot(x - 11, y - 6);
+            const g = Math.max(0, 1 - d1 / 4.2) + Math.max(0, 1 - d2 / 3.2);
+            return <rect class="fr-sq" x={x * 26.67 + 1} y={y * 25.56 + 1} width="24.67" height="23.56" style={`opacity:${Math.min(1, g).toFixed(2)}`} />;
+          })}
+          <g class="fr-stay"><path d="M222 108h20v13h-20zM216 109l16-15 16 15z" /></g>
+          <g class="fr-move"><path d="M104 96l14-23 14 23z" /><path d="M286 168l14-23 14 23z" /><path d="M146 122l14-23 14 23z" /></g>
+        </svg>
+      </a>
+      <div class="txt">
+        <p class="kind">Playable explanation</p>
+        <h2><a href="/lab/follow-the-rain">Follow the rain</a></h2>
+        <p>Why have herders on the dry edge of the Sahara kept moving for 7,000 years, and what happens when they can't? Steer a herd through patchy rain, bet on two villages, flip a coin for a thousand families, and then try to bring fifteen families through the real Sahel drought of 1968 to 1993.</p>
+        <p class="for">Outreach for the AGRI-DRY network. Ten minutes, on a phone or a laptop.</p>
+        <a class="btn" href="/lab/follow-the-rain">Open Follow the rain</a>
+      </div>
+    </article>
+
+    <article class="feature">
       <a class="preview" href="/lab/patch" aria-label="Open Patch">
         <svg viewBox="0 0 400 230" aria-hidden="true">
           <rect class="p-sky" width="400" height="130" />
@@ -114,6 +137,9 @@ import Base from '../layouts/Base.astro';
   :global([data-theme='night']) .p-blade { stroke: #7fbf72; }
   :global([data-theme='night']) .p-co2 { fill: #a9b6aa; }
   .feature + .feature { padding-top: 3rem; }
+  .fr-ground { fill: #e6dfd0; } .fr-sq { fill: #3c7a3e; } .fr-stay path { fill: #a85a06; stroke: #fff; stroke-width: 2; stroke-linejoin: round; } .fr-move path { fill: #00789a; stroke: #fff; stroke-width: 2; stroke-linejoin: round; }
+  :global([data-theme='night']) .fr-ground { fill: #2b2a24; } :global([data-theme='night']) .fr-sq { fill: #a9cf7c; }
+  :global([data-theme='night']) .fr-stay path { fill: #c98427; stroke: #18231c; } :global([data-theme='night']) .fr-move path { fill: #2a9cba; stroke: #18231c; }
   .sg-land { fill: #ead6aa; } .sg-belt { fill: #9cbb72; opacity: 0.75; } .sg-sea { fill: #8fc0d8; } .sg-river { stroke: #3d8bbd; stroke-width: 4; fill: none; } .sg-lake { fill: #3d8bbd; }
   .sg-links path { stroke: #11252b; stroke-width: 1.4; stroke-dasharray: 4 5; fill: none; opacity: 0.6; }
   .sg-dots circle { fill: #fff; stroke: #11252b; stroke-width: 2; } .sg-me { fill: none; stroke: #a85a06; stroke-width: 3.5; }
