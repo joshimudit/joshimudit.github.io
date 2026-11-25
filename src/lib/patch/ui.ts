@@ -1,22 +1,22 @@
 // Everything interactive on the Patch page. The widgets call the model's own functions,
 // so the numbers in each "rule" are the numbers the model uses.
 import { C, PFT, BASE, runPatch, lightCaught, lightUse, tempLimit, thirst, poreFactor, breathing, gammaStar, type Scen, type Result, type DayOut } from './model';
-import { STATIONS, AARHUS, transect, type Site } from './sites';
+import { SITES, type Site } from './sites';
 
-const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector(sel) as T;
-const $$ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => [...root.querySelectorAll(sel)] as T[];
-const clamp = (x: number, a = 0, b = 1) => Math.max(a, Math.min(b, x));
-const pct = (x: number) => Math.round(x * 100) + '%';
-const signed = (x: number, unit = '%') => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(Math.round(x)) + unit;
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+export const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector(sel) as T;
+export const $$ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => [...root.querySelectorAll(sel)] as T[];
+export const clamp = (x: number, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+export const pct = (x: number) => Math.round(x * 100) + '%';
+export const signed = (x: number, unit = '%') => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(Math.round(x)) + unit;
+export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const MDAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-const monthOfDay = (d: number) => { let m = 0, e = MDAYS[0]; while (d >= e && m < 11) { m++; e += MDAYS[m]; } return m; };
-const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+export const monthOfDay = (d: number) => { let m = 0, e = MDAYS[0]; while (d >= e && m < 11) { m++; e += MDAYS[m]; } return m; };
+export const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const CELLS = transect();
-const PLACES: Site[] = [...STATIONS, AARHUS];
+export const PLACES: Site[] = SITES;
+export const place = (id: string) => SITES.find((s) => s.id === id)!;
 const cache = new Map<string, Result>();
-function run(site: Site, scen: Scen = BASE, land: 'natural' | 'crop' = 'natural'): Result {
+export function run(site: Site, scen: Scen = BASE, land: 'natural' | 'crop' = 'natural'): Result {
   const key = [site.id, site.lat, land, scen.dT, scen.rain, scen.co2, scen.sow ?? 0, scen.variety ?? 1, C.alphaA].join('|');
   let r = cache.get(key);
   if (!r) { r = runPatch(site, scen, { land, years: land === 'crop' ? 40 : 220, average: land === 'crop' ? 30 : 40 }); cache.set(key, r); if (cache.size > 60) cache.delete(cache.keys().next().value!); }
@@ -151,7 +151,7 @@ function rules() {
     chips: [
       { label: 'Frosty morning', set: { T: -3, sun: 3 }, ctx: 'A clear winter morning in Denmark. There is light, but the leaf machinery is too cold to run.' },
       { label: 'Mild spring day', set: { T: 16, sun: 7 }, ctx: 'A bright day in May. Comfortable for plants from cool places.' },
-      { label: 'Tropical afternoon', set: { T: 33, sun: 10 }, ctx: 'A sunny day in the Sahel. Now the two kinds of plant behave very differently.' },
+      { label: 'Tropical afternoon', set: { T: 33, sun: 10 }, ctx: 'A sunny day in the tropics. Now the two kinds of plant behave very differently.' },
       { label: 'Heatwave', set: { T: 44, sun: 11 }, ctx: 'Hotter than most plants ever meet. Only the hot-climate grass still works well.' },
     ],
     calc: (v) => {
@@ -253,8 +253,8 @@ function rules() {
 }
 
 // ───────────────────────── the living patch ─────────────────────────
-interface Player { stop(): void; running: boolean }
-function playDays(msPerDay: number, frame: (d: number) => void, done: () => void, from = 0): Player {
+export interface Player { stop(): void; running: boolean }
+export function playDays(msPerDay: number, frame: (d: number) => void, done: () => void, from = 0): Player {
   let raf = 0; const p: Player = { running: true, stop() { p.running = false; cancelAnimationFrame(raf); } };
   if (reduceMotion()) { setTimeout(() => { frame(364); p.running = false; done(); }, 0); return p; }
   const t0 = performance.now() - from * msPerDay;
@@ -262,38 +262,38 @@ function playDays(msPerDay: number, frame: (d: number) => void, done: () => void
   raf = requestAnimationFrame(tick);
   return p;
 }
-function events(r: Result, crop: boolean): { day: number; text: string }[] {
+export function events(r: Result, crop: boolean): { day: number; text: string }[] {
   const D = r.daily, ev: { day: number; text: string }[] = [{ day: 0, text: 'The first of January.' }];
   const first = (from: number, test: (d: DayOut, i: number) => boolean) => { for (let i = from; i < 365; i++) if (test(D[i], i)) return i; return -1; };
   let dry = 0, rain = -1;
   for (let i = 0; i < 365; i++) { if (D[i].P > 5 && dry > 25) { rain = i; break; } dry = D[i].P > 1 ? 0 : dry + 1; }
-  if (rain > 0) ev.push({ day: rain, text: 'The first real rain after the dry season. The top soil fills.' });
+  if (rain > 0) ev.push({ day: rain, text: 'The first real rain after the dry season. The top soil fills up.' });
   if (crop) {
     const sow = first(0, (d) => d.laiGrass > 0.02), grain = first(0, (d) => d.grain > 3), cut = sow >= 0 ? first(sow + 20, (d) => d.laiGrass < 0.02) : -1;
-    if (sow >= 0) ev.push({ day: sow, text: 'Sowing day. The seedlings have almost no leaves, so most light is wasted on bare soil.' });
-    if (sow >= 0) { const closed = first(sow, (d) => d.caught > 0.6); if (closed > 0) ev.push({ day: closed, text: 'The leaves have closed over the soil. More leaves caught more light, which made more leaves.' }); }
-    if (grain >= 0) ev.push({ day: grain, text: 'The crop has had enough warm days to flower. From now on, new sugar goes into grain.' });
+    if (sow >= 0) ev.push({ day: sow, text: 'Sowing day. The seedlings have almost no leaves, so most of the light lands on bare soil.' });
+    if (sow >= 0) { const closed = first(sow, (d) => d.caught > 0.6); if (closed > 0) ev.push({ day: closed, text: 'The leaves now cover the soil. More leaves caught more light, which paid for more leaves.' }); }
+    if (grain >= 0) ev.push({ day: grain, text: 'The crop has counted enough warm days to flower. From now on its sugar goes into grain.' });
     if (cut >= 0) ev.push({ day: cut, text: 'Harvest. The field is bare until the next sowing.' });
   } else {
     const c = D.map((d) => d.caught), lo = Math.min(...c), hi = Math.max(...c), range = hi - lo, peak = c.indexOf(hi), mid = lo + 0.35 * range;
     ev[0].text = D[0].T < 6 ? 'January. Too cold for leaves to work. The plants wait for spring.' : c[0] < mid ? 'January, the dry season. The soil is nearly empty and most leaves are off.' : 'January. The leaves are still on, living off water left in the soil.';
     const fill = first(1, (d, i) => d.w1 > 0.6 && Math.min(...D.slice(Math.max(0, i - 40), i).map((x) => x.w1)) < 0.25);
-    if (fill > 0) ev.push({ day: fill, text: 'The rains have filled the top soil. Roots can deliver water again, so the brake comes off.' });
+    if (fill > 0) ev.push({ day: fill, text: 'Rain has filled the top soil. The roots can drink again, so the plants start to grow.' });
     if (range > 0.2) {
       const lowDay = c.indexOf(lo), up = first(lowDay < peak ? lowDay : 0, (d) => d.caught > mid);
-      if (up > 0 && up < peak) ev.push({ day: up, text: 'Leaves are coming out. More leaves catch more light and make more sugar for more leaves: growth feeds growth.' });
+      if (up > 0 && up < peak) ev.push({ day: up, text: 'Leaves are coming out. More leaves catch more light, which pays for more leaves.' });
     }
     const deep = first(1, (d, i) => d.w2 > 0.5 && D[Math.max(0, i - 30)].w2 < 0.35);
     if (deep > 0) ev.push({ day: deep, text: 'Water has trickled down into the deep soil. Tree roots reach it. Most grass roots do not.' });
-    ev.push({ day: peak, text: 'The leafiest time of the year. Nearly all the light is caught, so adding leaves no longer pays.' });
+    ev.push({ day: peak, text: 'The leafiest time of the year. Hardly any light reaches the ground now.' });
     const brake = first(peak, (d) => d.brake < 0.5 && d.caught > 0.15);
-    if (brake >= 0) ev.push({ day: brake, text: 'The leaves have drunk the soil dry. The water brake comes on: growth slows itself down.' });
+    if (brake >= 0) ev.push({ day: brake, text: 'The leaves have drunk the soil dry. Thirsty plants close up and grow more slowly.' });
     const off = range > 0.2 ? first(peak, (d) => d.caught < mid) : -1;
-    if (off >= 0) ev.push({ day: off, text: D[off].T < 8 ? 'Too cold to work. The leaves come off until spring.' : 'The leaves are falling. Holding on to them would cost more sugar than they earn.' });
+    if (off >= 0) ev.push({ day: off, text: D[off].T < 8 ? 'Too cold to work. The leaves come off until spring.' : 'The leaves are falling. Keeping them would cost more sugar than they earn.' });
   }
   return ev.sort((a, b) => a.day - b.day);
 }
-function yearStrip(svg: SVGSVGElement, r: Result) {
+export function yearStrip(svg: SVGSVGElement, r: Result) {
   const D = r.daily, W = 360, X = (d: number) => 4 + (d / 364) * (W - 8);
   const maxLai = Math.max(1, ...D.map((d) => d.laiTree + d.laiGrass));
   let h = '', area = `M${X(0)},74`;
@@ -310,211 +310,6 @@ function yearStrip(svg: SVGSVGElement, r: Result) {
   return (d: number) => { head.setAttribute('x1', String(X(d))); head.setAttribute('x2', String(X(d))); };
 }
 
-function patchViewer() {
-  const root = $('#p-patch'); if (!root) return;
-  const svg = $<SVGSVGElement>('svg.scene', root), strip = $<SVGSVGElement>('svg.strip', root), cap = $('.caption', root), go = $<HTMLButtonElement>('.go', root), sum = $('.sum', root);
-  let site = PLACES[2], land: 'natural' | 'crop' = 'natural', res: Result, ev: ReturnType<typeof events>, head: (d: number) => void, player: Player | null = null, day = 0;
-  const out = (k: string, v: string) => { const e = $(`[data-r="${k}"]`, root); if (e) e.textContent = v; };
-  const smooth = (k: keyof DayOut, d: number) => { let s = 0, n = 0; for (let i = Math.max(0, d - 3); i <= Math.min(364, d + 3); i++) { s += res.daily[i][k] as number; n++; } return s / n; };
-  const frame = (d: number) => {
-    day = d;
-    const x = res.daily[d], m = monthOfDay(d);
-    drawScene(svg, { d: x, maxTree: res.mean.tree, maxGrass: land === 'crop' ? 1 : res.mean.grass, crop: land === 'crop', label: `${MONTHS[m]} · ${Math.round(x.T)} °C` });
-    head(d);
-    const gpp = smooth('gpp', d), resp = smooth('resp', d);
-    out('caught', pct(smooth('caught', d))); out('sugar', gpp.toFixed(1) + ' g'); out('brake', smooth('brake', d).toFixed(2)); out('resp', resp.toFixed(1) + ' g'); out('grow', (gpp - resp).toFixed(1) + ' g');
-    let t = ev[0].text; for (const e of ev) if (e.day <= d) t = e.text;
-    cap.textContent = t;
-  };
-  const load = () => {
-    player?.stop();
-    res = run(site, BASE, land); ev = events(res, land === 'crop'); head = yearStrip(strip, res);
-    const m = res.mean;
-    $('.who', root).textContent = land === 'crop' ? `A field of ${res.types[0]} near ${site.name}.` : `Wild plants near ${site.name}: ${res.types[1]} and ${res.types[0]}s.`;
-    sum.textContent = `A typical year here: ${Math.round(m.rain).toLocaleString('en')} mm of rain, of which the plants drink ${pct(m.transp / Math.max(1, m.rain))}. They make ${Math.round(m.gpp).toLocaleString('en')} g of sugar on every square metre, burn ${pct(1 - m.npp / Math.max(1, m.gpp))} of it, and keep the rest as growth.` + (land === 'crop' ? ` The harvest is about ${m.yield.toFixed(1)} tonnes of grain per hectare.` : '');
-    go.textContent = 'Play one year';
-    frame(land === 'crop' ? Math.min(364, res.sowDay + 40) : 200);
-  };
-  go.addEventListener('click', () => {
-    if (player?.running) { player.stop(); go.textContent = 'Carry on'; return; }
-    const from = go.textContent === 'Carry on' ? day : 0;
-    go.textContent = 'Pause';
-    player = playDays(38, frame, () => { go.textContent = 'Play it again'; }, from);
-  });
-  const chips = $('.places', root);
-  PLACES.forEach((p) => {
-    const b = document.createElement('button'); b.type = 'button'; b.innerHTML = `${p.name}<small>${p.blurb}</small>`; if (p === site) b.classList.add('on');
-    b.addEventListener('click', () => { site = p; $$('button', chips).forEach((x) => x.classList.toggle('on', x === b)); load(); });
-    chips.appendChild(b);
-  });
-  $$<HTMLButtonElement>('[data-land] button', root).forEach((b) => b.addEventListener('click', () => { land = b.dataset.v as typeof land; $$('[data-land] button', root).forEach((x) => x.classList.toggle('on', x === b)); load(); }));
-  load();
-  // hero: the same picture, looping quietly
-  const hero = $<SVGSVGElement>('#hero-scene');
-  if (hero) {
-    const hr = run(PLACES[2]); let hp: Player | null = null;
-    const still = () => drawScene(hero, { d: hr.daily[230], maxTree: hr.mean.tree, maxGrass: hr.mean.grass, crop: false, label: 'August · 25 °C' });
-    still();
-    if (!reduceMotion()) new IntersectionObserver((es) => {
-      if (es[0].isIntersecting && !hp?.running) { const loop = () => { hp = playDays(30, (d) => drawScene(hero, { d: hr.daily[d], maxTree: hr.mean.tree, maxGrass: hr.mean.grass, crop: false, label: `${MONTHS[monthOfDay(d)]} · ${Math.round(hr.daily[d].T)} °C` }), loop); }; loop(); }
-      else if (!es[0].isIntersecting) hp?.stop();
-    }, { threshold: 0.2 }).observe(hero);
-  }
-}
-
-// ───────────────────────── zoom out: a line of cells ─────────────────────────
-function lineOfCells() {
-  const root = $('#p-line'); if (!root) return;
-  const svg = $<SVGSVGElement>('svg.cells', root), say = $('.say', root), go = $<HTMLButtonElement>('.go', root), info = $('.cellinfo', root), stage = $('.stage', root);
-  const knobs = $$<HTMLInputElement>('input[type=range]', root);
-  let base: Result[] = [], cur: Result[] = [], picked = 4, year = 219, bet = '', busy = false;
-  const scen = (): Scen => ({ dT: +knobs.find((k) => k.dataset.k === 'dT')!.value, rain: 1 + +knobs.find((k) => k.dataset.k === 'rain')!.value / 100, co2: +knobs.find((k) => k.dataset.k === 'co2')!.value });
-  const N = CELLS.length, cw = 360 / N;
-  const draw = () => {
-    let h = '';
-    const maxRain = 1500;
-    CELLS.forEach((c, i) => {
-      const r = cur[i]; if (!r) return;
-      const y = r.years[Math.min(year, r.years.length - 1)], full = year >= r.years.length - 1;
-      const tree = full ? r.mean.tree : y.tree, grass = Math.min(1 - tree, full ? r.mean.grass : y.grass), x = i * cw, top = 44, H = 120;
-      h += `<rect class="sRain" x="${x + cw * 0.3}" y="${40 - (r.mean.rain / maxRain) * 34}" width="${cw * 0.4}" height="${(r.mean.rain / maxRain) * 34}"/>`;
-      h += `<rect class="cBare" x="${x + 1}" y="${top}" width="${cw - 2}" height="${H}"/>`;
-      h += `<rect class="cGrass" x="${x + 1}" y="${top + H * (1 - tree - grass)}" width="${cw - 2}" height="${H * grass}"/>`;
-      h += `<rect class="cTree" x="${x + 1}" y="${top + H * (1 - tree)}" width="${cw - 2}" height="${H * tree}"/>`;
-      if (i === picked) h += `<rect class="pick" x="${x + 1.5}" y="${top + 0.5}" width="${cw - 3}" height="${H - 1}"/>`;
-      if (c.station) h += `<text class="lab" x="${x + cw / 2}" y="${top + H + 14}" text-anchor="${i === 0 ? 'start' : i === N - 1 ? 'end' : 'middle'}">${c.name}</text>`;
-    });
-    h += `<text class="lab" x="2" y="10">rain in a year</text><text class="lab" x="2" y="${44 + 120 + 30}">north, the Sahara</text><text class="lab" x="358" y="${44 + 120 + 30}" text-anchor="end">south, the sea</text>`;
-    svg.innerHTML = h;
-  };
-  const showInfo = () => {
-    const c = CELLS[picked], r = cur[picked], b = base[picked]; if (!r) return;
-    const m = r.mean, ch = b && b !== r ? ` Before your change: ${pct(b.mean.tree)} trees, ${pct(Math.min(1 - b.mean.tree, b.mean.grass))} grass.` : '';
-    info.innerHTML = `<b>${c.station ? `${c.name}, ${c.country}` : `Near ${c.name}`}</b> ${Math.round(m.rain)} mm of rain a year. Trees shade ${pct(m.tree)} of the ground, grass ${pct(Math.min(1 - m.tree, m.grass))}, and ${pct(Math.max(0, 1 - m.tree - Math.min(1 - m.tree, m.grass)))} is bare.${ch}${c.station ? '' : ' This cell has no weather station. Its climate is blended from the stations to its north and south.'}`;
-  };
-  const compute = (animate: boolean, done: () => void) => {
-    busy = true; const s = scen(); cur = []; let i = 0;
-    const step = () => {
-      cur[i] = run(CELLS[i], s); i++;
-      say.textContent = `Running cell ${i} of ${N}: 220 years, one day at a time…`;
-      if (i < N) { setTimeout(step, 0); return; }
-      if (!animate || reduceMotion()) { year = 219; draw(); busy = false; done(); return; }
-      const t0 = performance.now();
-      const tick = (now: number) => { year = Math.max(0, Math.min(219, Math.floor(((now - t0) / 5000) * 220))); draw(); say.textContent = `Year ${year + 1} of 220`; if (year < 219) requestAnimationFrame(tick); else { busy = false; done(); } };
-      requestAnimationFrame(tick);
-    };
-    setTimeout(step, 30);
-  };
-  const half = (rs: Result[]) => rs.findIndex((r) => r.mean.tree > 0.5);
-  const where = (i: number) => (i < 0 ? 'nowhere on this line' : CELLS[i].station ? `at ${CELLS[i].name}` : `near ${CELLS[i].name}`);
-  $$<HTMLButtonElement>('.choice', root).forEach((b) => b.addEventListener('click', () => {
-    if (busy) return;
-    bet = b.dataset.bet!; $$('.choice', root).forEach((x) => { x.classList.toggle('on', x === b); (x as HTMLButtonElement).disabled = true; });
-    stage.hidden = false;
-    compute(true, () => {
-      base = cur.slice(); const i = half(base);
-      const right = i >= 0 && i <= 4 ? 'north' : i > 4 && i < 8 ? 'between' : 'south';
-      say.textContent = `Every cell started bare and followed the same five rules for 220 years. Trees shade more than half the ground first ${where(i)}. ${bet === right ? 'You called it.' : 'Not where you guessed.'} Nobody drew a border on this map. It appeared on its own. Tap any cell to look inside.`;
-      $('.after', root).hidden = false; showInfo();
-    });
-  }));
-  svg.addEventListener('click', (e) => { const r = svg.getBoundingClientRect(); picked = clamp(Math.floor(((e.clientX - r.left) / r.width) * N), 0, N - 1); draw(); showInfo(); });
-  knobs.forEach((k) => k.addEventListener('input', () => { const o = $(`[data-o="${k.dataset.k}"]`, root); const v = +k.value; o.textContent = k.dataset.k === 'dT' ? (v === 0 ? 'as today' : `+${v.toFixed(1)} °C`) : k.dataset.k === 'rain' ? (v === 0 ? 'as today' : signed(v)) : v === C.co2ref ? 'as today, 420 ppm' : v + ' ppm'; go.hidden = false; }));
-  knobs.forEach((k) => k.dispatchEvent(new Event('input'))); go.hidden = true;
-  go.addEventListener('click', () => {
-    if (busy) return;
-    compute(false, () => {
-      const a = half(base), b = half(cur), moved = a < 0 || b < 0 ? 0 : Math.round((CELLS[a].lat - CELLS[b].lat) * 111);
-      say.textContent = b === a ? `The place where trees take over has not moved: still ${where(b)}. Tap cells to see what changed inside them.` : `The place where trees take over has moved from ${where(a)} to ${where(b)}${moved ? `, about ${Math.abs(moved)} km ${moved > 0 ? 'south' : 'north'}` : ''}.`;
-      showInfo();
-    });
-  });
-}
-
-// ───────────────────────── ask a question ─────────────────────────
-interface Q { id: string; places: string[]; land: 'natural' | 'crop'; preset: Partial<Scen>; ready(s: Scen): boolean; need: string; judge(b: Result[], x: Result[]): { pick: string; text: string }; hint: string; real: string }
-const byId = (id: string) => PLACES.find((p) => p.id === id)!;
-const rel = (a: number, b: number) => (a > 0 ? (b / a - 1) * 100 : 0);
-const QS: Q[] = [
-  { id: 'co2', places: ['niamey'], land: 'natural', preset: { co2: 600 }, need: 'Raise CO₂ and leave temperature and rain alone.',
-    ready: (s) => s.co2 >= 500 && s.dT === 0 && s.rain === 1,
-    judge: (b, x) => { const t = x[0].mean.tree - b[0].mean.tree, g = x[0].mean.grass - b[0].mean.grass; return { pick: t > 0.03 && t > g ? 'a' : g > 0.03 ? 'b' : 'c', text: `Trees went from ${pct(b[0].mean.tree)} to ${pct(x[0].mean.tree)} of the ground, and grass from ${pct(b[0].mean.grass)} to ${pct(x[0].mean.grass)}.` }; },
-    hint: 'Change only CO₂. Then look at trees and grass separately, not only at total growth. Why would they differ? Go back to rule 4: trees gain sugar from extra CO₂, and this grass does not.',
-    real: 'Many African savannas have grown denser with trees and shrubs over the last century. Rising CO₂ is one of the suspected causes, alongside less burning and heavy grazing (Bond and Midgley 2012).' },
-  { id: 'warm', places: ['niamey', 'aarhus'], land: 'natural', preset: { dT: 3 }, need: 'Warm both places by the same amount and leave rain and CO₂ alone.',
-    ready: (s) => s.dT >= 2 && s.co2 === C.co2ref && s.rain === 1,
-    judge: (b, x) => { const hot = rel(b[0].mean.npp, x[0].mean.npp), cold = rel(b[1].mean.npp, x[1].mean.npp); return { pick: hot < -4 && cold > -4 ? 'b' : hot < -4 && cold < -4 ? 'a' : 'c', text: `Plant growth changed by ${signed(hot)} in Niamey and by ${signed(cold)} in Aarhus.` }; },
-    hint: 'Run the same warming in a hot place and a cold place and compare. Then ask which rule is responsible. In Niamey, heat raises breathing costs and the air\'s thirst. In Aarhus, the same heat also lengthens the season in which leaves can work.',
-    real: 'Satellites show that cold regions have become greener as they warmed (Keenan and Riley 2018), while many warm, dry regions are expected to lose growth.' },
-  { id: 'dry', places: ['niamey'], land: 'natural', preset: { rain: 0.8 }, need: 'Cut rain and leave temperature and CO₂ alone.',
-    ready: (s) => s.rain <= 0.9 && s.dT === 0 && s.co2 === C.co2ref,
-    judge: (b, x) => { const t = rel(b[0].mean.tree, x[0].mean.tree), g = rel(b[0].mean.grass, x[0].mean.grass); return { pick: t < g - 5 ? 'a' : g < t - 5 ? 'b' : 'c', text: `Tree cover changed by ${signed(t)} and grass cover by ${signed(g)}.` }; },
-    hint: 'Change only rain and compare trees with grass. Then think about rule 5. A tree carries a trunk and big roots that burn sugar every day, rain or no rain. Grass has almost nothing to keep alive in a bad year.',
-    real: 'Across 854 sites in African savannas, the most tree cover a place can hold rises with rainfall up to about 650 mm a year (Sankaran and others 2005).' },
-  { id: 'crop', places: ['parakou'], land: 'crop', preset: { dT: 2 }, need: 'Warm the field and leave rain, CO₂, variety and sowing day alone.',
-    ready: (s) => s.dT >= 1 && s.rain === 1 && s.co2 === C.co2ref && (s.variety ?? 1) === 1 && (s.sow ?? 0) === 0,
-    judge: (b, x) => { const days = x[0].mean.season - b[0].mean.season, br = x[0].mean.brake - b[0].mean.brake; return { pick: days < -3 && br > -0.08 ? 'b' : br <= -0.08 ? 'a' : 'c', text: `The harvest changed by ${signed(rel(b[0].mean.yield, x[0].mean.yield))}. The crop took ${Math.round(x[0].mean.season)} days from sowing to harvest instead of ${Math.round(b[0].mean.season)}, and its water brake barely moved (${b[0].mean.brake.toFixed(2)} to ${x[0].mean.brake.toFixed(2)}).` }; },
-    hint: 'Do not look only at the harvest. Look at the number of days from sowing to harvest. A crop counts warm days to decide when to flower and ripen. In warmer air it races through its life and has fewer days to catch light. Now test a fix: keep the warming and choose a slower variety.',
-    real: 'Field trials and models together suggest that each degree of warming, with nothing else changed, cuts the world\'s maize by about 7% and wheat by about 6% (Zhao and others 2017). Switching variety or sowing date wins part of it back (Challinor and others 2014).' },
-];
-function lab() {
-  const root = $('#p-lab'); if (!root) return;
-  const bench = $('.bench', root), results = $('.results', root), verdict = $('.verdict', root), hint = $('.hint', root), warn = $('.warn', root);
-  const knob = (k: string) => $<HTMLInputElement>(`input[data-k="${k}"]`, bench);
-  const selA = $<HTMLSelectElement>('select[data-k="a"]', bench), selB = $<HTMLSelectElement>('select[data-k="b"]', bench), selLand = $<HTMLSelectElement>('select[data-k="land"]', bench);
-  PLACES.forEach((p) => { selA.add(new Option(`${p.name}, ${p.country}`, p.id)); selB.add(new Option(`${p.name}, ${p.country}`, p.id)); });
-  selB.add(new Option('No second place', ''), 0);
-  let q: Q | null = null, guess = '';
-  const scen = (): Scen => ({ dT: +knob('dT').value, rain: 1 + +knob('rain').value / 100, co2: +knob('co2').value, variety: 1 + +knob('variety').value / 100, sow: +knob('sow').value });
-  const labels = () => {
-    const s = scen(), o = (k: string, t: string) => ($(`[data-o="${k}"]`, bench).textContent = t);
-    o('dT', s.dT === 0 ? 'as today' : `+${s.dT.toFixed(1)} °C`); o('rain', s.rain === 1 ? 'as today' : signed((s.rain - 1) * 100)); o('co2', s.co2 === C.co2ref ? 'as today, 420 ppm' : s.co2 + ' ppm');
-    o('variety', s.variety === 1 ? 'the usual one' : `${signed((s.variety! - 1) * 100)} warm days to ripen`); o('sow', s.sow === 0 ? 'the usual day' : `${Math.abs(s.sow!)} days ${s.sow! < 0 ? 'earlier' : 'later'}`);
-    $$('.croponly', bench).forEach((e) => (e.hidden = selLand.value !== 'crop'));
-    const changed = [s.dT !== 0, s.rain !== 1, s.co2 !== C.co2ref, selLand.value === 'crop' && s.variety !== 1, selLand.value === 'crop' && s.sow !== 0].filter(Boolean).length;
-    warn.textContent = changed > 1 ? `You have changed ${changed} things at once. If the result moves, you will not know which change did it. That is fine for exploring, but a clean test changes one thing.` : changed === 0 ? 'Nothing is changed yet, so the experiment would be the same as today.' : '';
-  };
-  const setScen = (s: Partial<Scen>) => { knob('dT').value = String(s.dT ?? 0); knob('rain').value = String(Math.round(((s.rain ?? 1) - 1) * 100)); knob('co2').value = String(s.co2 ?? C.co2ref); knob('variety').value = String(Math.round(((s.variety ?? 1) - 1) * 100)); knob('sow').value = String(s.sow ?? 0); labels(); };
-  $$<HTMLInputElement>('input[type=range]', bench).forEach((k) => k.addEventListener('input', labels));
-  [selA, selB, selLand].forEach((s) => s.addEventListener('change', labels));
-  const pickQ = (id: string) => {
-    q = QS.find((x) => x.id === id) ?? null; guess = '';
-    $$('.qcard', root).forEach((c) => c.classList.toggle('on', (c as HTMLElement).dataset.q === id));
-    $$('.qbody', root).forEach((c) => ((c as HTMLElement).hidden = (c as HTMLElement).dataset.q !== id));
-    $$('.qbody .choice', root).forEach((b) => { b.classList.remove('on'); });
-    bench.hidden = id !== 'own'; results.innerHTML = ''; verdict.textContent = ''; hint.hidden = true;
-    setScen({});
-    if (q) { selA.value = q.places[0]; selB.value = q.places[1] ?? ''; selLand.value = q.land; $('.need', bench).textContent = q.need; $('.hintbtn', root).hidden = false; $('.setup', bench).hidden = false; }
-    else { $('.need', bench).textContent = 'Pick one or two places, change something, and run it.'; $('.hintbtn', root).hidden = true; $('.setup', bench).hidden = true; }
-    labels();
-  };
-  $$<HTMLButtonElement>('.qcard', root).forEach((c) => c.addEventListener('click', () => { pickQ(c.dataset.q!); ($(`.qbody[data-q="${c.dataset.q}"]`, root) ?? bench).scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }));
-  $$<HTMLButtonElement>('.qbody .choice', root).forEach((b) => b.addEventListener('click', () => {
-    guess = b.dataset.g!; $$('.choice', b.parentElement!).forEach((x) => x.classList.toggle('on', x === b)); bench.hidden = false;
-  }));
-  $('.setup', bench).addEventListener('click', () => { if (q) setScen(q.preset); });
-  $('.reset', bench).addEventListener('click', () => setScen({}));
-  $('.hintbtn', root).addEventListener('click', () => { if (!q) return; hint.hidden = !hint.hidden; hint.innerHTML = `<p><b>How a modeller would test it.</b> ${q.hint}</p><p><b>What real studies found.</b> ${q.real}</p>`; });
-  $('.run', bench).addEventListener('click', () => {
-    const s = scen(), land = selLand.value as 'natural' | 'crop', sites = [selA.value, selB.value].filter(Boolean).map(byId);
-    const b = sites.map((p) => run(p, BASE, land)), x = sites.map((p) => run(p, s, land));
-    const row = (name: string, a: number, c: number, unit: string, dp = 0, asPct = false) => `<tr><th scope="row">${name}</th><td>${asPct ? pct(a) : a.toFixed(dp)}</td><td>${asPct ? pct(c) : c.toFixed(dp)}${unit}</td><td class="chg">${Math.abs(rel(a, c)) < 0.5 ? 'no change' : signed(rel(a, c))}</td></tr>`;
-    results.innerHTML = sites.map((p, i) => {
-      const m0 = b[i].mean, m1 = x[i].mean, head = land === 'crop' ? rel(m0.yield, m1.yield) : rel(m0.npp, m1.npp);
-      const rows = land === 'crop'
-        ? row('Grain harvested', m0.yield, m1.yield, ' t/ha', 1) + row('Days from sowing to harvest', m0.season, m1.season, '') + row('Water brake in the season', m0.brake, m1.brake, '', 2) + row('Water drunk by the crop', m0.transp, m1.transp, ' mm')
-        : row('Plant growth', m0.npp, m1.npp, ' g') + row('Ground shaded by trees', m0.tree, m1.tree, '', 0, true) + row('Ground shaded by grass', Math.min(1 - m0.tree, m0.grass), Math.min(1 - m1.tree, m1.grass), '', 0, true) + row('Carbon held in plants', m0.vegC / 1000, m1.vegC / 1000, ' kg', 1) + row('Carbon held in soil', m0.soilC / 1000, m1.soilC / 1000, ' kg', 1) + row('Water drunk by plants', m0.transp, m1.transp, ' mm');
-      return `<div class="res"><p class="place">${p.name}, ${p.country}</p><p class="big">${Math.abs(head) < 0.5 ? 'no change' : signed(head)}</p><p class="bigl">${land === 'crop' ? 'grain harvested' : 'plant growth'}, compared with today</p><table><thead><tr><th></th><th>today</th><th>experiment</th><th>change</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-    }).join('');
-    if (q) {
-      if (!q.ready(s)) verdict.textContent = `This run does not test the question cleanly yet. ${q.need} Or press "Set it up for me".`;
-      else { const j = q.judge(b, x); verdict.textContent = `${j.text} ${guess ? (j.pick === guess ? 'That matches your guess.' : 'That is not what you guessed.') : ''} Open the hint to see why, and what real studies found.`; }
-    } else verdict.textContent = 'Both runs used the same weather, day for day. Any difference comes from what you changed.';
-    results.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  });
-  pickQ('co2'); bench.hidden = true;
-}
-
 // ───────────────────────── tuning and testing ─────────────────────────
 function tuning() {
   const root = $('#p-tune'); if (!root) return;
@@ -523,7 +318,7 @@ function tuning() {
   const truth = C.alphaA, noise = [1.06, 0.95, 1.04, 0.93, 1.08, 0.97, 1.03, 0.94, 1.05, 0.98, 0.92, 1.07];
   const obs = new Map<string, number[]>();
   const measured = (site: Site) => { if (!obs.has(site.id)) obs.set(site.id, monthly(site).map((v, i) => v * noise[i])); return obs.get(site.id)!; };
-  let site = PLACES[2], tested = false;
+  let site = place('seville'), tested = false;
   const draw = () => {
     const a = +slider.value / 100; out.textContent = a.toFixed(2);
     const o = measured(site); C.alphaA = a; const m = monthly(site); C.alphaA = truth;
@@ -542,10 +337,10 @@ function tuning() {
   };
   let t = 0;
   slider.addEventListener('input', () => { out.textContent = (+slider.value / 100).toFixed(2); clearTimeout(t); t = window.setTimeout(draw, 120); });
-  test.addEventListener('click', () => { tested = !tested; site = tested ? AARHUS : PLACES[2]; test.textContent = tested ? 'Back to the tuning place' : 'Test it somewhere else'; draw(); });
+  test.addEventListener('click', () => { tested = !tested; site = place(tested ? 'aarhus' : 'seville'); test.textContent = tested ? 'Back to the tuning place' : 'Test it somewhere else'; draw(); });
   new IntersectionObserver((es, ob) => { if (es[0].isIntersecting) { draw(); ob.disconnect(); } }, { rootMargin: '300px' }).observe(root);
 }
 
 export function init() {
-  rules(); patchViewer(); lineOfCells(); lab(); tuning();
+  rules(); tuning();
 }
