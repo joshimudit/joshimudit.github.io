@@ -1,53 +1,55 @@
 ---
 import PatchLayout from '../../../layouts/PatchLayout.astro';
+import PatchSources from '../../../components/PatchSources.astro';
 import { blockSvg, BLOCK_VIEW } from '../../../lib/patch/block';
-const art = blockSvg({ style: 'niamey', tree: 0.34, grass: 0.55, size: 0.95, w1: 0.3, w2: 0.38, rainMm: 530, warm: 0, crop: 'millet', cropH: 0.67 });
+const art = blockSvg({ style: 'niamey', land: 'both', tree: 0.36, tree0: 0.36, grass: 0.55, size: 0.95, w1: 0.3, w2: 0.38, rainMm: 530, warm: 0, crop: 'millet', cropH: 0.67, labels: true });
 const questions = [
-  { q: 'How much will the grass grow in a normal year?', d: ['Yes', 'Years like this are in the measurements. Data-driven models are often very accurate here.'], p: ['Yes', 'It works the growth out from the weather of that year.'] },
-  { q: 'What if CO₂ in the air doubles?', d: ['Hard', 'No such world has been measured, so there is no pattern to learn from.'], p: ['Yes', 'CO₂ is inside the photosynthesis equation, so you can change it and run again.'] },
-  { q: 'Why did the trees die back?', d: ['Partly', 'It can show what tends to go together with tree loss, but not the chain of causes.'], p: ['Yes', 'You can follow the chain: less rain, drier deep soil, less photosynthesis, less growth.'] },
-  { q: 'How wet is the soil, where nobody measured it?', d: ['Only with data', 'It needs soil measurements from somewhere to learn from.'], p: ['Yes', 'The model has to keep track of soil water to work, so the number is there to read.'] },
-  { q: 'What if plants did not respond to CO₂ at all?', d: ['No', 'You cannot switch off a process the model does not contain.'], p: ['Yes', 'Switch that process off and compare the two runs. This is a model experiment.'] },
+  { q: 'How much will the grass grow in a normal year?', d: ['yes', 'Yes', 'Years like this are in its data. Often very accurate.'], p: ['yes', 'Yes', 'It works the growth out from that year’s weather.'] },
+  { q: 'What if CO₂ in the air doubles?', d: ['no', 'Hard', 'No such world has been measured, so there is nothing to learn from.'], p: ['yes', 'Yes', 'CO₂ is in the photosynthesis equation. Change it and run again.'] },
+  { q: 'Why did the trees die back?', d: ['part', 'Partly', 'It shows what goes together with tree loss, not the chain of causes.'], p: ['yes', 'Yes', 'Follow the chain: less rain, drier soil, less photosynthesis, less growth.'] },
+  { q: 'How wet is the soil where nobody measured it?', d: ['part', 'Only with data', 'It needs soil measurements from somewhere to learn from.'], p: ['yes', 'Yes', 'The model has to track soil water to work, so the number is there.'] },
+  { q: 'What if plants did not respond to CO₂ at all?', d: ['no', 'No', 'It cannot switch off a process it does not contain.'], p: ['yes', 'Yes', 'Switch the process off and compare. That is a model experiment.'] },
 ];
 ---
-<PatchLayout step={1} title="What is Patch?" description="Patch is a small process-based ecosystem model you can open up and run. Learn what such models are, look inside one, and run your own experiments.">
+<PatchLayout step={1} title="What is Patch?" description="Patch is a teaching aid that shows how process-based ecosystem models work. Look inside one, run your own experiments, and share what you find.">
   <section class="hero">
     <div class="art"><svg class="block" viewBox={BLOCK_VIEW} role="img" aria-label="A block of land cut out of the ground: natural vegetation at the back, a field of millet at the front, two soil layers with water underneath" set:html={art} /></div>
     <div>
-      <h1>Patch is a small ecosystem model you can open up and run</h1>
-      <p class="lead">It grows natural vegetation and crops on one block of land, day by day, from equations that describe how plants use light, water and CO₂. Models built this way are called <strong>process-based models</strong>.</p>
-      <p><strong>Why it matters.</strong> This is the kind of model scientists use to work out what a changing climate does to forests, grasslands and harvests. Few people ever see inside one. Here you can look inside, run your own experiments, and share what you find.</p>
+      <h1>See how an ecosystem model works, and run one yourself</h1>
+      <p class="lead">Scientists use <strong>process-based ecosystem models</strong> to study what a changing climate does to forests, grasslands and harvests. These models are large, and few people ever see inside one.</p>
+      <p><strong>Patch is a teaching aid for them.</strong> It keeps the core idea, growing natural vegetation and crops from equations for light, water and CO₂, and reduces it to one block of land, so that you can look inside, run experiments and share what you find.</p>
+      <p>Patch is not a research model and makes no predictions. It is inspired by <a href="/lab/patch/beyond/#agridry">LPJmL</a>, the model used in the AGRI-DRY project, and is built from published equations.</p>
+      <p><strong>Use it</strong> in a classroom, a workshop or at a science fair, or on your own. Five minutes is enough to try it. An hour is enough to explore it.</p>
       <div class="row"><a class="btn" href="/lab/patch/inside/">Start: look inside Patch</a><a class="btn ghost" href="/lab/patch/experiment/">Go straight to the experiments</a></div>
     </div>
   </section>
 
   <section class="sec">
     <h2>What is a process-based model?</h2>
-    <p>There are two broad families of model. They are built differently, so they can be asked different things.</p>
+    <p>Models come in two broad families. They are built differently, so they answer different questions.</p>
     <div class="fam">
-      <div>
+      <div class="fd">
         <h3>Data-driven model</h3>
-        <p class="sub">Statistical and machine-learning models: regression, GAMs, random forests, neural networks.</p>
-        <div class="flow"><div>measurements</div><i aria-hidden="true">→</i><div class="mid">learns the pattern that links them</div><i aria-hidden="true">→</i><div>prediction</div></div>
-        <p class="say">It finds the relationship between inputs and outputs in the data, however curved or complex. It does not need to know why the relationship exists.</p>
+        <p class="sub">Statistics and machine learning: regression, GAMs, random forests, neural networks.</p>
+        <div class="flow"><div>measurements</div><i aria-hidden="true">→</i><div class="mid">learns the pattern</div><i aria-hidden="true">→</i><div>prediction</div></div>
+        <p class="say">It learns how inputs and outputs go together. It does not need to know why.</p>
       </div>
-      <div>
+      <div class="fp">
         <h3>Process-based model</h3>
-        <p class="sub">Also called a mechanistic model. Patch is one. So is LPJmL, which is used in research.</p>
-        <div class="flow"><div>climate, soil, CO₂</div><i aria-hidden="true">→</i><div class="mid">equations for each process: photosynthesis, respiration, water balance</div><i aria-hidden="true">→</i><div>vegetation, carbon, water, yield</div></div>
-        <p class="say">It describes the processes themselves, with equations that come from experiments and theory. The result is whatever those processes add up to.</p>
+        <p class="sub">Also called a mechanistic model. LPJmL is one. Patch shows how they work.</p>
+        <div class="flow"><div>climate, soil, CO₂</div><i aria-hidden="true">→</i><div class="mid">equations for each process</div><i aria-hidden="true">→</i><div>vegetation, carbon, water, yield</div></div>
+        <p class="say">It describes the processes themselves, with equations from experiments and theory.</p>
       </div>
     </div>
 
     <div class="ask" id="ask">
       <h3>Ask each one a question</h3>
-      <p class="note">Pick a question and see what each family can do with it.</p>
-      <div class="row">{questions.map((x, i) => <button type="button" class={i === 0 ? 'opt on' : 'opt'} data-i={i} data-d0={x.d[0]} data-d1={x.d[1]} data-p0={x.p[0]} data-p1={x.p[1]}>{x.q}</button>)}</div>
+      <div class="row">{questions.map((x, i) => <button type="button" class={i === 0 ? 'opt on' : 'opt'} data-i={i} data-d={JSON.stringify(x.d)} data-p={JSON.stringify(x.p)}>{x.q}</button>)}</div>
       <div class="ans" aria-live="polite">
-        <div><span class="cond">Data-driven model</span><b class="d0">{questions[0].d[0]}</b><p class="d1">{questions[0].d[1]}</p></div>
-        <div><span class="cond">Process-based model</span><b class="p0">{questions[0].p[0]}</b><p class="p1">{questions[0].p[1]}</p></div>
+        <div class="fd"><span class="cond">Data-driven model</span><b class={'verdict ' + questions[0].d[0]}>{questions[0].d[1]}</b><p>{questions[0].d[2]}</p></div>
+        <div class="fp"><span class="cond">Process-based model</span><b class={'verdict ' + questions[0].p[0]}>{questions[0].p[1]}</b><p>{questions[0].p[2]}</p></div>
       </div>
-      <p style="margin-top: 1.2rem; max-width: 46rem">Neither family is better. Data-driven models are often sharper where measurements are plentiful. Process-based models need careful testing, but they reach conditions that have not been measured. Many studies use both.</p>
+      <p class="note" style="margin-top: 1rem; max-width: 46rem">Neither family is better. Data-driven models are often sharper where measurements are plentiful. Process-based models reach conditions nobody has measured, but need careful testing. Many studies use both.</p>
     </div>
   </section>
 
@@ -62,6 +64,7 @@ const questions = [
     <p class="note" style="margin-top: 1rem">In step 3 you do the first three yourself.</p>
   </section>
 
+  <PatchSources keys={['schaphoff', 'figure']} />
   <div class="next"><span></span><a class="btn" href="/lab/patch/inside/">Next: look inside Patch</a></div>
 </PatchLayout>
 
@@ -71,6 +74,10 @@ const questions = [
     const b = (e.target as Element).closest<HTMLElement>('button[data-i]');
     if (!b) return;
     ask.querySelectorAll('button[data-i]').forEach((x) => x.classList.toggle('on', x === b));
-    for (const k of ['d0', 'd1', 'p0', 'p1']) ask.querySelector('.' + k)!.textContent = b.dataset[k]!;
+    for (const k of ['d', 'p'] as const) {
+      const [kind, word, text] = JSON.parse(b.dataset[k]!), cell = ask.querySelector('.ans .f' + k)!;
+      const v = cell.querySelector('.verdict')!; v.className = 'verdict ' + kind; v.textContent = word;
+      cell.querySelector('p')!.textContent = text;
+    }
   });
 </script>

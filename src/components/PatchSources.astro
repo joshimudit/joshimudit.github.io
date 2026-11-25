@@ -1,0 +1,9 @@
+---
+import { REFS } from '../lib/patch/refs';
+interface Props { keys: string[] }
+const { keys } = Astro.props;
+---
+<details class="more sources">
+  <summary>Sources for this page</summary>
+  <ul class="refs">{keys.map((k) => <li set:html={REFS[k]} />)}</ul>
+</details>
