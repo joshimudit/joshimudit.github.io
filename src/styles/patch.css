@@ -14,10 +14,12 @@
 .pt-wrap { width: min(100% - 2rem, 75rem); margin-inline: auto; }
 .pt-skip { position: absolute; left: -999px; } .pt-skip:focus { left: 1rem; top: 1rem; background: #fff; padding: 0.5rem; z-index: 50; }
 
-/* way back to the main website */
+/* where this page sits in the main website */
 .pt-site { background: var(--ink); font-size: 0.86rem; }
-.pt-site .pt-wrap { display: flex; gap: 1.4rem; align-items: center; min-height: 2.1rem; }
-.pt-site a { color: #fff !important; text-decoration: none; padding-block: 0.35rem; } .pt-site a:hover { text-decoration: underline; }
+.pt-site ol { display: flex; flex-wrap: wrap; align-items: center; min-height: 2.1rem; margin-block: 0; padding: 0; list-style: none; }
+.pt-site li + li::before { content: '›'; margin-inline: 0.6rem; color: #9a9a9a; }
+.pt-site a { display: inline-block; padding-block: 0.35rem; color: #fff !important; text-decoration: none; } .pt-site a:hover { text-decoration: underline; }
+.pt-site a[aria-current] { font-weight: 600; }
 
 /* header with the four steps */
 .pt-top { border-bottom: 1px solid var(--ink); background: var(--bg); }
@@ -33,10 +35,14 @@
 
 /* funding strip, on every step: three equal parts, the wording under each logo */
 .pt-foot { border-top: 1px solid var(--ink); margin-top: 3.5rem; padding-block: 1.6rem 2rem; }
-.pt-funders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem 2.5rem; align-items: start; text-align: center; }
+.pt-funders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem 2.5rem; align-items: center; text-align: center; }
+/* who made Patch: closes every page, in the green of the AGRI-DRY logo (darkened so that it can be read) */
+.pt .pt-made { margin-top: 2.4rem; padding-top: 0.9rem; border-top: 3px solid #8da649; color: #567024; font-weight: 500; max-width: none; }
+.pt .pt-made a { color: inherit; }
+.pt .pt-feedback { margin-top: 0.3rem; font-size: 0.95rem; color: var(--mut); }
 .pt-funders > div { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
 .pt-funders img { display: block; height: 3.4rem; width: auto; max-width: 100%; object-fit: contain; }
-.pt-funders img { margin-block: 0.8rem; } .pt-funders img.agri { height: 5rem; margin-block: 0; }
+.pt-funders img.agri { height: 8.5rem; }
 .pt-funders p { font-size: 0.74rem; line-height: 1.4; color: var(--mut); max-width: 21rem; }
 
 /* type */

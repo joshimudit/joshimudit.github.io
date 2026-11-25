@@ -1,0 +1,99 @@
+---
+import PatchLayout from '../../../layouts/PatchLayout.astro';
+import PatchSources from '../../../components/PatchSources.astro';
+---
+<PatchLayout step={3} title="Experiment" description="Run experiments with Patch, a teaching aid for process-based ecosystem models: scenario analysis, hypothesis testing and understanding mechanisms in four ecosystems.">
+  <section id="exp">
+    <h1 class="exp-h">Run an experiment</h1>
+    <p class="lead">Scientists use a process-based model in three ways. Try each one.</p>
+    <div class="modes" role="group" aria-label="Kind of experiment">
+      <button type="button" class="opt on" data-v="scenario">Scenario analysis</button>
+      <button type="button" class="opt" data-v="hypothesis">Hypothesis testing</button>
+      <button type="button" class="opt" data-v="mechanism">Understanding mechanisms</button>
+    </div>
+    <p class="modeq"></p>
+
+    <div class="lab">
+      <div class="stage">
+        <div class="blocks">
+          <figure><figcaption class="capA"></figcaption><div class="blockA"></div></figure>
+          <figure><figcaption class="capB"></figcaption><div class="blockB"></div></figure>
+        </div>
+        <div class="yearrow"><strong class="yr">Today</strong><input class="year" type="range" min="0" max="10" step="1" value="0" aria-label="Year" disabled /><button type="button" class="btn ghost replay" hidden>Replay</button></div>
+        <p class="where note"></p>
+      </div>
+
+      <div class="main">
+        <div class="pane" data-pane="scenario">
+          <div class="stepq"><h2><i>1</i>Choose an ecosystem</h2><div class="tiles places"></div></div>
+          <div class="stepq"><h2><i>2</i>Choose what grows there</h2><div class="tiles lands"></div>
+            <div class="row cropsel" role="group" aria-label="Crop"><span class="cond">Crop</span><button type="button" class="opt" data-v="wheat">Wheat</button><button type="button" class="opt" data-v="maize">Maize</button><button type="button" class="opt" data-v="millet">Millet</button></div>
+          </div>
+          <div class="stepq"><h2><i>3</i>Choose a scenario</h2><div class="presets"></div>
+            <div class="build" hidden>
+              <p class="hint">Everything starts as today. Move one control and run it, to see what that change does alone. Then combine several to build a future.</p>
+              <div class="ctl"></div>
+            </div>
+          </div>
+          <div class="stepq"><h2><i>4</i>Run it</h2><div class="row"><button type="button" class="btn run">Run 10 years</button><p class="runnote note"></p></div></div>
+        </div>
+
+        <div class="pane" data-pane="hypothesis" hidden>
+          <div class="stepq"><h2><i>1</i>Pick a hypothesis</h2><div class="hyplist"></div>
+            <div class="custom build" hidden>
+              <p class="hint">A good hypothesis changes one thing and names one measure. For example: with precipitation −30% in the dry savanna, tree cover will decrease.</p>
+              <div class="crow"><label>Place<select class="cplace"></select></label><label>Land<select class="cland"><option value="natural">natural vegetation</option><option value="wheat">wheat field</option><option value="maize">maize field</option><option value="millet">millet field</option></select></label></div>
+              <div class="ctl"></div>
+              <div class="crow"><label>Then this<select class="cmeasure"></select></label><div class="row cdir" role="group" aria-label="Direction"><button type="button" class="opt" data-v="1">will increase</button><button type="button" class="opt" data-v="-1">will decrease</button><button type="button" class="opt" data-v="0">will stay about the same</button></div></div>
+              <p class="csent"></p>
+            </div>
+          </div>
+          <div class="stepq predict"><h2><i>2</i>Predict</h2><div class="row guess" role="group" aria-label="Your prediction"><button type="button" class="opt" data-v="1">The model will support it</button><button type="button" class="opt" data-v="2">The model will not support it</button></div></div>
+          <div class="stepq"><h2><i class="testno">3</i>Test it</h2><p class="hdid"></p><div class="row"><button type="button" class="btn run">Run the experiment</button><p class="runnote note"></p></div></div>
+        </div>
+
+        <div class="pane" data-pane="mechanism" hidden>
+          <div class="stepq"><h2><i>1</i>Choose an ecosystem</h2><div class="tiles places"></div>
+            <button type="button" class="opt customclim">Custom climate<small>change temperature, precipitation or CO₂</small></button>
+            <div class="build" hidden><div class="ctl"></div></div>
+          </div>
+          <div class="stepq"><h2><i>2</i>Switch a process off</h2><div class="procs"></div><p class="runnote note"></p></div>
+        </div>
+
+        <div class="results">
+          <p class="idle note">Nothing has run yet. Both pieces of land show the place as it is today.</p>
+          <div class="after" hidden aria-live="polite">
+            <div class="heads"></div>
+            <div class="outcome"><p class="verdict" hidden></p><p class="found"></p><p class="why"></p><p class="yours"></p>
+              <div class="row acts"><button type="button" class="btn mkcard">Create my result card</button><button type="button" class="btn ghost fixco2" hidden>Raise CO₂ to 700 ppm</button><button type="button" class="btn ghost reset">Start over</button></div>
+            </div>
+            <p class="key"></p>
+            <div class="graphs"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="toy">Each line is the mean of six runs with different weather. Patch reacts faster and more sharply than real vegetation does, and its numbers are illustrations, not predictions for any real place. What carries over to the real world is the direction of a change and the reason for it.</p>
+    <PatchSources keys={['sitch', 'bondeau', 'schaphoff', 'atkin', 'climate', 'enroads', 'figure']} />
+    <div class="next"><a class="btn ghost" href="/studio/patch/inside/">Back: look inside Patch</a><a class="btn" href="/studio/patch/beyond/">Next: beyond Patch</a></div>
+  </section>
+
+  <dialog class="card" aria-label="Your result card">
+    <canvas width="2400" height="1350"></canvas>
+    <div class="namerow"><label for="cardname">Your name on the card (optional)</label><input id="cardname" type="text" maxlength="40" autocomplete="name" /></div>
+    <div class="row">
+      <button type="button" class="btn dl">Download image</button>
+      <button type="button" class="btn ghost sh">Share</button>
+      <button type="button" class="btn ghost li">Share on LinkedIn</button>
+      <button type="button" class="btn ghost cp">Copy link</button>
+      <button type="button" class="btn ghost close">Close</button>
+    </div>
+    <p class="said" aria-live="polite"></p>
+  </dialog>
+</PatchLayout>
+
+<script>
+  import { experimentPage } from '../../../lib/patch/experiment';
+  experimentPage();
+</script>

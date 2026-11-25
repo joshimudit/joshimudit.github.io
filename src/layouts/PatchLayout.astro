@@ -9,10 +9,10 @@ import '../styles/patch.css';
 interface Props { step: 1 | 2 | 3 | 4; title: string; description: string }
 const { step, title, description } = Astro.props;
 const steps = [
-  { href: '/lab/patch/', label: 'What is Patch?' },
-  { href: '/lab/patch/inside/', label: 'Look inside Patch' },
-  { href: '/lab/patch/experiment/', label: 'Experiment' },
-  { href: '/lab/patch/beyond/', label: 'Beyond Patch' },
+  { href: '/studio/patch/', label: 'What is Patch?' },
+  { href: '/studio/patch/inside/', label: 'Look inside Patch' },
+  { href: '/studio/patch/experiment/', label: 'Experiment' },
+  { href: '/studio/patch/beyond/', label: 'Beyond Patch' },
 ];
 ---
 <!doctype html>
@@ -32,10 +32,10 @@ const steps = [
   </head>
   <body class="pt">
     <a class="pt-skip" href="#main">Skip to content</a>
-    <div class="pt-site"><div class="pt-wrap"><a href="/">← Mudit Joshi’s website</a><a href="/lab">Lab</a></div></div>
+    <nav class="pt-site" aria-label="Where you are"><ol class="pt-wrap"><li><a href="/">Mudit Joshi</a></li><li><a href="/studio">Studio</a></li><li><a href="/studio/patch/" aria-current="page">Patch</a></li></ol></nav>
     <header class="pt-top">
       <div class="pt-wrap pt-toprow">
-        <a class="pt-name" href="/lab/patch/">Patch</a>
+        <a class="pt-name" href="/studio/patch/">Patch</a>
         <nav aria-label="Steps">
           <ol class="pt-steps">
             {steps.map((s, i) => (
@@ -46,12 +46,16 @@ const steps = [
         <a class="pt-agri" href="https://agri-dry.org"><img src="/patch/agri-dry.png" alt="AGRI-DRY" width="318" height="347" /></a>
       </div>
     </header>
-    <main id="main" class="pt-wrap"><slot /></main>
+    <main id="main" class="pt-wrap">
+      <slot />
+      <p class="pt-made">Patch is outreach material from the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, made by <a href="/">Mudit Joshi</a>. It is a teaching aid, not a research model.</p>
+      <p class="pt-feedback">For any feedback, contact Mudit Joshi (<a href="mailto:mjoshi@bio.au.dk">mjoshi@bio.au.dk</a>).</p>
+    </main>
     <footer class="pt-foot">
       <div class="pt-wrap pt-funders">
-        <div><a href="https://agri-dry.org"><img class="agri" src="/patch/agri-dry.png" alt="AGRI-DRY" width="318" height="347" /></a><p>(Patch is outreach material from the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, made by <a href="/">Mudit Joshi</a>. It is a teaching aid, not a research model.)</p></div>
-        <div><img src="/patch/eu-funded.png" alt="Funded by the European Union" width="488" height="115" /><p>(This project has received funding from the European Union’s Horizon Europe research and innovation programme under the Marie Skłodowska-Curie Grant Agreement No 101120560.)</p></div>
-        <div><img src="/patch/ukri-epsrc.png" alt="UKRI Engineering and Physical Sciences Research Council" width="451" height="124" /><p>(This work was supported by the Engineering and Physical Sciences Research Council [grant number EP/Y03290X/1].)</p></div>
+        <div><a href="https://agri-dry.org"><img class="agri" src="/patch/agri-dry.png" alt="AGRI-DRY" width="318" height="347" /></a></div>
+        <div><img src="/patch/eu-funded.png" alt="Funded by the European Union" width="488" height="115" /><p>This project has received funding from the European Union’s Horizon Europe research and innovation programme under the Marie Skłodowska-Curie Grant Agreement No 101120560.</p></div>
+        <div><img src="/patch/ukri-epsrc.png" alt="UKRI Engineering and Physical Sciences Research Council" width="451" height="124" /><p>This work was supported by the Engineering and Physical Sciences Research Council [grant number EP/Y03290X/1].</p></div>
       </div>
     </footer>
   </body>
