@@ -86,7 +86,7 @@ async function draw(canvas: HTMLCanvasElement, d: CardData, name: string) {
   if (who) { let px = 68; ctx.font = `600 ${px}px ${SANS}`; while (ctx.measureText(who).width > room && px > 40) ctx.font = `600 ${--px}px ${SANS}`; ctx.fillText(who, right, y + 20); y += 76; }
   ctx.font = `500 40px ${SANS}`; ctx.fillText(date, right, y + 14); y += 58;
   ctx.font = `400 34px ${SANS}`; ctx.fillStyle = '#333'; ctx.fillText('Patch is a teaching aid from the AGRI-DRY network', right, y + 12); y += 50;
-  ctx.font = `600 36px ${SANS}`; ctx.fillStyle = '#111'; ctx.fillText('joshimudit.github.io/lab/patch', right, y + 12);
+  ctx.font = `600 36px ${SANS}`; ctx.fillStyle = '#111'; ctx.fillText('joshimudit.github.io/studio/patch', right, y + 12);
   ctx.lineWidth = 8; ctx.strokeStyle = '#111'; ctx.strokeRect(4, 4, W - 8, H - 8);
 }
 

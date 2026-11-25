@@ -9,10 +9,10 @@ import '../styles/patch.css';
 interface Props { step: 1 | 2 | 3 | 4; title: string; description: string }
 const { step, title, description } = Astro.props;
 const steps = [
-  { href: '/lab/patch/', label: 'What is Patch?' },
-  { href: '/lab/patch/inside/', label: 'Look inside Patch' },
-  { href: '/lab/patch/experiment/', label: 'Experiment' },
-  { href: '/lab/patch/beyond/', label: 'Beyond Patch' },
+  { href: '/studio/patch/', label: 'What is Patch?' },
+  { href: '/studio/patch/inside/', label: 'Look inside Patch' },
+  { href: '/studio/patch/experiment/', label: 'Experiment' },
+  { href: '/studio/patch/beyond/', label: 'Beyond Patch' },
 ];
 ---
 <!doctype html>
@@ -32,10 +32,10 @@ const steps = [
   </head>
   <body class="pt">
     <a class="pt-skip" href="#main">Skip to content</a>
-    <nav class="pt-site" aria-label="Where you are"><ol class="pt-wrap"><li><a href="/">Mudit Joshi</a></li><li><a href="/lab">Agentic Lab</a></li><li><a href="/lab/patch/" aria-current="page">Patch</a></li></ol></nav>
+    <nav class="pt-site" aria-label="Where you are"><ol class="pt-wrap"><li><a href="/">Mudit Joshi</a></li><li><a href="/studio">Studio</a></li><li><a href="/studio/patch/" aria-current="page">Patch</a></li></ol></nav>
     <header class="pt-top">
       <div class="pt-wrap pt-toprow">
-        <a class="pt-name" href="/lab/patch/">Patch</a>
+        <a class="pt-name" href="/studio/patch/">Patch</a>
         <nav aria-label="Steps">
           <ol class="pt-steps">
             {steps.map((s, i) => (
