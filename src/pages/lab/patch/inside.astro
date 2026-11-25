@@ -1,7 +1,8 @@
 ---
 import PatchLayout from '../../../layouts/PatchLayout.astro';
+import PatchSources from '../../../components/PatchSources.astro';
 import { blockSvg, BLOCK_VIEW } from '../../../lib/patch/block';
-const art = blockSvg({ style: 'hyderabad', tree: 0.42, grass: 0.5, size: 0.95, w1: 0.45, w2: 0.5, rainMm: 700, warm: 0, crop: 'millet', cropH: 0.7, labels: false });
+const art = blockSvg({ style: 'hyderabad', land: 'both', tree: 0.42, tree0: 0.42, grass: 0.5, size: 0.95, w1: 0.45, w2: 0.5, rainMm: 700, warm: 0, crop: 'millet', cropH: 0.7 });
 ---
 <PatchLayout step={2} title="Look inside Patch" description="Every process inside Patch, a small process-based ecosystem model: what it does in plain words, its equation and its source.">
   <section id="inside">
@@ -13,7 +14,6 @@ const art = blockSvg({ style: 'hyderabad', tree: 0.42, grass: 0.5, size: 0.95, w
         <div class="c"><h3>Carbon</h3><ul></ul></div>
         <div class="w"><h3>Water</h3><ul></ul></div>
         <div class="e"><h3>Energy</h3><ul></ul></div>
-        <div class="n"><h3>Nitrogen</h3><p>Not in Patch. Models used in research, such as LPJmL, include it.</p></div>
       </div>
       <div class="fig"><svg class="block" viewBox={BLOCK_VIEW} role="img" aria-label="The block of land, with a label on each process" set:html={art} /></div>
       <div class="detail" aria-live="polite">
@@ -42,6 +42,7 @@ const art = blockSvg({ style: 'hyderabad', tree: 0.42, grass: 0.5, size: 0.95, w
       <p style="margin-top: 1rem; max-width: 46rem">Because of these feedbacks, no single equation tells you the outcome. The model has to run all of them together, day after day. That is what you do in the next step.</p>
     </section>
 
+    <PatchSources keys={['bernacchi', 'bondeau', 'collatz', 'farquhar', 'haxeltine', 'jarvis', 'lloyd', 'manabe', 'monsi', 'priestley', 'ryan', 'sitch', 'walter', 'figure']} />
     <div class="next"><a class="btn ghost" href="/lab/patch/">Back: what is Patch?</a><a class="btn" href="/lab/patch/experiment/">Next: run an experiment</a></div>
   </section>
 </PatchLayout>

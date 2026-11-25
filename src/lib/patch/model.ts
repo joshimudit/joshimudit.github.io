@@ -126,7 +126,7 @@ export function sunGeometry(lat: number, doy: number) {
 }
 
 /** A scenario. dT in °C, rain as a multiplier, co2 in ppm. The switches default to on. */
-export interface Scen { dT: number; rain: number; co2: number; sow?: number; variety?: number; irrigate?: boolean; fert?: boolean; wue?: boolean; deepRoots?: boolean }
+export interface Scen { dT: number; rain: number; co2: number; sow?: number; variety?: number; irrigate?: boolean; fert?: boolean; wue?: boolean; deepRoots?: boolean; stress?: boolean; tlim?: boolean; evap?: boolean }
 export const BASE: Scen = { dT: 0, rain: 1, co2: C.co2ref, sow: 0, variety: 1 };
 
 export interface Day { T: number; P: number; par: number; pet: number }
@@ -247,9 +247,9 @@ function stepYear(st: State, scen: Scen, wx: Day[], cal: Calendar, daily?: DayOu
         const wr = rt[0] * s1 + rt[1] * s2;
         const supply = C.emax * wr * share;
         const demand = pet * share * poreFactor(f.c4, T, co2Pore);
-        const fW = demand > 0 ? Math.min(1, supply / demand) : 1;
+        const fW = scen.stress === false ? 1 : demand > 0 ? Math.min(1, supply / demand) : 1; // switch: water stress
         const tr = Math.min(supply, demand);
-        gpp = par * share * lightUse(f.c4, T, co2Leaf) * tempLimit(f.tl, T) * fW;
+        gpp = par * share * lightUse(f.c4, T, co2Leaf) * (scen.tlim === false ? 1 : tempLimit(f.tl, T)) * fW; // switch: temperature limits
         const tot = wr || 1;
         t1 += (tr * rt[0] * s1) / tot; t2 += (tr * rt[1] * s2) / tot;
         brakeSum += fW * share; brakeW += share; brakeDay = Math.min(brakeDay, fW);
@@ -277,7 +277,7 @@ function stepYear(st: State, scen: Scen, wx: Day[], cal: Calendar, daily?: DayOu
     }
     // water out
     t1 = Math.min(t1, st.w1); t2 = Math.min(t2, st.w2); st.w1 -= t1; st.w2 -= t2;
-    const ev = Math.min(st.w1, pet * (1 - caughtDay) * s1 * s1);
+    const ev = scen.evap === false ? 0 : Math.min(st.w1, pet * Math.max(0, 1 - caughtDay) * s1 * s1); // switch: evaporation from bare soil
     st.w1 -= ev; Y.transp += t1 + t2; Y.evap += ev;
     Y.decay += C.kSoil10 * breathing(T) * (0.25 + 0.75 * s1);
     Y.tree = Math.max(Y.tree, covT); Y.grass = Math.max(Y.grass, covG); Y.lai = Math.max(Y.lai, laiT + laiG);

@@ -5,7 +5,7 @@ import { site } from './sites';
 export function calibration() {
   const host = document.getElementById('calib');
   if (!host) return;
-  const days = sampleYear(site('seville')), MD = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], model: number[] = [];
+  const days = sampleYear(site('aarhus')), MD = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], model: number[] = [];
   let d = 0;
   for (const m of MD) { let s = 0; for (let i = 0; i < m; i++) s += days[d + i].gpp; model.push(s / m); d += m; }
   // The points are invented: the model's own curve at another value of the uncertain number, with some scatter.
@@ -19,7 +19,7 @@ export function calibration() {
     const gap = Math.sqrt(line.reduce((s, v, i) => s + (v - obs[i]) ** 2, 0) / 12) / (obs.reduce((s, v) => s + v, 0) / 12);
     let h = `<line x1="40" y1="150" x2="388" y2="150" stroke="#bdbdbd"/>`;
     'JFMAMJJASOND'.split('').forEach((m, i) => (h += `<text x="${X(i)}" y="166" text-anchor="middle">${m}</text>`));
-    h += `<text x="4" y="12">photosynthesis (GPP) by month, near Seville</text>`;
+    h += `<text x="4" y="12">photosynthesis (GPP) by month, near Aarhus</text>`;
     h += `<path d="${line.map((v, i) => `${i ? 'L' : 'M'}${X(i)},${Y(v).toFixed(1)}`).join('')}" fill="none" stroke="#111" stroke-width="3"/>`;
     h += obs.map((v, i) => `<circle cx="${X(i)}" cy="${Y(v).toFixed(1)}" r="5" fill="#fff" stroke="#b5480b" stroke-width="3"/>`).join('');
     svg.innerHTML = h;

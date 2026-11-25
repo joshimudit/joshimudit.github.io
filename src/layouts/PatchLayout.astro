@@ -32,6 +32,7 @@ const steps = [
   </head>
   <body class="pt">
     <a class="pt-skip" href="#main">Skip to content</a>
+    <div class="pt-site"><div class="pt-wrap"><a href="/">← Mudit Joshi’s website</a><a href="/lab">Lab</a></div></div>
     <header class="pt-top">
       <div class="pt-wrap pt-toprow">
         <a class="pt-name" href="/lab/patch/">Patch</a>
@@ -47,13 +48,10 @@ const steps = [
     </header>
     <main id="main" class="pt-wrap"><slot /></main>
     <footer class="pt-foot">
-      <div class="pt-wrap">
-        <p class="pt-foot-lead">Patch is outreach material from the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, made by <a href="/">Mudit Joshi</a>. It is a teaching model and is not used in research.</p>
-        <div class="pt-funders">
-          <a class="pt-flogo agri" href="https://agri-dry.org"><img src="/patch/agri-dry.png" alt="AGRI-DRY" width="318" height="347" /></a>
-          <div class="pt-fund"><img src="/patch/eu-funded.png" alt="Funded by the European Union" width="488" height="115" /><p>This project has received funding from the European Union’s Horizon Europe research and innovation programme under the Marie Skłodowska-Curie Grant Agreement No 101120560.</p></div>
-          <div class="pt-fund"><img src="/patch/ukri-epsrc.png" alt="UKRI Engineering and Physical Sciences Research Council" width="451" height="124" /><p>This work was supported by the Engineering and Physical Sciences Research Council [grant number EP/Y03290X/1].</p></div>
-        </div>
+      <div class="pt-wrap pt-funders">
+        <div><a href="https://agri-dry.org"><img class="agri" src="/patch/agri-dry.png" alt="AGRI-DRY" width="318" height="347" /></a><p>(Patch is outreach material from the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, made by <a href="/">Mudit Joshi</a>. It is a teaching aid, not a research model.)</p></div>
+        <div><img src="/patch/eu-funded.png" alt="Funded by the European Union" width="488" height="115" /><p>(This project has received funding from the European Union’s Horizon Europe research and innovation programme under the Marie Skłodowska-Curie Grant Agreement No 101120560.)</p></div>
+        <div><img src="/patch/ukri-epsrc.png" alt="UKRI Engineering and Physical Sciences Research Council" width="451" height="124" /><p>(This work was supported by the Engineering and Physical Sciences Research Council [grant number EP/Y03290X/1].)</p></div>
       </div>
     </footer>
   </body>
