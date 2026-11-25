@@ -140,7 +140,7 @@ export function weatherYear(site: Site, scen: Scen, seed: number, year: number):
 }
 
 // ---------- the patch ----------
-export interface Plant { pft: Pft; leaf: number; root: number; wood: number; phen: number; grain: number; phu: number; growing: boolean }
+export interface Plant { pft: Pft; leaf: number; root: number; wood: number; phen: number; grain: number; phu: number; days: number; growing: boolean }
 export interface YearOut {
   gpp: number; npp: number; rain: number; transp: number; evap: number; runoff: number;
   tree: number; grass: number;         // share of the ground shaded at the leafiest time of year
@@ -153,17 +153,20 @@ export interface Result { years: YearOut[]; daily: DayOut[]; mean: YearOut & { s
 
 export interface Opts { years?: number; seed?: number; land?: 'natural' | 'crop'; average?: number }
 
-function seedling(pft: Pft): Plant { return { pft, leaf: pft.tree ? 3 : 4, root: pft.tree ? 3 : 6, wood: pft.tree ? 5 : 0, phen: 0, grain: 0, phu: 0, growing: !pft.crop }; }
+function seedling(pft: Pft): Plant { return { pft, leaf: pft.tree ? 3 : 4, root: pft.tree ? 3 : 6, wood: pft.tree ? 5 : 0, phen: 0, grain: 0, phu: 0, days: 0, growing: !pft.crop }; }
 
 /** Warm places get tropical plant types, cool places temperate ones (the 15.5 °C rule of Sitch et al. 2003). */
 export const isTropical = (site: Site, dT = 0) => Math.min(...site.T) + dT >= 15.5;
 
-/** When farmers sow: at the first month with at least 100 mm of rain in warm places, in early April in cool ones. */
+/** When farmers sow: at the start of the four months that are wettest while still warm enough to grow. */
 export function sowingDay(site: Site) {
-  if (!isTropical(site)) return 95;
-  let m = site.P.findIndex((p) => p >= 100);
-  if (m < 0) m = site.P.indexOf(Math.max(...site.P));
-  let d = 0; for (let i = 0; i < m; i++) d += MD[i];
+  let best = 0, bestScore = -1;
+  for (let m = 0; m < 12; m++) {
+    let sc = 0;
+    for (let k = 0; k < 4; k++) { const i = (m + k) % 12; sc += Math.min(site.P[i], 100) * Math.max(0, Math.min(1, (site.T[i] - 5) / 10)); }
+    if (sc > bestScore + 1e-9) { bestScore = sc; best = m; }
+  }
+  let d = 0; for (let i = 0; i < best; i++) d += MD[i];
   return d + 5;
 }
 
@@ -176,7 +179,7 @@ export function runPatch(site: Site, scen: Scen = BASE, opts: Opts = {}): Result
   // crop calendar: the variety is chosen to ripen about 105 days after sowing in today's climate
   const crop = land === 'crop' ? plants[0] : null;
   const tBase = crop && crop.pft.c4 ? 10 : 0;
-  const sowDay = Math.max(0, Math.min(330, sowingDay(site) + (scen.sow ?? 0)));
+  const sowDay = (sowingDay(site) + (scen.sow ?? 0) + 365) % 365;
   let phuReq = 0;
   if (crop) { const s0 = sowingDay(site); for (let d = s0; d < s0 + 105; d++) phuReq += Math.max(0, interp(site.T, d % 365) - tBase); phuReq *= scen.variety ?? 1; }
   let w1 = C.cap[0] * 0.3, w2 = C.cap[1] * 0.3, tWarm = 10;
@@ -198,12 +201,12 @@ export function runPatch(site: Site, scen: Scen = BASE, opts: Opts = {}): Result
       const s1 = w1 / C.cap[0], s2 = w2 / C.cap[1];
       // crop calendar
       if (crop) {
-        if (d === sowDay) { crop.growing = true; crop.leaf = 10; crop.root = 6; crop.grain = 0; crop.phu = 0; crop.phen = 1; }
+        if (d === sowDay) { crop.growing = true; crop.leaf = 10; crop.root = 6; crop.grain = 0; crop.phu = 0; crop.days = 0; crop.phen = 1; }
         if (crop.growing) {
           crop.phu += Math.max(0, T - tBase);
-          Y.season++;
-          if (crop.phu >= phuReq || Y.season > 240) { // harvest
-            Y.yield = crop.grain / 0.45 / 100; Y.litter += crop.leaf + crop.root;
+          crop.days++;
+          if (crop.phu >= phuReq || crop.days > 240) { // harvest
+            Y.yield = crop.grain / 0.45 / 100; Y.season = crop.days; Y.litter += crop.leaf + crop.root;
             crop.growing = false; crop.leaf = 0; crop.root = 0; crop.grain = 0; crop.phen = 0;
           }
         }
