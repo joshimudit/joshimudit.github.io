@@ -10,7 +10,8 @@
 import type { Site } from './sites';
 
 // ---------- plant types ----------
-export type PftId = 'c4grass' | 'c3grass' | 'troptree' | 'temptree' | 'c4crop' | 'c3crop';
+export type CropId = 'wheat' | 'maize' | 'millet';
+export type PftId = 'c4grass' | 'c3grass' | 'troptree' | 'temptree' | CropId;
 export interface Pft {
   id: PftId; name: string; c4: boolean; tree: boolean; crop: boolean;
   tl: [number, number, number, number]; // temperature limits for photosynthesis, °C (after Sitch et al. 2003, Table 2)
@@ -21,14 +22,19 @@ export interface Pft {
   resp: number;                         // maintenance respiration of leaves and roots at 10 °C, per day
   respWood: number;
   cold: boolean;                        // sheds leaves when cold (true) or only when dry (false)
+  tBase?: number;                       // crops: warmth is counted above this temperature, °C
+  season?: number;                      // crops: days from sowing to harvest in today's climate, usual variety
+  grain?: number;                       // crops: share of growth after flowering that becomes grain
 }
 export const PFT: Record<PftId, Pft> = {
-  c4grass:  { id: 'c4grass',  name: 'savanna grass', c4: true,  tree: false, crop: false, tl: [6, 20, 45, 55],  roots: [0.9, 0.1], sla: 0.030, alloc: [0.4, 0.6, 0],     turn: [2, 1, 0],      resp: 0.0011, respWood: 0, cold: false },
-  c3grass:  { id: 'c3grass',  name: 'cool-season grass', c4: false, tree: false, crop: false, tl: [-4, 10, 30, 45], roots: [0.9, 0.1], sla: 0.030, alloc: [0.4, 0.6, 0],     turn: [2, 1, 0],      resp: 0.0026, respWood: 0, cold: true },
+  c4grass:  { id: 'c4grass',  name: 'C4 grass', c4: true,  tree: false, crop: false, tl: [6, 20, 45, 55],  roots: [0.9, 0.1], sla: 0.030, alloc: [0.4, 0.6, 0],     turn: [2, 1, 0],      resp: 0.0011, respWood: 0, cold: false },
+  c3grass:  { id: 'c3grass',  name: 'C3 grass', c4: false, tree: false, crop: false, tl: [-4, 10, 30, 45], roots: [0.9, 0.1], sla: 0.030, alloc: [0.4, 0.6, 0],     turn: [2, 1, 0],      resp: 0.0026, respWood: 0, cold: true },
   troptree: { id: 'troptree', name: 'tropical tree', c4: false, tree: true,  crop: false, tl: [2, 25, 30, 55],  roots: [0.6, 0.4], sla: 0.020, alloc: [0.35, 0.25, 0.4], turn: [2, 1, 0.025],  resp: 0.0016, respWood: 0.000013, cold: false },
-  temptree: { id: 'temptree', name: 'broadleaf tree', c4: false, tree: true,  crop: false, tl: [-4, 20, 25, 38], roots: [0.7, 0.3], sla: 0.020, alloc: [0.35, 0.25, 0.4], turn: [2, 1, 0.025],  resp: 0.0026, respWood: 0.000018, cold: true },
-  c4crop:   { id: 'c4crop',   name: 'millet',  c4: true,  tree: false, crop: true, tl: [6, 20, 45, 55],  roots: [0.9, 0.1], sla: 0.030, alloc: [0.6, 0.4, 0], turn: [0, 0, 0], resp: 0.00045, respWood: 0, cold: false },
-  c3crop:   { id: 'c3crop',   name: 'wheat',   c4: false, tree: false, crop: true, tl: [-4, 10, 30, 45], roots: [0.9, 0.1], sla: 0.030, alloc: [0.6, 0.4, 0], turn: [0, 0, 0], resp: 0.0011, respWood: 0, cold: false },
+  temptree: { id: 'temptree', name: 'temperate tree', c4: false, tree: true,  crop: false, tl: [-4, 20, 25, 38], roots: [0.7, 0.3], sla: 0.020, alloc: [0.35, 0.25, 0.4], turn: [2, 1, 0.025],  resp: 0.0026, respWood: 0.000018, cold: true },
+  // crops (toy values in the spirit of Bondeau et al. 2007: a C3 cereal and two C4 cereals)
+  wheat:  { id: 'wheat',  name: 'wheat',  c4: false, tree: false, crop: true, tl: [-4, 10, 30, 45], roots: [0.9, 0.1], sla: 0.030, alloc: [0.6, 0.4, 0], turn: [0, 0, 0], resp: 0.0011,  respWood: 0, cold: false, tBase: 0,  season: 105, grain: 0.45 },
+  maize:  { id: 'maize',  name: 'maize',  c4: true,  tree: false, crop: true, tl: [8, 22, 38, 48],  roots: [0.9, 0.1], sla: 0.030, alloc: [0.6, 0.4, 0], turn: [0, 0, 0], resp: 0.00055, respWood: 0, cold: false, tBase: 8,  season: 115, grain: 0.5 },
+  millet: { id: 'millet', name: 'millet', c4: true,  tree: false, crop: true, tl: [10, 25, 45, 55], roots: [0.8, 0.2], sla: 0.030, alloc: [0.6, 0.4, 0], turn: [0, 0, 0], resp: 0.00045, respWood: 0, cold: false, tBase: 10, season: 95,  grain: 0.4 },
 };
 
 // ---------- constants (all from the cited papers unless marked "toy") ----------
@@ -47,6 +53,9 @@ export const C = {
   co2ref: 420,       // CO2 in the air in recent years, ppm
   kSoil10: 1 / (25 * 365), // soil carbon decay at 10 °C in moist soil, per day (toy: one pool)
   quitNpp: 0,        // a tree type with a negative yearly carbon balance loses part of its biomass
+  dieBack: 0.2,      // the share it loses in such a year (toy)
+  starve: 1,         // most tissue a starving plant can use up in one day, as a share (toy)
+  acclim: 0.5,       // share of a lasting warming that plant respiration gets used to (toy; idea from Atkin & Tjoelker 2003)
 };
 
 // ---------- the rules, as small functions the page can show one at a time ----------
@@ -116,7 +125,8 @@ export function sunGeometry(lat: number, doy: number) {
   return { Ra: Math.max(0, Ra), dayLength: (24 / Math.PI) * ws };
 }
 
-export interface Scen { dT: number; rain: number; co2: number; sow?: number; variety?: number }
+/** A scenario. dT in °C, rain as a multiplier, co2 in ppm. The switches default to on. */
+export interface Scen { dT: number; rain: number; co2: number; sow?: number; variety?: number; irrigate?: boolean; fert?: boolean; wue?: boolean; deepRoots?: boolean }
 export const BASE: Scen = { dT: 0, rain: 1, co2: C.co2ref, sow: 0, variety: 1 };
 
 export interface Day { T: number; P: number; par: number; pet: number }
@@ -142,21 +152,23 @@ export function weatherYear(site: Site, scen: Scen, seed: number, year: number):
 // ---------- the patch ----------
 export interface Plant { pft: Pft; leaf: number; root: number; wood: number; phen: number; grain: number; phu: number; days: number; growing: boolean }
 export interface YearOut {
-  gpp: number; npp: number; rain: number; transp: number; evap: number; runoff: number;
+  gpp: number; npp: number; rain: number; transp: number; evap: number; runoff: number; irrig: number;
   tree: number; grass: number;         // share of the ground shaded at the leafiest time of year
   lai: number; vegC: number; litter: number; decay: number;
   yield: number; season: number;       // crop: tonnes of grain per hectare, days from sowing to harvest
-  brake: number;                       // growing-season mean of the water brake (1 = never thirsty)
+  w1: number; w2: number;              // yearly mean of how full the top and the deep soil layer are (0 to 1)
+  brake: number;                       // growing-season mean of the water stress factor (1 = never short of water)
 }
-export interface DayOut { T: number; P: number; par: number; pet: number; w1: number; w2: number; gpp: number; resp: number; transp: number; evap: number; brake: number; laiTree: number; laiGrass: number; coverTree: number; coverGrass: number; grain: number; caught: number }
-export interface Result { years: YearOut[]; daily: DayOut[]; mean: YearOut & { soilC: number }; types: string[]; tropical: boolean; sowDay: number }
-
-export interface Opts { years?: number; seed?: number; land?: 'natural' | 'crop'; average?: number }
+export interface DayOut { T: number; P: number; par: number; gpp: number; brake: number; w1: number; w2: number }
+export type Land = 'natural' | CropId;
+interface State { plants: Plant[]; w1: number; w2: number; tWarm: number }
+interface Calendar { sowDay: number; phuReq: number; tBase: number }
 
 function seedling(pft: Pft): Plant { return { pft, leaf: pft.tree ? 3 : 4, root: pft.tree ? 3 : 6, wood: pft.tree ? 5 : 0, phen: 0, grain: 0, phu: 0, days: 0, growing: !pft.crop }; }
+const clone = (s: State): State => ({ plants: s.plants.map((p) => ({ ...p })), w1: s.w1, w2: s.w2, tWarm: s.tWarm });
 
 /** Warm places get tropical plant types, cool places temperate ones (the 15.5 °C rule of Sitch et al. 2003). */
-export const isTropical = (site: Site, dT = 0) => Math.min(...site.T) + dT >= 15.5;
+export const isTropical = (site: Site) => Math.min(...site.T) >= 15.5;
 
 /** When farmers sow: at the start of the four months that are wettest while still warm enough to grow. */
 export function sowingDay(site: Site) {
@@ -167,121 +179,180 @@ export function sowingDay(site: Site) {
     if (sc > bestScore + 1e-9) { bestScore = sc; best = m; }
   }
   let d = 0; for (let i = 0; i < best; i++) d += MD[i];
-  return d + 5;
+  return d + 20;
 }
 
-export function runPatch(site: Site, scen: Scen = BASE, opts: Opts = {}): Result {
-  const years = opts.years ?? 220, seed = opts.seed ?? 11, land = opts.land ?? 'natural', avgN = Math.min(opts.average ?? 40, years);
-  const tropical = isTropical(site, scen.dT);
-  const plants: Plant[] = land === 'crop'
-    ? [seedling(PFT[isTropical(site) ? 'c4crop' : 'c3crop'])]
-    : [seedling(PFT[tropical ? 'troptree' : 'temptree']), seedling(PFT[tropical ? 'c4grass' : 'c3grass'])];
-  // crop calendar: the variety is chosen to ripen about 105 days after sowing in today's climate
-  const crop = land === 'crop' ? plants[0] : null;
-  const tBase = crop && crop.pft.c4 ? 10 : 0;
-  const sowDay = (sowingDay(site) + (scen.sow ?? 0) + 365) % 365;
+function calendar(site: Site, land: Land, scen: Scen): Calendar {
+  if (land === 'natural') return { sowDay: -1, phuReq: 0, tBase: 0 };
+  const f = PFT[land], tBase = f.tBase ?? 0, s0 = sowingDay(site);
   let phuReq = 0;
-  if (crop) { const s0 = sowingDay(site); for (let d = s0; d < s0 + 105; d++) phuReq += Math.max(0, interp(site.T, d % 365) - tBase); phuReq *= scen.variety ?? 1; }
-  let w1 = C.cap[0] * 0.3, w2 = C.cap[1] * 0.3, tWarm = 10;
-  const out: YearOut[] = []; let daily: DayOut[] = [];
-  for (let y = 0; y < years; y++) {
-    const wx = weatherYear(site, scen, seed, y);
-    const keep = y === years - 1;
-    if (keep) daily = [];
-    const Y: YearOut = { gpp: 0, npp: 0, rain: 0, transp: 0, evap: 0, runoff: 0, tree: 0, grass: 0, lai: 0, vegC: 0, litter: 0, decay: 0, yield: 0, season: 0, brake: 0 };
-    const nppOf = plants.map(() => 0);
-    let brakeSum = 0, brakeW = 0;
-    for (let d = 0; d < 365; d++) {
-      const { T, P, par, pet } = wx[d];
-      tWarm += (T - tWarm) / 10;
-      // water in
-      w1 += P; Y.rain += P;
-      if (w1 > C.cap[0]) { w2 += w1 - C.cap[0]; w1 = C.cap[0]; }
-      if (w2 > C.cap[1]) { Y.runoff += w2 - C.cap[1]; w2 = C.cap[1]; }
-      const s1 = w1 / C.cap[0], s2 = w2 / C.cap[1];
-      // crop calendar
-      if (crop) {
-        if (d === sowDay) { crop.growing = true; crop.leaf = 10; crop.root = 6; crop.grain = 0; crop.phu = 0; crop.days = 0; crop.phen = 1; }
-        if (crop.growing) {
-          crop.phu += Math.max(0, T - tBase);
-          crop.days++;
-          if (crop.phu >= phuReq || crop.days > 240) { // harvest
-            Y.yield = crop.grain / 0.45 / 100; Y.season = crop.days; Y.litter += crop.leaf + crop.root;
-            crop.growing = false; crop.leaf = 0; crop.root = 0; crop.grain = 0; crop.phen = 0;
-          }
-        }
-      }
-      // leaves out or not
-      for (const p of plants) {
-        if (p.pft.crop) continue;
-        const wr = p.pft.roots[0] * s1 + p.pft.roots[1] * s2;
-        const want = wr > 0.2 && (!p.pft.cold || tWarm > 5) ? 1 : wr < 0.08 || (p.pft.cold && tWarm < 4) ? 0 : p.phen > 0.5 ? 1 : 0;
-        p.phen += want > p.phen ? Math.min(1 / 10, want - p.phen) : -Math.min(1 / 20, p.phen - want);
-      }
-      // light: trees stand above grass
-      let above = 0, gppDay = 0, respDay = 0, trDay = 0, caughtDay = 0, brakeDay = 1, covT = 0, covG = 0, laiT = 0, laiG = 0;
-      const take1: number[] = [], take2: number[] = [];
-      for (let i = 0; i < plants.length; i++) {
-        const p = plants[i], f = p.pft;
-        const lai = p.leaf * f.sla * p.phen;
-        const share = (1 - above) * lightCaught(lai);
-        if (f.tree) { covT = share; laiT = lai; above = share; } else { covG = share; laiG = lai; }
-        caughtDay += share;
-        let gpp = 0, tr = 0, fW = 1;
-        if (share > 0.001 && (p.growing || !f.crop)) {
-          const wr = f.roots[0] * s1 + f.roots[1] * s2;
-          const supply = C.emax * wr * share;
-          const demand = pet * share * poreFactor(f.c4, T, scen.co2);
-          fW = demand > 0 ? Math.min(1, supply / demand) : 1;
-          tr = Math.min(supply, demand);
-          gpp = par * share * lightUse(f.c4, T, scen.co2) * tempLimit(f.tl, T) * fW;
-          const tot = f.roots[0] * s1 + f.roots[1] * s2 || 1;
-          take1[i] = (tr * f.roots[0] * s1) / tot; take2[i] = (tr * f.roots[1] * s2) / tot;
-          brakeSum += fW * share; brakeW += share; brakeDay = Math.min(brakeDay, fW);
-        } else { take1[i] = 0; take2[i] = 0; }
-        // breathing, then growth
-        const g = breathing(T);
-        const rm = ((p.leaf * p.phen + p.root) * f.resp + p.wood * f.respWood) * g;
-        let net = gpp - rm;
-        if (net > 0) {
-          net *= 1 - C.growthResp;
-          if (f.crop) {
-            const stage = phuReq > 0 ? p.phu / phuReq : 1;
-            if (stage < 0.4) { p.leaf += net * 0.65; p.root += net * 0.35; }
-            else { p.grain += net * 0.45; p.leaf += net * 0.1; p.root += net * 0.1; Y.litter += net * 0.35; } // the rest builds stem and husk
-            if (stage > 0.75) { const fall = p.leaf * 0.03; p.leaf -= fall; Y.litter += fall; }
-          } else { p.leaf += net * f.alloc[0]; p.root += net * f.alloc[1]; p.wood += net * f.alloc[2]; }
-        } else if (p.leaf + p.root > 0) { // starving: tissue is used up
-          const k = Math.max(0, 1 + net / (p.leaf + p.root)); p.leaf *= k; p.root *= k;
-        }
-        nppOf[i] += net; Y.gpp += gpp; Y.npp += net; gppDay += gpp; respDay += rm + (net > 0 ? (net / (1 - C.growthResp)) * C.growthResp : 0); trDay += tr;
-        // leaf fall and death
-        if (!f.crop) {
-          const l = (p.leaf * f.turn[0]) / 365, r = (p.root * f.turn[1]) / 365, w = (p.wood * f.turn[2]) / 365;
-          p.leaf -= l; p.root -= r; p.wood -= w; Y.litter += l + r + w;
-        }
-      }
-      // water out
-      let t1 = take1.reduce((a, b) => a + b, 0), t2 = take2.reduce((a, b) => a + b, 0);
-      t1 = Math.min(t1, w1); t2 = Math.min(t2, w2); w1 -= t1; w2 -= t2;
-      const ev = Math.min(w1, pet * (1 - caughtDay) * s1 * s1);
-      w1 -= ev; Y.transp += t1 + t2; Y.evap += ev;
-      Y.decay += C.kSoil10 * breathing(T) * (0.25 + 0.75 * s1);
-      Y.tree = Math.max(Y.tree, covT); Y.grass = Math.max(Y.grass, covG); Y.lai = Math.max(Y.lai, laiT + laiG);
-      if (keep) daily.push({ T, P, par, pet, w1: w1 / C.cap[0], w2: w2 / C.cap[1], gpp: gppDay, resp: respDay, transp: trDay, evap: ev, brake: brakeDay, laiTree: laiT, laiGrass: laiG, coverTree: covT, coverGrass: covG, grain: crop ? crop.grain : 0, caught: caughtDay });
-    }
-    // once a year: trees that lost carbon die back; new seedlings arrive if there was any rain
-    plants.forEach((p, i) => {
-      if (p.pft.crop) return;
-      if (p.pft.tree && nppOf[i] <= C.quitNpp) { const lost = 0.2; Y.litter += (p.leaf + p.root + p.wood) * lost; p.leaf *= 1 - lost; p.root *= 1 - lost; p.wood *= 1 - lost; }
-      if (Y.rain > 100) { const s = seedling(p.pft); p.leaf += s.leaf * 0.5; p.root += s.root * 0.5; p.wood += s.wood * 0.5; }
-    });
-    Y.vegC = plants.reduce((a, p) => a + p.leaf + p.root + p.wood, 0);
-    Y.brake = brakeW > 0 ? brakeSum / brakeW : 1;
-    out.push(Y);
-  }
-  const last = out.slice(-avgN), mean = { ...last[0] } as YearOut & { soilC: number };
-  for (const k of Object.keys(last[0]) as (keyof YearOut)[]) mean[k] = last.reduce((a, r) => a + r[k], 0) / last.length;
-  mean.soilC = mean.decay > 0 ? mean.litter / mean.decay : 0; // soil carbon in balance: what falls in equals what rots away
-  return { years: out, daily, mean, types: plants.map((p) => p.pft.name), tropical, sowDay };
+  for (let d = s0; d < s0 + (f.season ?? 105); d++) phuReq += Math.max(0, interp(site.T, d % 365) - tBase);
+  return { sowDay: (s0 + (scen.sow ?? 0) + 365) % 365, phuReq: phuReq * (scen.variety ?? 1), tBase };
 }
+
+function start(site: Site, land: Land): State {
+  const tropical = isTropical(site);
+  const plants = land === 'natural' ? [seedling(PFT[tropical ? 'troptree' : 'temptree']), seedling(PFT[tropical ? 'c4grass' : 'c3grass'])] : [seedling(PFT[land])];
+  return { plants, w1: C.cap[0] * 0.3, w2: C.cap[1] * 0.3, tWarm: 10 };
+}
+
+/** One year of the patch, day by day. Changes the state and returns the year's totals. */
+function stepYear(st: State, scen: Scen, wx: Day[], cal: Calendar, daily?: DayOut[]): YearOut {
+  const plants = st.plants, crop = plants[0].pft.crop ? plants[0] : null;
+  const co2Leaf = scen.fert === false ? C.co2ref : scen.co2;   // switch: CO2 fertilisation
+  const co2Pore = scen.wue === false ? C.co2ref : scen.co2;    // switch: CO2 water saving
+  const Y: YearOut = { gpp: 0, npp: 0, rain: 0, transp: 0, evap: 0, runoff: 0, irrig: 0, tree: 0, grass: 0, lai: 0, vegC: 0, litter: 0, decay: 0, yield: 0, season: 0, w1: 0, w2: 0, brake: 0 };
+  const nppOf = plants.map(() => 0);
+  let brakeSum = 0, brakeW = 0;
+  for (let d = 0; d < 365; d++) {
+    const { T, P, par, pet } = wx[d];
+    st.tWarm += (T - st.tWarm) / 10;
+    // water in
+    st.w1 += P; Y.rain += P;
+    if (crop && crop.growing && scen.irrigate && st.w1 < 0.5 * C.cap[0]) { const add = 0.8 * C.cap[0] - st.w1; st.w1 += add; Y.irrig += add; } // switch: irrigation
+    if (st.w1 > C.cap[0]) { st.w2 += st.w1 - C.cap[0]; st.w1 = C.cap[0]; }
+    if (st.w2 > C.cap[1]) { Y.runoff += st.w2 - C.cap[1]; st.w2 = C.cap[1]; }
+    const s1 = st.w1 / C.cap[0], s2 = st.w2 / C.cap[1];
+    // crop calendar
+    if (crop) {
+      if (d === cal.sowDay && !crop.growing) { crop.growing = true; crop.leaf = 10; crop.root = 6; crop.grain = 0; crop.phu = 0; crop.days = 0; crop.phen = 1; }
+      if (crop.growing) {
+        crop.phu += Math.max(0, T - cal.tBase);
+        crop.days++;
+        if (crop.phu >= cal.phuReq || crop.days > 240) { // harvest
+          Y.yield = crop.grain / 0.45 / 100; Y.season = crop.days; Y.litter += crop.leaf + crop.root;
+          crop.growing = false; crop.leaf = 0; crop.root = 0; crop.grain = 0; crop.phen = 0;
+        }
+      }
+    }
+    // leaves out or not
+    for (const p of plants) {
+      if (p.pft.crop) continue;
+      const rt = p.pft.tree && scen.deepRoots === false ? [1, 0] : p.pft.roots; // switch: deep tree roots
+      const wr = rt[0] * s1 + rt[1] * s2;
+      const want = wr > 0.2 && (!p.pft.cold || st.tWarm > 5) ? 1 : wr < 0.08 || (p.pft.cold && st.tWarm < 4) ? 0 : p.phen > 0.5 ? 1 : 0;
+      p.phen += want > p.phen ? Math.min(1 / 10, want - p.phen) : -Math.min(1 / 20, p.phen - want);
+    }
+    // light: trees stand above grass
+    let above = 0, gppDay = 0, caughtDay = 0, brakeDay = 1, covT = 0, covG = 0, laiT = 0, laiG = 0, t1 = 0, t2 = 0;
+    for (let i = 0; i < plants.length; i++) {
+      const p = plants[i], f = p.pft;
+      const rt = f.tree && scen.deepRoots === false ? [1, 0] : f.roots;
+      const lai = p.leaf * f.sla * p.phen;
+      const share = (1 - above) * lightCaught(lai);
+      if (f.tree) { covT = share; laiT = lai; above = share; } else { covG = share; laiG = lai; }
+      caughtDay += share;
+      let gpp = 0;
+      if (share > 0.001 && (p.growing || !f.crop)) {
+        const wr = rt[0] * s1 + rt[1] * s2;
+        const supply = C.emax * wr * share;
+        const demand = pet * share * poreFactor(f.c4, T, co2Pore);
+        const fW = demand > 0 ? Math.min(1, supply / demand) : 1;
+        const tr = Math.min(supply, demand);
+        gpp = par * share * lightUse(f.c4, T, co2Leaf) * tempLimit(f.tl, T) * fW;
+        const tot = wr || 1;
+        t1 += (tr * rt[0] * s1) / tot; t2 += (tr * rt[1] * s2) / tot;
+        brakeSum += fW * share; brakeW += share; brakeDay = Math.min(brakeDay, fW);
+      }
+      // respiration, then growth
+      const rm = ((p.leaf * p.phen + p.root) * f.resp + p.wood * f.respWood) * breathing(T - C.acclim * scen.dT);
+      let net = gpp - rm;
+      if (net > 0) {
+        net *= 1 - C.growthResp;
+        if (f.crop) {
+          const stage = cal.phuReq > 0 ? p.phu / cal.phuReq : 1, gs = f.grain ?? 0.45;
+          if (stage < 0.4) { p.leaf += net * 0.65; p.root += net * 0.35; }
+          else { p.grain += net * gs; p.leaf += net * 0.1; p.root += net * 0.1; Y.litter += net * (0.8 - gs); } // the rest builds stem and husk
+          if (stage > 0.75) { const fall = p.leaf * 0.03; p.leaf -= fall; Y.litter += fall; }
+        } else { p.leaf += net * f.alloc[0]; p.root += net * f.alloc[1]; p.wood += net * f.alloc[2]; }
+      } else if (p.leaf + p.root > 0) { // starving: tissue is used up
+        const k = Math.max(1 - C.starve, 1 + net / (p.leaf + p.root)); p.leaf *= k; p.root *= k;
+      }
+      nppOf[i] += net; Y.gpp += gpp; Y.npp += net; gppDay += gpp;
+      // leaf fall and death
+      if (!f.crop) {
+        const l = (p.leaf * f.turn[0]) / 365, r = (p.root * f.turn[1]) / 365, w = (p.wood * f.turn[2]) / 365;
+        p.leaf -= l; p.root -= r; p.wood -= w; Y.litter += l + r + w;
+      }
+    }
+    // water out
+    t1 = Math.min(t1, st.w1); t2 = Math.min(t2, st.w2); st.w1 -= t1; st.w2 -= t2;
+    const ev = Math.min(st.w1, pet * (1 - caughtDay) * s1 * s1);
+    st.w1 -= ev; Y.transp += t1 + t2; Y.evap += ev;
+    Y.decay += C.kSoil10 * breathing(T) * (0.25 + 0.75 * s1);
+    Y.tree = Math.max(Y.tree, covT); Y.grass = Math.max(Y.grass, covG); Y.lai = Math.max(Y.lai, laiT + laiG);
+    Y.w1 += st.w1 / C.cap[0] / 365; Y.w2 += st.w2 / C.cap[1] / 365;
+    if (daily) daily.push({ T, P, par, gpp: gppDay, brake: brakeDay, w1: st.w1 / C.cap[0], w2: st.w2 / C.cap[1] });
+  }
+  // once a year: trees that lost carbon die back; new seedlings arrive if there was any rain
+  plants.forEach((p, i) => {
+    if (p.pft.crop) return;
+    if (p.pft.tree && nppOf[i] <= C.quitNpp) { const lost = C.dieBack; Y.litter += (p.leaf + p.root + p.wood) * lost; p.leaf *= 1 - lost; p.root *= 1 - lost; p.wood *= 1 - lost; }
+    if (Y.rain > 100) { const s = seedling(p.pft); p.leaf += s.leaf * 0.5; p.root += s.root * 0.5; p.wood += s.wood * 0.5; }
+  });
+  Y.vegC = plants.reduce((a, p) => a + p.leaf + p.root + p.wood, 0);
+  Y.brake = brakeW > 0 ? brakeSum / brakeW : 1;
+  return Y;
+}
+
+// ---------- experiments ----------
+const SPIN = 220, SEED = 11;
+const MEMBERS = 6;
+const spun = new Map<string, State[]>();
+/**
+ * The patch after it has grown for about 220 years under today's climate. Six snapshots are kept, ten years apart,
+ * so that an experiment can start from several moments and average out the luck of any single one.
+ */
+function spinUp(site: Site, land: Land, member: number): State {
+  const key = site.id + '|' + land;
+  let snaps = spun.get(key);
+  if (!snaps) {
+    snaps = [];
+    const st = start(site, land), cal = calendar(site, land, BASE), gap = land === 'natural' ? 10 : 1, n = (land === 'natural' ? SPIN - 50 : 4) + gap * (MEMBERS - 1);
+    for (let y = 0; y <= n; y++) {
+      stepYear(st, BASE, weatherYear(site, BASE, SEED, y), cal);
+      if ((n - y) % gap === 0 && snaps.length < MEMBERS && y >= n - gap * (MEMBERS - 1)) snaps.push(clone(st));
+    }
+    spun.set(key, snaps);
+  }
+  return clone(snaps[member % snaps.length]);
+}
+
+const mean = (rows: YearOut[]): YearOut => {
+  const m = { ...rows[0] };
+  for (const k of Object.keys(m) as (keyof YearOut)[]) m[k] = rows.reduce((a, r) => a + r[k], 0) / rows.length;
+  return m;
+};
+
+function branch(site: Site, land: Land, scen: Scen, n: number, members: number): YearOut[] {
+  const cal0 = calendar(site, land, BASE), cal = calendar(site, land, scen), rows: YearOut[][] = [];
+  for (let m = 0; m < members; m++) {
+    const st = spinUp(site, land, m), seed = SEED + 17 * (m + 1), out: YearOut[] = [];
+    out.push(stepYear(st, BASE, weatherYear(site, BASE, seed, 0), cal0));          // year 0: today's climate
+    for (let y = 1; y <= n; y++) out.push(stepYear(st, scen, weatherYear(site, scen, seed, y), cal));
+    rows.push(out);
+  }
+  return rows[0].map((_, y) => mean(rows.map((r) => r[y])));                      // average over the weather sequences
+}
+
+export interface Run { base: YearOut[]; scen: YearOut[] }
+const baseRuns = new Map<string, YearOut[]>();
+/**
+ * A model experiment. The patch starts in balance with today's climate. From year 1 the scenario applies.
+ * The same run is made under today's climate, with the same weather day for day, so the two can be compared.
+ * Each line is the mean of several weather sequences, to keep one odd year from deciding the answer.
+ */
+export function experiment(site: Site, scen: Scen, land: Land, n = 10, members = MEMBERS): Run {
+  const key = [site.id, land, n, members].join('|');
+  let base = baseRuns.get(key);
+  if (!base) { base = branch(site, land, BASE, n, members); baseRuns.set(key, base); }
+  return { base, scen: branch(site, land, scen, n, members) };
+}
+
+/** One year of daily values under today's climate, for the calibration demonstration. */
+export function sampleYear(site: Site): DayOut[] {
+  const st = spinUp(site, 'natural', 0), daily: DayOut[] = [];
+  stepYear(st, BASE, weatherYear(site, BASE, SEED, 0), calendar(site, 'natural', BASE), daily);
+  return daily;
+}
+export const plantNames = (site: Site, land: Land) => (land === 'natural' ? [PFT[isTropical(site) ? 'troptree' : 'temptree'].name, PFT[isTropical(site) ? 'c4grass' : 'c3grass'].name] : [PFT[land].name]);

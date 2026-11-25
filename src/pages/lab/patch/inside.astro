@@ -1,0 +1,52 @@
+---
+import PatchLayout from '../../../layouts/PatchLayout.astro';
+import { blockSvg, BLOCK_VIEW } from '../../../lib/patch/block';
+const art = blockSvg({ style: 'hyderabad', tree: 0.42, grass: 0.5, size: 0.95, w1: 0.45, w2: 0.5, rainMm: 700, warm: 0, crop: 'millet', cropH: 0.7, labels: false });
+---
+<PatchLayout step={2} title="Look inside Patch" description="Every process inside Patch, a small process-based ecosystem model: what it does in plain words, its equation and its source.">
+  <section id="inside">
+    <h1 style="margin-top: 1.6rem">Look inside Patch</h1>
+    <p class="lead" style="margin-top: 0.4rem">Patch follows carbon, water and energy through one block of land. Each arrow is a process with its own equation. Choose one from the list or from the picture.</p>
+
+    <div class="inside">
+      <div class="legend">
+        <div class="c"><h3>Carbon</h3><ul></ul></div>
+        <div class="w"><h3>Water</h3><ul></ul></div>
+        <div class="e"><h3>Energy</h3><ul></ul></div>
+        <div class="n"><h3>Nitrogen</h3><p>Not in Patch. Models used in research, such as LPJmL, include it.</p></div>
+      </div>
+      <div class="fig"><svg class="block" viewBox={BLOCK_VIEW} role="img" aria-label="The block of land, with a label on each process" set:html={art} /></div>
+      <div class="detail" aria-live="polite">
+        <p class="cond cyc"></p>
+        <h2></h2>
+        <p class="plain"></p>
+        <p class="lab">Equation in Patch</p>
+        <p class="eq"></p>
+        <p class="lab trylab">Try it</p>
+        <div class="try"></div>
+        <p class="lab">Changing this also changes</p>
+        <div class="row to" style="margin-top: 0.3rem"></div>
+        <p class="note src" style="margin-top: 1rem"></p>
+      </div>
+    </div>
+
+    <section class="sec">
+      <h2>The processes are linked: this is a system</h2>
+      <p>Change one thing and the effect travels through the others. Pull one and follow it.</p>
+      <div class="row pulls" style="margin-top: 0.9rem"></div>
+      <ol class="chain"></ol>
+      <dl class="terms">
+        <dt>Reinforcing feedback</dt><dd>A change that strengthens itself. More leaves absorb more light, which pays for more leaves.</dd>
+        <dt>Balancing feedback</dt><dd>A change that slows itself. More leaves use more water, the soil dries, and growth slows.</dd>
+      </dl>
+      <p style="margin-top: 1rem; max-width: 46rem">Because of these feedbacks, no single equation tells you the outcome. The model has to run all of them together, day after day. That is what you do in the next step.</p>
+    </section>
+
+    <div class="next"><a class="btn ghost" href="/lab/patch/">Back: what is Patch?</a><a class="btn" href="/lab/patch/experiment/">Next: run an experiment</a></div>
+  </section>
+</PatchLayout>
+
+<script>
+  import { insidePage } from '../../../lib/patch/inside';
+  insidePage();
+</script>

@@ -1,0 +1,107 @@
+---
+import PatchLayout from '../../../layouts/PatchLayout.astro';
+---
+<PatchLayout step={3} title="Experiment" description="Run your own experiments with Patch, a small process-based ecosystem model: scenario analysis and hypothesis testing in six ecosystems.">
+  <section id="exp">
+    <h1 class="exp-h">Run an experiment</h1>
+    <div class="modes" role="group" aria-label="Kind of experiment">
+      <button type="button" class="opt on" data-v="scenario"><b>Scenario analysis</b><span>What happens to this land if the climate changes? Set a possible future and run it.</span></button>
+      <button type="button" class="opt" data-v="hypothesis"><b>Hypothesis testing</b><span>Have an idea about how the system works? Predict, change one thing, and check.</span></button>
+    </div>
+
+    <div class="setup">
+      <div class="row"><span class="lab">Ecosystem</span><div class="row places"></div></div>
+      <div class="scenario-only">
+        <div class="row"><span class="lab">Scenario</span><div class="row presets"></div></div>
+        <p class="guide">Pick a scenario, or build your own with the controls further down. Then run 10 years and watch the land change.</p>
+      </div>
+    </div>
+
+    <div class="hyp" hidden>
+      <div><p class="band">1  Hypothesis</p><div class="hyplist"></div></div>
+      <div><p class="band">2  Your prediction</p><div class="guess">
+        <button type="button" class="opt" data-v="1">I think the model will support it</button>
+        <button type="button" class="opt" data-v="2">I think the model will not support it</button>
+      </div></div>
+      <div><p class="band">3  Experiment</p><p><strong class="hdid"></strong></p><p>Everything else stays as today, so any change comes from this alone.</p><button type="button" class="btn runtest">Run the experiment</button></div>
+      <div><p class="band">4  Result</p>
+        <p class="hwait">Run the experiment to see what the model says.</p>
+        <div class="hres" hidden><p class="verdict"></p><p class="hfound"></p><p class="hwhy"></p><p class="hyours note"></p><button type="button" class="btn mkcard">Create my result card</button></div>
+      </div>
+    </div>
+
+    <div class="bench">
+      <div>
+        <p class="where"></p>
+        <div class="blockwrap"></div>
+        <div class="yearrow"><strong class="yr">Year 0 of 10</strong><input class="year" type="range" min="0" max="10" step="1" value="0" aria-label="Year" /></div>
+        <div class="row" style="margin-top: 0.5rem">
+          <button type="button" class="btn run">Run 10 years</button>
+          <div class="row view" role="group" aria-label="Which run to show">
+            <button type="button" class="opt on" data-v="scen">Your experiment</button>
+            <button type="button" class="opt" data-v="base">Today’s climate</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="heads">
+          <div class="v"><b>±0%</b><p>Natural vegetation: carbon stored in plants, compared with today’s climate</p></div>
+          <div class="y"><b>±0%</b><p></p></div>
+        </div>
+        <div class="graphhead"><label for="gsel" class="cond">Graph</label><select id="gsel" class="gsel"></select><span class="note gunit"></span></div>
+        <div class="graph"></div>
+        <p class="key"></p>
+        <p class="explain" aria-live="polite"></p>
+        <div class="tools">
+          <button type="button" class="btn mkcard">Create my result card</button>
+          <button type="button" class="btn ghost reset">Back to today’s climate</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panels">
+      <div><p class="band">Climate</p>
+        <div class="knob"><label for="k-dT"><span>Temperature</span><output data-o="dT"></output></label><input id="k-dT" data-k="dT" type="range" min="0" max="4" step="0.5" value="0" /></div>
+        <div class="knob"><label for="k-rain"><span>Precipitation</span><output data-o="rain"></output></label><input id="k-rain" data-k="rain" type="range" min="-40" max="40" step="5" value="0" /></div>
+        <div class="knob"><label for="k-co2"><span>CO₂ concentration</span><output data-o="co2"></output></label><input id="k-co2" data-k="co2" type="range" min="280" max="900" step="10" value="420" /></div>
+      </div>
+      <div><p class="band">Management of the cropland</p>
+        <div class="row crops" role="group" aria-label="Crop" style="margin-bottom: 0.5rem">
+          <button type="button" class="opt" data-v="wheat">Wheat</button><button type="button" class="opt" data-v="maize">Maize</button><button type="button" class="opt" data-v="millet">Millet</button>
+        </div>
+        <label class="sw"><input type="checkbox" data-k="irrigate" /><span>Irrigation<small>water the crop when the soil gets dry</small></span></label>
+        <div class="knob"><label for="k-sow"><span>Sowing date</span><output data-o="sow"></output></label><input id="k-sow" data-k="sow" type="range" min="-30" max="30" step="5" value="0" /></div>
+        <div class="row variety" role="group" aria-label="Crop variety">
+          <button type="button" class="opt" data-v="-1">Fast-ripening</button><button type="button" class="opt" data-v="0">Usual variety</button><button type="button" class="opt" data-v="1">Slow-ripening</button>
+        </div>
+      </div>
+      <div><p class="band">Processes: switch one off to see what it does</p>
+        <label class="sw"><input type="checkbox" data-k="fert" checked /><span>CO₂ fertilisation<small>more CO₂ speeds up photosynthesis</small></span></label>
+        <label class="sw"><input type="checkbox" data-k="wue" checked /><span>CO₂ water saving<small>stomata close a little when CO₂ is high</small></span></label>
+        <label class="sw"><input type="checkbox" data-k="deepRoots" checked /><span>Deep tree roots<small>trees can reach the deep soil layer</small></span></label>
+      </div>
+    </div>
+
+    <p class="toy">Each line is the mean of six runs with different weather. Patch reacts faster and more sharply than real vegetation does, and its numbers are illustrations, not predictions for any real place. What carries over to the real world is the direction of a change and the reason for it.</p>
+
+    <div class="next"><a class="btn ghost" href="/lab/patch/inside/">Back: look inside Patch</a><a class="btn" href="/lab/patch/beyond/">Next: beyond Patch</a></div>
+  </section>
+
+  <dialog class="card" aria-label="Your result card">
+    <canvas width="2400" height="1254"></canvas>
+    <div class="namerow"><label for="cardname">Your name on the card (optional)</label><input id="cardname" type="text" maxlength="40" autocomplete="name" /></div>
+    <div class="row">
+      <button type="button" class="btn dl">Download image</button>
+      <button type="button" class="btn ghost sh">Share</button>
+      <button type="button" class="btn ghost li">Share on LinkedIn</button>
+      <button type="button" class="btn ghost cp">Copy link</button>
+      <button type="button" class="btn ghost close">Close</button>
+    </div>
+    <p class="said" aria-live="polite"></p>
+  </dialog>
+</PatchLayout>
+
+<script>
+  import { experimentPage } from '../../../lib/patch/experiment';
+  experimentPage();
+</script>
