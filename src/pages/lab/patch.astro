@@ -1,596 +1,475 @@
 ---
 import Base from '../../layouts/Base.astro';
 ---
-<Base title="Patch, a pocket-sized vegetation model" description="Change the climate and watch one square metre of grassland respond, day by day. A playable, process-based vegetation model for teaching and outreach.">
-  <div class="wrap page patch-page">
-    <header class="page-head">
-      <p class="crumb"><a href="/lab">Lab</a></p>
+<Base title="Patch" description="Build a small model of plants out of five rules, watch it run, and use it to test your own ideas. A teaching toy that shows how process-based vegetation and crop models work.">
+  <article class="pm">
+    <header>
       <h1>Patch</h1>
-      <p>A pocket-sized vegetation model. Change the climate and watch one square metre of grassland respond, one day at a time. Tap any label in the scene to see what is going on inside.</p>
+      <p class="lede">Scientists use computer models to ask how forests, grasslands and crops will cope with a changing climate. Here you can build a small one yourself, out of five rules, and then put questions to it.</p>
+      <figure class="play">
+        <svg id="hero-scene" class="scene" viewBox="0 0 360 250" role="img" aria-label="A patch of savanna seen from the side through a year: sun, rain, trees, grass, and water in two layers of soil."></svg>
+        <figcaption>One patch of land through one year. Everything that changes in this picture follows from the five rules below.</figcaption>
+      </figure>
+      <p class="note"><strong>A teaching toy.</strong> Patch is inspired by research models such as LPJ and LPJmL, but it is far simpler, shares no code with them, and is not used for research. Building the model takes about ten minutes. The experiments after that take as long as you like.</p>
     </header>
 
-    <div class="layout">
-      <div class="stage">
-        <div class="scene-wrap">
-          <svg id="scene" viewBox="0 0 800 460" role="img" aria-label="Animated cross-section of a grassland patch: sky, plants, and soil with water, roots and carbon">
-            <rect id="sky" x="0" y="0" width="800" height="262" />
-            <g id="stars"></g>
-            <circle id="sun" cx="660" cy="80" r="30" />
-            <g id="rain"></g>
-            <g id="co2"></g>
-            <g id="vapour"></g>
-            <rect id="soil" x="0" y="262" width="800" height="198" />
-            <rect id="soilc" x="0" y="268" width="800" height="40" />
-            <rect id="water" x="0" y="400" width="800" height="60" />
-            <line id="bucket-line" x1="0" x2="800" y1="268" y2="268" />
-            <g id="roots"></g>
-            <rect id="litter" x="0" y="258" width="800" height="6" />
-            <rect id="snow" x="0" y="252" width="800" height="0" />
-            <g id="plants"></g>
-            <g id="decomp"></g>
-          </svg>
-          <button class="hot" style="left:24%;top:30%" data-box="photosynthesis">Photosynthesis</button>
-          <button class="hot" style="left:63%;top:47%" data-box="growth">Growth</button>
-          <button class="hot" style="left:13%;top:60%" data-box="decomposition">Decomposition</button>
-          <button class="hot" style="left:72%;top:86%" data-box="water">Soil water</button>
-          <button class="hot" style="left:30%;top:74%" data-box="soilcarbon">Soil carbon</button>
-          <p class="clock" aria-live="off"><span id="t-date">Year 1, January</span><span id="t-temp">0 °C</span></p>
-        </div>
-
-        <div class="transport">
-          <button id="play" class="btn" type="button">Pause</button>
-          <div class="speed" role="group" aria-label="Speed">
-            <button type="button" data-speed="10" aria-pressed="true">Normal</button>
-            <button type="button" data-speed="45" aria-pressed="false">Fast</button>
-          </div>
-          <button id="reset" class="ghost" type="button">Start over</button>
-        </div>
-
-        <section class="limits" aria-labelledby="lim-h">
-          <h2 id="lim-h">What is holding growth back today?</h2>
-          <div class="meters">
-            <div class="meter"><span>Light</span><div class="bar"><i id="m-light"></i></div></div>
-            <div class="meter"><span>Water</span><div class="bar"><i id="m-water"></i></div></div>
-            <div class="meter"><span>Temperature</span><div class="bar"><i id="m-temp"></i></div></div>
-          </div>
-          <p class="verdict"><strong id="v-limit">—</strong> <span id="v-co2"></span></p>
-        </section>
-      </div>
-
-      <aside class="controls" aria-label="Climate controls">
-        <h2>Set the climate</h2>
-        <label class="ctl">
-          <span class="lab">Average temperature <output id="o-temp">10 °C</output></span>
-          <input id="i-temp" type="range" min="-2" max="26" step="1" value="10" />
-          <span class="ends"><span>Arctic</span><span>Tropical</span></span>
-        </label>
-        <label class="ctl">
-          <span class="lab">Rainfall per year <output id="o-rain">700 mm</output></span>
-          <input id="i-rain" type="range" min="100" max="1600" step="50" value="700" />
-          <span class="ends"><span>Desert</span><span>Rainforest</span></span>
-        </label>
-        <label class="ctl">
-          <span class="lab">CO₂ in the air <output id="o-co2">420 ppm</output></span>
-          <input id="i-co2" type="range" min="180" max="900" step="10" value="420" list="co2-marks" />
-          <datalist id="co2-marks"><option value="180"></option><option value="280"></option><option value="420"></option></datalist>
-          <span class="ends"><span>Ice Age</span><span>Today: 420</span><span>Future</span></span>
-        </label>
-        <label class="ctl">
-          <span class="lab">Soil <output id="o-soil">Loam</output></span>
-          <input id="i-soil" type="range" min="50" max="230" step="10" value="150" />
-          <span class="ends"><span>Sand, drains fast</span><span>Clay, holds water</span></span>
-        </label>
-
-        <div class="presets">
-          <h3>Try this</h3>
-          <div class="preset-row">
-            <button type="button" data-preset="today">Today</button>
-            <button type="button" data-preset="preind">Before industry</button>
-            <button type="button" data-preset="ice">Ice Age</button>
-            <button type="button" data-preset="double">Double CO₂</button>
-            <button type="button" data-preset="drought">Drought</button>
-            <button type="button" data-preset="hot">8 °C hotter</button>
-          </div>
-          <p id="preset-note" class="note">Pick a scenario. The patch keeps its history, so watch how fast plants respond and how slowly the soil does.</p>
-        </div>
-      </aside>
-    </div>
-
-    <section class="box" aria-labelledby="box-h">
-      <div class="box-tabs" role="tablist" aria-label="Processes">
-        <button role="tab" data-box="photosynthesis" aria-selected="true">Photosynthesis</button>
-        <button role="tab" data-box="water" aria-selected="false">Soil water</button>
-        <button role="tab" data-box="growth" aria-selected="false">Growth</button>
-        <button role="tab" data-box="decomposition" aria-selected="false">Decomposition</button>
-        <button role="tab" data-box="soilcarbon" aria-selected="false">Soil carbon</button>
-      </div>
-      <div class="box-body" role="tabpanel">
-        <h2 id="box-h">Open the box: <span id="b-title">Photosynthesis</span></h2>
-        <div class="box-cols">
-          <div><h3>In plain words</h3><p id="b-plain"></p></div>
-          <div><h3>In Patch</h3><p id="b-toy"></p><p class="eq" id="b-eq"></p></div>
-          <div><h3>In a full model like LPJmL</h3><p id="b-model"></p></div>
-        </div>
-      </div>
+    <section>
+      <h2>A model made of rules</h2>
+      <p>Most models you hear about learn from examples. Show one thousands of measurements, and it finds the pattern in them.</p>
+      <p>A <em>process-based</em> model works the other way round. Nobody shows it examples. You write down what you know about how a plant works, as a handful of rules, and let the computer apply them day after day. What comes out is not a pattern someone found. It is what the rules add up to.</p>
+      <p>That is why such a model can be asked about things nobody has measured yet, such as the air of the year 2100. It is also why it can be wrong: it is only as good as its rules.</p>
     </section>
 
-    <section class="results" aria-labelledby="res-h">
-      <h2 id="res-h">What the patch did</h2>
-      <div class="charts">
-        <figure>
-          <figcaption>Plant carbon above ground, last three years <span class="data" id="c-plant-v"></span></figcaption>
-          <svg viewBox="0 0 400 120" class="chart" id="c-plant" aria-hidden="true"><polyline /></svg>
-        </figure>
-        <figure>
-          <figcaption>Carbon stored in the soil <span class="data" id="c-soil-v"></span></figcaption>
-          <svg viewBox="0 0 400 120" class="chart" id="c-soil" aria-hidden="true"><polyline /></svg>
-        </figure>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th scope="col">Year</th><th scope="col">Carbon captured</th><th scope="col">Plant growth</th><th scope="col">Water used</th><th scope="col">Water drained</th><th scope="col">Soil carbon</th></tr></thead>
-          <tbody id="years"><tr><td colspan="6">Results appear after the first year.</td></tr></tbody>
-        </table>
-        <p class="units">Carbon in grams per square metre per year (soil carbon in kilograms per square metre); water in millimetres.</p>
-      </div>
+    <section>
+      <h2>Rule 1: leaves catch light</h2>
+      <p>Everything a plant builds starts as sunlight landing on a leaf. So the first thing the model needs to know is how much light the leaves catch. Try a few places, then move the slider yourself.</p>
+      <figure class="play rule" id="r-light">
+        <svg class="vis" viewBox="0 0 360 150" role="img" aria-label="Sunbeams passing down through layers of leaves and getting thinner."></svg>
+        <div class="chips" aria-label="Situations"></div>
+        <p class="ctx"></p>
+        <label class="sl"><span>Layers of leaves <b data-o="L"></b></span><input type="range" data-k="L" min="0" max="7" step="0.1" value="1" /></label>
+        <div class="eq" aria-live="polite"></div>
+        <p class="say"></p>
+        <details class="maths"><summary>Show the maths</summary>
+          <p class="f">share of light caught = 1 − e<sup>−k × LAI</sup>, with k = 0.5</p>
+          <p>LAI, the leaf area index, is the area of leaf above each square metre of ground: the "layers" in the slider. This is Beer's law, first applied to plant canopies by Monsi and Saeki (1953). LPJ uses the same form and the same k.</p>
+        </details>
+      </figure>
     </section>
 
-    <section class="about-model">
-      <h2>About this model</h2>
-      <p>Patch is a teaching model, not a research tool. It keeps the structure of a dynamic vegetation model and leaves out a lot: nutrients, competition between plant types, fire, grazing and the real daily weather. Its numbers are plausible, not predictions. Real plants usually gain less from extra CO₂ than Patch shows, because nitrogen and other nutrients run short.</p>
-      <p>The processes follow the logic of LPJ and LPJmL, described in Sitch et al. (2003, <em>Global Change Biology</em>) and Schaphoff et al. (2018, <em>Geoscientific Model Development</em>). Free to use in teaching and outreach.</p>
+    <section>
+      <h2>Rule 2: light becomes sugar, if the temperature suits</h2>
+      <p>A leaf uses the light it catches to turn CO₂ from the air into sugar. How well it does that depends on how warm it is, and on what kind of plant it is. There are two kinds of engine. Most plants, including trees, wheat and rice, have the first. Maize, millet and many tropical grasses have the second, built for heat.</p>
+      <figure class="play rule" id="r-sugar">
+        <div class="seg" data-opt="plant" role="group" aria-label="Kind of plant">
+          <button type="button" class="on" data-v="c3">A beech tree</button>
+          <button type="button" data-v="c4">A savanna grass</button>
+        </div>
+        <svg class="vis" viewBox="0 0 360 150" role="img" aria-label="Two curves of sugar made against temperature: one for the tree, peaking in mild weather, and one for the grass, peaking in hot weather."></svg>
+        <ul class="key"><li>Sugar made in a day, at each temperature:</li><li><span class="k c3"></span>beech tree</li><li><span class="k c4"></span>savanna grass</li></ul>
+        <div class="chips" aria-label="Situations"></div>
+        <p class="ctx"></p>
+        <label class="sl"><span>Temperature <b data-o="T"></b></span><input type="range" data-k="T" min="-5" max="50" step="1" value="16" /></label>
+        <label class="sl"><span>Light caught <b data-o="sun"></b></span><input type="range" data-k="sun" min="0" max="12" step="1" value="7" /></label>
+        <div class="eq" aria-live="polite"></div>
+        <p class="say"></p>
+        <details class="maths"><summary>Show the maths</summary>
+          <p class="f">sugar = light caught × 0.5 × α × (c<sub>i</sub> − Γ*) ÷ (c<sub>i</sub> + 2Γ*) × f(T)</p>
+          <p>α is how much CO₂ a leaf fixes per unit of light (0.08 for the first kind of plant, called C3). c<sub>i</sub> is the CO₂ inside the leaf, about 0.8 of the CO₂ outside. Γ* is the CO₂ level at which the leaf only breaks even. It rises with temperature, which is why this plant wastes more in warm air (Farquhar, von Caemmerer and Berry 1980; Bernacchi and others 2001).</p>
+          <p>The second kind of plant, C4, pumps CO₂ into its leaves, so the CO₂ term drops out and α = 0.053 (Collatz, Ribas-Carbo and Berry 1992). The factor 0.5 scales one leaf up to a whole canopy (Haxeltine and Prentice 1996). f(T) switches the plant off outside its temperature limits, which are close to those in LPJ (Sitch and others 2003): −4, 20, 25 and 38 °C for the beech, 6, 20, 45 and 55 °C for the grass. Light is in megajoules and sugar in grams of carbon, per square metre per day.</p>
+        </details>
+      </figure>
     </section>
-  </div>
+
+    <section>
+      <h2>Rule 3: thirst is a brake</h2>
+      <p>To let CO₂ in, a leaf has to open tiny pores, and water escapes through them. On a hot, bright day the air pulls hard. If the roots cannot deliver that much water, the plant half-closes its pores, and makes less sugar. The soil is the bucket the roots drink from.</p>
+      <figure class="play rule" id="r-water">
+        <svg class="vis" viewBox="0 0 360 150" role="img" aria-label="A bucket of soil water, and two bars: the water roots can deliver and the water the air asks for."></svg>
+        <div class="chips" aria-label="Situations"></div>
+        <p class="ctx"></p>
+        <label class="sl"><span>Water in the soil <b data-o="w"></b></span><input type="range" data-k="w" min="0" max="100" step="1" value="60" /></label>
+        <label class="sl"><span>Air temperature <b data-o="T"></b></span><input type="range" data-k="T" min="5" max="45" step="1" value="27" /></label>
+        <label class="sl"><span>Sky <b data-o="sun"></b></span><input type="range" data-k="sun" min="5" max="100" step="5" value="60" /></label>
+        <div class="eq" aria-live="polite"></div>
+        <p class="say"></p>
+        <details class="maths"><summary>Show the maths</summary>
+          <p class="f">brake = min(1, supply ÷ demand)</p>
+          <p class="f">supply = 5 mm × how full the soil is around the roots</p>
+          <p class="f">demand = 1.32 × Δ ÷ (Δ + γ) × R<sub>n</sub> ÷ λ</p>
+          <p>Supply against demand is how LPJ decides whether a plant is short of water (Sitch and others 2003); 5 mm a day is the most its roots can deliver. Demand is the Priestley and Taylor (1972) estimate of how much water warm, sunlit air can take up. R<sub>n</sub> is the energy the surface absorbs, Δ says how fast air's capacity for water grows with warmth, and γ and λ are physical constants. Treating soil as a bucket goes back to Manabe (1969). Patch has two buckets, a top one and a deep one.</p>
+        </details>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Rule 4: CO₂ is food</h2>
+      <p>CO₂ is what sugar is made from, so more of it in the air helps a leaf. But not every plant. This one rule is the reason the same model can be asked about an ice age and about the year 2100.</p>
+      <figure class="play rule" id="r-co2">
+        <svg class="vis" viewBox="0 0 360 150" role="img" aria-label="Sugar-making against CO2 in the air: a rising curve for trees and wheat, a flat line for maize and savanna grass."></svg>
+        <ul class="key"><li><span class="k c3"></span>trees, wheat, rice</li><li><span class="k c4"></span>maize, millet, savanna grass</li></ul>
+        <div class="chips" aria-label="Situations"></div>
+        <p class="ctx"></p>
+        <label class="sl"><span>CO₂ in the air <b data-o="co2"></b></span><input type="range" data-k="co2" min="180" max="900" step="5" value="425" /></label>
+        <div class="eq" aria-live="polite"></div>
+        <p class="say"></p>
+        <details class="maths"><summary>Show the maths</summary>
+          <p class="f">gain = (c<sub>i</sub> − Γ*) ÷ (c<sub>i</sub> + 2Γ*), compared with today</p>
+          <p>The same term as in rule 2, shown here at 25 °C. As CO₂ rises, the curve flattens: each extra bit helps less (Farquhar and others 1980). For C4 plants the term is already full (Collatz and others 1992). Open-air experiments that pump extra CO₂ over real fields find the same contrast (Ainsworth and Long 2005).</p>
+          <p>Water: with more CO₂ a leaf can keep its pores a little more closed and still get enough. Patch lowers the air's demand by 30% of the change in pore opening, because leaves are only partly in control of how much water a whole field loses (Jarvis and McNaughton 1986). That 30% is our own simple choice.</p>
+        </details>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Rule 5: sugar is spent</h2>
+      <p>A plant is alive day and night, and staying alive burns sugar, the way breathing does in animals. A bigger plant burns more, and so does a warmer one. Only what is left over can become new leaves, roots or wood.</p>
+      <figure class="play rule" id="r-spend">
+        <svg class="vis" viewBox="0 0 360 130" role="img" aria-label="One bar for sugar made today, and below it a bar split into breathing, the cost of building, and growth."></svg>
+        <div class="chips" aria-label="Situations"></div>
+        <p class="ctx"></p>
+        <label class="sl"><span>Sugar made today <b data-o="made"></b></span><input type="range" data-k="made" min="0" max="12" step="0.5" value="6" /></label>
+        <label class="sl"><span>Living leaves and roots <b data-o="size"></b></span><input type="range" data-k="size" min="20" max="900" step="10" value="300" /></label>
+        <label class="sl"><span>Temperature <b data-o="T"></b></span><input type="range" data-k="T" min="0" max="45" step="1" value="20" /></label>
+        <div class="eq" aria-live="polite"></div>
+        <p class="say"></p>
+        <details class="maths"><summary>Show the maths</summary>
+          <p class="f">breathing = living tissue × r × g(T)</p>
+          <p class="f">g(T) = exp[308.56 × (1 ÷ 56.02 − 1 ÷ (T + 46.02))]</p>
+          <p class="f">growth = 0.75 × (sugar − breathing)</p>
+          <p>g(T) is the temperature curve of Lloyd and Taylor (1994), equal to 1 at 10 °C. That breathing scales with the amount of living tissue follows Ryan (1991). A quarter of what remains is burnt in building new tissue, as in LPJ (Sitch and others 2003). The rate r is a number we tuned for each kind of plant.</p>
+          <p>New growth is shared out in fixed parts: grass puts 40% into leaves and 60% into roots; trees put 35% into leaves, 25% into roots and 40% into wood. Leaves live half a year, roots one year, wood about forty.</p>
+        </details>
+      </figure>
+      <p>Now connect the rules. New leaves catch more light (rule 1), which makes more sugar (rule 2), which builds more leaves. Growth feeds itself. But more leaves also drink more water (rule 3) and cost more to keep alive (rule 5). Growth slows itself down. A model like this is mostly loops of that kind, and that is what makes its behaviour hard to guess and worth simulating.</p>
+    </section>
+
+    <section>
+      <h2>Press play</h2>
+      <p>Here are all five rules running together on one patch of land, one day at a time, with real weather statistics from five places. Pick a place and play a year. The line under the picture tells you which rule is at work.</p>
+      <figure class="play" id="p-patch">
+        <div class="chips places" aria-label="Place"></div>
+        <div class="seg" data-land role="group" aria-label="What grows here">
+          <button type="button" class="on" data-v="natural">Wild plants</button>
+          <button type="button" data-v="crop">A field of grain</button>
+        </div>
+        <p class="who"></p>
+        <svg class="scene" viewBox="0 0 360 250" role="img" aria-label="The patch seen from the side: sky, plants, and water in the top and deep soil."></svg>
+        <p class="caption" aria-live="polite"></p>
+        <svg class="strip" viewBox="0 0 360 92" role="img" aria-label="The year at a glance: rain as bars from the top, leaves as a green area, water in the top soil as a line."></svg>
+        <ul class="key"><li><span class="k rain"></span>rain</li><li><span class="k leafk"></span>leaves</li><li><span class="k waterk"></span>water in the top soil</li></ul>
+        <div class="bar"><button class="btn go" type="button">Play one year</button></div>
+        <div class="reads">
+          <p><b data-r="caught"></b><span>light caught<i>rule 1</i></span></p>
+          <p><b data-r="sugar"></b><span>sugar made today<i>rule 2</i></span></p>
+          <p><b data-r="brake"></b><span>water brake<i>rule 3</i></span></p>
+          <p><b data-r="resp"></b><span>burnt today<i>rule 5</i></span></p>
+          <p><b data-r="grow"></b><span>left for growth</span></p>
+        </div>
+        <p class="sum"></p>
+        <details class="maths"><summary>What the model does each day</summary>
+          <p>Rain soaks into the top soil; what does not fit trickles into the deep soil, and what does not fit there runs off. Each kind of plant then catches its share of the light (trees first, grass gets what passes through), works out its sugar from rules 2 to 4, drinks from the soil layers its roots reach, pays for breathing, and grows or shrinks. Leaves and roots that die become litter. Bare soil loses water to the air.</p>
+          <p>Grass keeps nine tenths of its roots in the top soil. Trees keep four tenths in the deep soil, an old idea about savannas from Walter (1971). Plants drop their leaves when the soil around their roots is nearly dry, and in cool places also when it is cold. Once a year, a tree type that spent more sugar than it made loses a fifth of its biomass, and a few seedlings arrive.</p>
+          <p>Before the year you see, the model has already run for 220 years so that plants and soil settle down. Modellers call this the spin-up.</p>
+          <p>For a field of grain, the crop is sown on a fixed day, counts warm days, switches from leaves to grain when it has counted enough, and is harvested when it has counted the full number. That is the heat-sum idea crop models use, including LPJmL (Bondeau and others 2007). The grain shown is what a crop could give with no shortage of nutrients and no pests, so it is higher than most real harvests.</p>
+        </details>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Zoom out: one model, many patches</h2>
+      <p>A global model is this same patch, copied into every square of a grid that covers the land. Each square gets its own weather. Nothing else changes: same rules, same numbers.</p>
+      <p>Here is a small version: a line of twelve cells running 1,200 km south from the edge of the Sahara to the coast of Benin. Four of them sit on a real weather station.</p>
+      <figure class="play" id="p-line">
+        <fieldset class="bet">
+          <legend>Place a bet first. Every cell starts as bare ground. After 220 years, where do trees first shade more than half the ground?</legend>
+          <button type="button" class="choice" data-bet="north">At Niamey or north of it</button>
+          <button type="button" class="choice" data-bet="between">Between Niamey and Parakou</button>
+          <button type="button" class="choice" data-bet="south">Only at Parakou or further south</button>
+        </fieldset>
+        <div class="stage" hidden>
+          <svg class="cells" viewBox="0 0 360 200" role="img" aria-label="Twelve cells in a row from north to south. Each is a column split into bare ground, grass and trees, with a bar for rain above it."></svg>
+          <ul class="key"><li><span class="k cb"></span>bare ground</li><li><span class="k cg"></span>grass</li><li><span class="k ct"></span>trees</li><li><span class="k rain"></span>rain</li></ul>
+          <p class="say" aria-live="polite"></p>
+          <p class="cellinfo"></p>
+          <div class="after" hidden>
+            <p>Now change the climate for the whole line and run it again.</p>
+            <label class="sl"><span>Temperature <b data-o="dT"></b></span><input type="range" data-k="dT" min="0" max="5" step="0.5" value="0" /></label>
+            <label class="sl"><span>Rain <b data-o="rain"></b></span><input type="range" data-k="rain" min="-40" max="40" step="5" value="0" /></label>
+            <label class="sl"><span>CO₂ in the air <b data-o="co2"></b></span><input type="range" data-k="co2" min="280" max="900" step="10" value="420" /></label>
+            <div class="bar"><button class="btn go" type="button" hidden>Run the line again</button></div>
+          </div>
+        </div>
+      </figure>
+      <p>Desert, grassland, savanna and woodland come out in the right order, and nobody told the model where they belong. That is the main thing a process-based model offers: patterns that follow from mechanisms.</p>
+      <aside class="fact"><p><strong>How it compares with the real world.</strong> Across 854 sites in Africa, the most tree cover a savanna can hold rises with rainfall up to about 650 mm a year (Sankaran and others 2005). Patch gets that trend. But real savannas are also kept open by fire and by grazing animals, which Patch leaves out, so it grows more trees in wet places than you would find there.</p></aside>
+    </section>
+
+    <section>
+      <h2>Ask it a question</h2>
+      <p>This is what such models are for. You have an idea about how the living world works. You turn it into a test: change one thing, keep everything else the same, and compare. Start with one of these questions, or bring your own.</p>
+      <div class="play" id="p-lab">
+        <div class="qcards">
+          <button type="button" class="qcard" data-q="co2">More CO₂ in the air: who gains, trees or grass?</button>
+          <button type="button" class="qcard" data-q="warm">Is warming bad for plants everywhere?</button>
+          <button type="button" class="qcard" data-q="dry">If rain drops by a fifth, who loses more: trees or grass?</button>
+          <button type="button" class="qcard" data-q="crop">Why does warming shrink a harvest, even with enough rain?</button>
+          <button type="button" class="qcard" data-q="own">My own question</button>
+        </div>
+        <fieldset class="bet qbody" data-q="co2"><legend>Near Niamey, in the Sahel, CO₂ rises from 420 to 600 ppm. Your guess first: who gains more ground?</legend>
+          <button type="button" class="choice" data-g="a">The trees</button><button type="button" class="choice" data-g="b">The grass</button><button type="button" class="choice" data-g="c">Neither changes much</button></fieldset>
+        <fieldset class="bet qbody" data-q="warm" hidden><legend>Hot Niamey and cool Aarhus both get 3 °C warmer. Your guess first: what happens to plant growth?</legend>
+          <button type="button" class="choice" data-g="a">It falls in both</button><button type="button" class="choice" data-g="b">It falls in Niamey but not in Aarhus</button><button type="button" class="choice" data-g="c">It does not fall in Niamey</button></fieldset>
+        <fieldset class="bet qbody" data-q="dry" hidden><legend>Near Niamey, every rain shower brings a fifth less water. Your guess first: who loses more ground?</legend>
+          <button type="button" class="choice" data-g="a">The trees</button><button type="button" class="choice" data-g="b">The grass</button><button type="button" class="choice" data-g="c">Both about the same</button></fieldset>
+        <fieldset class="bet qbody" data-q="crop" hidden><legend>A field of millet near Parakou, with plenty of rain, gets 2 °C warmer and the harvest falls. Your guess first: why?</legend>
+          <button type="button" class="choice" data-g="a">The soil dries out</button><button type="button" class="choice" data-g="b">The crop finishes its life too fast</button><button type="button" class="choice" data-g="c">Something else</button></fieldset>
+
+        <div class="bench" hidden>
+          <p class="need"></p>
+          <div class="pickers">
+            <label>Place<select data-k="a"></select></label>
+            <label>Compare with<select data-k="b"></select></label>
+            <label>What grows<select data-k="land"><option value="natural">Wild plants</option><option value="crop">A field of grain</option></select></label>
+          </div>
+          <label class="sl"><span>Temperature <b data-o="dT"></b></span><input type="range" data-k="dT" min="0" max="5" step="0.5" value="0" /></label>
+          <label class="sl"><span>Rain <b data-o="rain"></b></span><input type="range" data-k="rain" min="-40" max="40" step="5" value="0" /></label>
+          <label class="sl"><span>CO₂ in the air <b data-o="co2"></b></span><input type="range" data-k="co2" min="280" max="900" step="10" value="420" /></label>
+          <label class="sl croponly" hidden><span>Variety <b data-o="variety"></b></span><input type="range" data-k="variety" min="-20" max="30" step="5" value="0" /></label>
+          <label class="sl croponly" hidden><span>Sowing day <b data-o="sow"></b></span><input type="range" data-k="sow" min="-30" max="30" step="5" value="0" /></label>
+          <p class="warn" aria-live="polite"></p>
+          <div class="bar">
+            <button class="btn run" type="button">Run the experiment</button>
+            <button class="btn quiet setup" type="button">Set it up for me</button>
+            <button class="btn quiet reset" type="button">Back to today</button>
+          </div>
+        </div>
+        <div class="results"></div>
+        <p class="verdict" aria-live="polite"></p>
+        <div class="bar"><button class="btn quiet hintbtn" type="button">Hint: how would a modeller test this?</button></div>
+        <div class="hint" hidden></div>
+      </div>
+      <p>Notice what just happened. You did not look anything up. You ran an experiment that would take decades and a great deal of money in the real world, and in some cases cannot be done at all. And when the answer came, you could go back to the rules and see why.</p>
+    </section>
+
+    <section>
+      <h2>From this toy to the real thing</h2>
+      <p>Research models work on the same principle, with far more in them. This is how Patch compares with LPJmL, a model built at the Potsdam Institute for Climate Impact Research and used around the world.</p>
+      <div class="tablewrap"><table class="cmp">
+        <thead><tr><th></th><th>Patch</th><th>LPJmL</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Kinds of wild plant</th><td>4, two at a time</td><td>11</td></tr>
+          <tr><th scope="row">Kinds of crop</th><td>2 simple grains</td><td>12, plus managed grass and energy crops</td></tr>
+          <tr><th scope="row">Grid</th><td>12 cells in a line</td><td>the whole land surface in half-degree cells, each about 50 km across</td></tr>
+          <tr><th scope="row">Soil</th><td>2 buckets</td><td>5 layers down to 3 m, with heat and frozen ground</td></tr>
+          <tr><th scope="row">Spin-up</th><td>220 years</td><td>5,000 years</td></tr>
+          <tr><th scope="row">Also inside</th><td>nothing else</td><td>fire, rivers, irrigation, dams, permafrost, and in newer versions nitrogen</td></tr>
+          <tr><th scope="row">Size</th><td>about 300 lines of code</td><td>more than 100,000</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small">LPJmL figures from Schaphoff and others (2018) and the model's own pages.</p>
+
+      <h3>Why would anyone trust a model?</h3>
+      <p>Rules alone do not earn trust. A research model goes through steps like these before anyone uses its answers.</p>
+      <p><strong>1. Good inputs.</strong> The model can only be as right as the weather records, soil maps and CO₂ measurements it is fed. Patch uses monthly averages from five weather stations; real models use daily data for every cell on Earth.</p>
+      <p><strong>2. Tuning.</strong> Some numbers in the rules are not known exactly. Modellers adjust them until the model matches measurements. Try it. The dots are measurements of how much sugar a patch makes each month. (Here they are invented for the demonstration. In real life they come from towers that measure CO₂ moving between plants and air.)</p>
+      <figure class="play" id="p-tune">
+        <svg class="fit vis" viewBox="0 0 360 150" role="img" aria-label="Monthly sugar production: dots for measurements, a line for the model."></svg>
+        <ul class="key"><li><span class="k obsk"></span>measurements</li><li><span class="k c3"></span>the model</li></ul>
+        <label class="sl"><span>The uncertain number <b data-o="a"></b></span><input type="range" min="25" max="75" step="1" value="32" /></label>
+        <p class="say" aria-live="polite"></p>
+        <div class="bar"><button class="btn quiet test" type="button" hidden>Test it somewhere else</button></div>
+      </figure>
+      <p><strong>3. Testing on something new.</strong> A model that fits the data it was tuned on has proved little. The real test is data it has never seen: another place, another period, another kind of measurement. LPJmL is checked against satellite images, CO₂ towers, river flows and harvest statistics (Schaphoff and others 2018, part 2).</p>
+      <p>We tested Patch that way too. In Patch, one degree of warming cuts the grain harvest by 5% to 12%, depending on the place. A review of field experiments and models found about 7% for maize and 6% for wheat (Zhao and others 2017). Right direction and right size, for a toy. A big miss would have told us a rule was wrong.</p>
+      <p><strong>4. Many models, side by side.</strong> Different teams write down the rules differently. Running several models on the same question shows where they agree and where the answer still depends on who built the model (Warszawski and others 2014).</p>
+      <p>Even then, a model is a tool for thinking, not a crystal ball. Its strength is that when it gives a surprising answer, you can open it up and ask why.</p>
+    </section>
+
+    <section class="close">
+      <h2>Three things to remember</h2>
+      <ol class="take">
+        <li><strong>A process-based model is built from rules about how things work,</strong> not from patterns in data.</li>
+        <li><strong>The rules feed back on each other.</strong> That is why the outcome can surprise you, and why you need to run it.</li>
+        <li><strong>You can experiment on it.</strong> Change one thing, keep the rest the same, compare, and then look inside to see why.</li>
+      </ol>
+
+      <details class="more"><summary>For teachers and workshop hosts</summary><div>
+        <p><strong>Five minutes (a stand or a science fair):</strong> rule 1, then "Press play" for one place. Ask: what stops the plants growing for ever?</p>
+        <p><strong>Fifteen minutes (a breakout room):</strong> the five rules in pairs, one year of play, then the bet on the line of cells. Discuss: why did nobody need to tell the model where the savanna is?</p>
+        <p><strong>Forty-five minutes (a class):</strong> all of the above, then each group takes one question, writes down a guess and a reason, runs the test, and reports back. Finish with "Why would anyone trust a model?" and ask what would make them distrust one.</p>
+        <p>Every rule has a "Show the maths" drawer with the equation and its source, for groups that want them.</p>
+      </div></details>
+
+      <details class="more"><summary>What Patch leaves out</summary><div>
+        <p>Nutrients, fire, grazing animals, frost damage, snow, different soils, individual trees of different ages, pests and people. It has one soil everywhere, two kinds of wild plant per place, and invented day-to-day weather built from monthly averages. Its plants share out growth in fixed parts instead of adjusting to their needs, and its crop has no limit set by heat at flowering.</p>
+        <p>Its responses to CO₂ are probably too strong, because real plants run short of nutrients. Treat its numbers as illustrations of how the mechanisms work, not as predictions for any real place.</p>
+        <p>The code is open: <a href="https://github.com/joshimudit/joshimudit.github.io/tree/main/src/lib/patch">model and data on GitHub</a>.</p>
+      </div></details>
+
+      <details class="more"><summary>Sources</summary><div>
+        <ul class="src">
+          <li>Ainsworth, E. A. and Long, S. P. (2005). What have we learned from 15 years of free-air CO₂ enrichment (FACE)? <em>New Phytologist</em> 165: 351–372.</li>
+          <li>Allen, R. G. and others (1998). <em>Crop evapotranspiration</em>. FAO Irrigation and Drainage Paper 56. (Sunshine and day length from latitude.)</li>
+          <li>Bernacchi, C. J. and others (2001). Improved temperature response functions for models of Rubisco-limited photosynthesis. <em>Plant, Cell and Environment</em> 24: 253–259.</li>
+          <li>Bond, W. J. and Midgley, G. F. (2012). Carbon dioxide and the uneasy interactions of trees and savannah grasses. <em>Philosophical Transactions of the Royal Society B</em> 367: 601–612.</li>
+          <li>Bondeau, A. and others (2007). Modelling the role of agriculture for the 20th century global terrestrial carbon balance. <em>Global Change Biology</em> 13: 679–706. (LPJmL.)</li>
+          <li>Challinor, A. J. and others (2014). A meta-analysis of crop yield under climate change and adaptation. <em>Nature Climate Change</em> 4: 287–291.</li>
+          <li>Collatz, G. J., Ribas-Carbo, M. and Berry, J. A. (1992). Coupled photosynthesis-stomatal conductance model for leaves of C4 plants. <em>Australian Journal of Plant Physiology</em> 19: 519–538.</li>
+          <li>Farquhar, G. D., von Caemmerer, S. and Berry, J. A. (1980). A biochemical model of photosynthetic CO₂ assimilation in leaves of C3 species. <em>Planta</em> 149: 78–90.</li>
+          <li>Haxeltine, A. and Prentice, I. C. (1996). BIOME3: an equilibrium terrestrial biosphere model. <em>Global Biogeochemical Cycles</em> 10: 693–709.</li>
+          <li>Jarvis, P. G. and McNaughton, K. G. (1986). Stomatal control of transpiration: scaling up from leaf to region. <em>Advances in Ecological Research</em> 15: 1–49.</li>
+          <li>Keenan, T. F. and Riley, W. J. (2018). Greening of the land surface in the world's cold regions consistent with recent warming. <em>Nature Climate Change</em> 8: 825–828.</li>
+          <li>Lloyd, J. and Taylor, J. A. (1994). On the temperature dependence of soil respiration. <em>Functional Ecology</em> 8: 315–323.</li>
+          <li>Manabe, S. (1969). Climate and the ocean circulation: I. The atmospheric circulation and the hydrology of the Earth's surface. <em>Monthly Weather Review</em> 97: 739–774.</li>
+          <li>Monsi, M. and Saeki, T. (1953). Über den Lichtfaktor in den Pflanzengesellschaften und seine Bedeutung für die Stoffproduktion. <em>Japanese Journal of Botany</em> 14: 22–52.</li>
+          <li>Prentice, I. C. and others (1993). A simulation model for the transient effects of climate change on forest landscapes. <em>Ecological Modelling</em> 65: 51–70. (Net radiation.)</li>
+          <li>Priestley, C. H. B. and Taylor, R. J. (1972). On the assessment of surface heat flux and evaporation using large-scale parameters. <em>Monthly Weather Review</em> 100: 81–92.</li>
+          <li>Ryan, M. G. (1991). Effects of climate change on plant respiration. <em>Ecological Applications</em> 1: 157–167.</li>
+          <li>Sankaran, M. and others (2005). Determinants of woody cover in African savannas. <em>Nature</em> 438: 846–849.</li>
+          <li>Schaphoff, S. and others (2018). LPJmL4, a dynamic global vegetation model with managed land. Part 1: Model description. <em>Geoscientific Model Development</em> 11: 1343–1375. Part 2: Model evaluation. 11: 1377–1403. <a href="https://doi.org/10.5194/gmd-11-1343-2018">doi:10.5194/gmd-11-1343-2018</a>. LPJmL's code is published at <a href="https://github.com/PIK-LPJmL/LPJmL">github.com/PIK-LPJmL/LPJmL</a>.</li>
+          <li>Sitch, S. and others (2003). Evaluation of ecosystem dynamics, plant geography and terrestrial carbon cycling in the LPJ dynamic global vegetation model. <em>Global Change Biology</em> 9: 161–185.</li>
+          <li>von Bloh, W. and others (2018). Implementing the nitrogen cycle into the dynamic global vegetation, hydrology, and crop growth model LPJmL (version 5.0). <em>Geoscientific Model Development</em> 11: 2789–2812.</li>
+          <li>Walter, H. (1971). <em>Ecology of Tropical and Subtropical Vegetation</em>. Oliver and Boyd, Edinburgh.</li>
+          <li>Warszawski, L. and others (2014). The Inter-Sectoral Impact Model Intercomparison Project (ISI-MIP): project framework. <em>PNAS</em> 111: 3228–3232.</li>
+          <li>Zhao, C. and others (2017). Temperature increase reduces global yields of major crops in four independent estimates. <em>PNAS</em> 114: 9326–9331.</li>
+          <li>Climate: monthly normals for Agadez, Niamey, Parakou and Cotonou (NOAA and the World Meteorological Organization) and for Aarhus (Danish Meteorological Institute), as given in the climate tables of each city's Wikipedia page.</li>
+        </ul>
+      </div></details>
+
+      <p class="credit">Made by Mudit Joshi, a doctoral researcher in the Marie Skłodowska-Curie network <a href="https://agri-dry.org">AGRI-DRY</a>, as a teaching aid. Patch is not LPJmL and is not used in any research study.</p>
+    </section>
+  </article>
 </Base>
 
-<style>
-  .crumb { margin: 0 0 0.5rem; font-size: 0.92rem; }
-  .layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
-  .scene-wrap { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
-  #scene { display: block; width: 100%; height: auto; }
+<script>
+  import { init } from '../../lib/patch/ui';
+  init();
+</script>
 
-  .patch-page {
-    --sky: #d6e7ea; --soil: #8b6c4c; --soil-c: #3e2d1f; --water: #6fa6c4;
-    --leaf: #4c8a3a; --straw: #c6a35a; --litter: #a5875a; --root: #e8dcc4; --sun: #f2b84b;
-    --co2: #4b5d63; --vapour: #2f80b0; --flower: #f4f1e6; --snow: #f4f7f8;
+<style is:global>
+  .pm {
+    --c3: #00789a; --c4: #a85a06; --leafc: #4e7a3a; --grassc: #86a548; --strawc: #c9a86a; --soil1c: #c2a67c; --soil2c: #a88a60;
+    --waterc: #2f6fb3; --skyc: #e3edf1; --sunc: #e8a100; --trunkc: #6b4a2b; --barec: #e6dcc2; --cgrass: #b3c468; --ctree: #2f6b3a;
+    width: min(100% - 1.5rem, 44rem); margin-inline: auto; padding-block: clamp(1.5rem, 5vw, 4rem) 4rem;
   }
-  :global([data-theme='night']) .patch-page {
-    --sky: #1b2b33; --soil: #5a4632; --soil-c: #241910; --water: #3f7396;
-    --leaf: #7fbf72; --straw: #c9a865; --litter: #7d6847; --root: #cbbd9f; --sun: #f0c06a;
-    --co2: #a9b6aa; --vapour: #8cc8ec; --flower: #eef2ea; --snow: #dfe7ea;
+  [data-theme='night'] .pm {
+    --c3: #2a9cba; --c4: #c98427; --leafc: #7fb36a; --grassc: #a9c56a; --strawc: #a08a5a; --soil1c: #5a4a34; --soil2c: #46392a;
+    --waterc: #6fa8e6; --skyc: #1b2830; --sunc: #f0b93a; --trunkc: #a88a60; --barec: #4a4334; --cgrass: #8fa650; --ctree: #cfe8b0;
   }
-  #sky { fill: var(--sky); }
-  #sun { fill: var(--sun); }
-  #soil { fill: var(--soil); }
-  #soilc { fill: var(--soil-c); opacity: 0.75; }
-  #water { fill: var(--water); }
-  #bucket-line { stroke: var(--water); stroke-width: 2; stroke-dasharray: 6 6; }
-  #litter { fill: var(--litter); }
-  #snow { fill: var(--snow); }
+  .pm h1 { font-size: clamp(2.8rem, 12vw, 5rem); margin-bottom: 0.3em; }
+  .pm .lede { font-size: clamp(1.1rem, 3.4vw, 1.3rem); line-height: 1.5; }
+  .pm section { padding-top: clamp(2.5rem, 8vw, 4.5rem); }
+  .pm h2 { font-size: clamp(1.55rem, 5.4vw, 2.2rem); margin-bottom: 0.6em; }
+  .pm h3 { font-size: 1.3rem; margin: 2rem 0 0.6rem; }
+  .pm p, .pm li { max-width: 40rem; }
+  .pm .note { border-left: 3px solid var(--line); padding-left: 1rem; color: var(--muted); font-size: 0.97rem; }
+  .pm .note strong, .pm .fact strong { color: var(--ink); font-weight: 600; }
+  .pm .fact { border-left: 3px solid var(--line); padding-left: 1rem; margin: 1.6rem 0; }
+  .pm .fact p { margin: 0; color: var(--muted); font-size: 0.97rem; }
+  .pm .small { font-size: 0.88rem; color: var(--muted); }
+  .pm [hidden] { display: none !important; }
 
-  .hot {
-    position: absolute; transform: translate(-50%, -50%);
-    font: inherit; font-size: 0.78rem; font-weight: 500; line-height: 1;
-    padding: 0.35rem 0.55rem; border-radius: 3px; cursor: pointer;
-    background: color-mix(in srgb, var(--surface) 88%, transparent); color: var(--ink);
-    border: 1px solid var(--line);
+  .pm .play { margin: 1.4rem 0 1.8rem; padding: 0; }
+  .pm figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+  .pm svg { display: block; width: 100%; height: auto; }
+  .pm svg.scene { border-radius: 3px; }
+  .pm svg text { font: 11px var(--sans); fill: var(--muted); }
+  .pm svg .when { font-size: 13px; fill: var(--ink); font-weight: 500; }
+  .pm svg .lab.warn { fill: var(--c4); font-weight: 600; }
+  .pm .sky { fill: var(--skyc); } .pm .sun { fill: var(--sunc); } .pm .cloud ellipse { fill: var(--muted); opacity: 0.55; }
+  .pm .rain { stroke: var(--waterc); stroke-width: 2; stroke-linecap: round; }
+  .pm .soil1 { fill: var(--soil1c); } .pm .soil2 { fill: var(--soil2c); } .pm .water { fill: var(--waterc); opacity: 0.42; }
+  .pm .scene .lab { fill: #fff; font-weight: 500; paint-order: stroke; stroke: rgba(0, 0, 0, 0.35); stroke-width: 2.5px; }
+  .pm .blade { stroke: var(--grassc); stroke-width: 2.4; stroke-linecap: round; } .pm .straw { stroke: var(--strawc); stroke-width: 2.4; stroke-linecap: round; }
+  .pm .trunk { stroke: var(--trunkc); stroke-linecap: round; } .pm .crown { fill: var(--leafc); } .pm .root { stroke: var(--trunkc); stroke-width: 1.5; fill: none; opacity: 0.6; }
+  .pm .stem { stroke: var(--grassc); stroke-width: 3; stroke-linecap: round; } .pm .leaf { stroke: var(--grassc); stroke-width: 3; fill: none; stroke-linecap: round; }
+  .pm .grain { fill: var(--sunc); } .pm .furrow { stroke: var(--trunkc); stroke-width: 2; opacity: 0.5; }
+  .pm .beam { stroke: var(--sunc); stroke-linecap: round; } .pm .layer { fill: var(--leafc); }
+  .pm .axis { stroke: var(--muted); stroke-width: 1; }
+  .pm .curve { fill: none; stroke-width: 2; opacity: 0.35; stroke-linejoin: round; } .pm .curve.on { opacity: 1; stroke-width: 3; }
+  .pm .curve.c3 { stroke: var(--c3); } .pm .curve.c4 { stroke: var(--c4); stroke-dasharray: 7 4; }
+  .pm .dot { stroke: var(--bg); stroke-width: 2; } .pm .dot.c3 { fill: var(--c3); } .pm .dot.c4 { fill: var(--c4); }
+  .pm .obs { fill: var(--ink); stroke: var(--bg); stroke-width: 1.5; }
+  .pm .barS { fill: var(--c3); } .pm .barD { fill: var(--c4); } .pm .barB { fill: var(--muted); opacity: 0.5; } .pm .barG { fill: var(--leafc); }
+  .pm .sLeaf { fill: var(--leafc); opacity: 0.55; } .pm .sRain { fill: var(--waterc); } .pm .sWater { fill: none; stroke: var(--waterc); stroke-width: 1.5; }
+  .pm .head { stroke: var(--ink); stroke-width: 1.5; }
+  .pm .cBare { fill: var(--barec); } .pm .cGrass { fill: var(--cgrass); } .pm .cTree { fill: var(--ctree); }
+  .pm .pick { fill: none; stroke: var(--ink); stroke-width: 2.5; } .pm svg.cells { cursor: pointer; touch-action: manipulation; }
+
+  .pm .key { list-style: none; display: flex; flex-wrap: wrap; gap: 0.2rem 1.1rem; padding: 0; margin: 0.5rem 0 0; font-size: 0.86rem; color: var(--muted); }
+  .pm .key li { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .pm .k { width: 1.3rem; height: 0; border-top: 3px solid var(--c3); display: inline-block; }
+  .pm .k.c4 { border-top: 3px dashed var(--c4); } .pm .k.rain, .pm .k.leafk, .pm .k.cb, .pm .k.cg, .pm .k.ct { height: 0.75rem; width: 0.75rem; border: 0; border-radius: 2px; }
+  .pm .k.rain { background: var(--waterc); } .pm .k.leafk { background: var(--leafc); opacity: 0.6; } .pm .k.waterk { border-top: 2px solid var(--waterc); }
+  .pm .k.cb { background: var(--barec); } .pm .k.cg { background: var(--cgrass); } .pm .k.ct { background: var(--ctree); }
+  .pm .k.obsk { width: 0.6rem; height: 0.6rem; border: 0; border-radius: 50%; background: var(--ink); }
+
+  .pm .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; }
+  .pm .chips button, .pm .seg button, .pm .choice, .pm .qcard {
+    font: inherit; font-size: 0.95rem; color: var(--ink); background: none; cursor: pointer; text-align: left;
+    border: 1px solid var(--muted); border-radius: 3px; padding: 0.5rem 0.8rem; min-height: 2.75rem;
   }
-  .hot:hover, .hot[aria-current='true'] { border-color: var(--blue); color: var(--blue); }
-  .clock { position: absolute; left: 0.75rem; top: 0.6rem; margin: 0; display: flex; gap: 0.75rem; font-family: var(--mono); font-size: 0.75rem; color: var(--ink); background: color-mix(in srgb, var(--surface) 80%, transparent); padding: 0.3rem 0.5rem; border-radius: 3px; }
+  .pm .chips button small { display: block; font-size: 0.78rem; color: var(--muted); }
+  .pm .chips button.on small { color: inherit; opacity: 0.8; }
+  .pm .chips button:hover, .pm .seg button:hover, .pm .choice:hover:not(:disabled), .pm .qcard:hover { border-color: var(--ink); }
+  .pm .chips button.on, .pm .seg button.on, .pm .choice.on, .pm .qcard.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .pm .choice:disabled:not(.on) { opacity: 0.45; cursor: default; }
+  .pm .seg { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.8rem 0; }
+  .pm .ctx { margin: 0.6rem 0 0; min-height: 1.5em; font-size: 0.97rem; color: var(--muted); }
+  .pm .who { margin: 0.2rem 0 0.6rem; font-weight: 500; }
 
-  .transport { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 0.9rem; }
-  .speed { display: inline-flex; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
-  .speed button, .ghost { font: inherit; font-size: 0.9rem; background: none; border: 0; color: var(--ink); padding: 0.5rem 0.85rem; cursor: pointer; }
-  .speed button[aria-pressed='true'] { background: var(--blue-soft); color: var(--blue); font-weight: 500; }
-  .ghost { border: 1px solid var(--line); border-radius: 3px; }
+  .pm .sl { display: block; margin-top: 0.7rem; }
+  .pm .sl span { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.93rem; color: var(--muted); }
+  .pm .sl b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pm .sl input { width: 100%; height: 2.6rem; accent-color: var(--ink); margin: 0; }
 
-  .limits { margin-top: 1.5rem; }
-  .limits h2, .controls h2, .results h2, .about-model h2 { font-size: 1.25rem; }
-  .meters { display: grid; gap: 0.5rem; }
-  .meter { display: grid; grid-template-columns: 6.5rem 1fr; align-items: center; gap: 0.75rem; font-size: 0.9rem; }
-  .bar { height: 0.6rem; background: var(--line); border-radius: 2px; overflow: hidden; }
-  .bar i { display: block; height: 100%; width: 0; background: var(--blue); transition: width 0.25s linear; }
-  .verdict { margin: 0.75rem 0 0; }
-  .verdict span { color: var(--muted); }
+  .pm .eq { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.4rem; margin-top: 0.9rem; }
+  .pm .tm { flex: 1 1 5.2rem; max-width: 9.5rem; padding: 0.45rem 0.55rem; border-radius: 3px; background: var(--surface); border: 1px solid var(--line); transition: background 0.3s, border-color 0.3s; }
+  .pm .tm b { display: block; font-family: var(--serif); font-weight: 400; font-size: 1.5rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .pm .tm i { font-style: normal; font-size: 0.78rem; line-height: 1.25; color: var(--muted); display: block; }
+  .pm .tm.hot { border-color: var(--c4); background: color-mix(in srgb, var(--c4) 14%, var(--surface)); }
+  .pm .tm.end { border-color: var(--ink); }
+  .pm .op { font-style: normal; font-family: var(--sans); font-size: 1rem; color: var(--muted); margin-right: 0.3rem; }
+  .pm .say { margin: 0.8rem 0 0; min-height: 3em; font-size: 1rem; line-height: 1.45; }
+  .pm .caption { margin: 0.6rem 0; min-height: 4.4em; font-size: 1.02rem; line-height: 1.45; }
+  .pm .sum, .pm .cellinfo { font-size: 0.95rem; color: var(--muted); margin: 0.8rem 0 0; }
+  .pm .cellinfo b { color: var(--ink); }
 
-  .controls { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1.25rem 1.25rem 1.5rem; }
-  .ctl { display: grid; gap: 0.35rem; margin-bottom: 1.1rem; }
-  .lab { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.95rem; }
-  .lab output { font-family: var(--mono); font-size: 0.8rem; color: var(--blue); }
-  .ends { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); }
-  input[type='range'] { width: 100%; accent-color: var(--blue); }
-  .presets h3 { font-family: var(--sans); font-weight: 500; font-size: 1rem; margin-bottom: 0.5rem; }
-  .preset-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .preset-row button { font: inherit; font-size: 0.85rem; padding: 0.35rem 0.65rem; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 3px; cursor: pointer; }
-  .preset-row button:hover, .preset-row button[aria-pressed='true'] { border-color: var(--ochre); color: var(--ochre); }
-  .note { font-size: 0.9rem; color: var(--muted); margin: 0.75rem 0 0; min-height: 4.5em; }
+  .pm .maths { margin-top: 0.9rem; border-top: 1px solid var(--line); padding-top: 0.6rem; }
+  .pm .maths summary, .pm .more summary { cursor: pointer; font-weight: 500; font-size: 0.95rem; min-height: 2rem; }
+  .pm .maths p { font-size: 0.92rem; color: var(--muted); margin: 0.6rem 0 0; }
+  .pm .maths .f { font-family: var(--serif); font-size: 1.05rem; color: var(--ink); }
 
-  .box { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
-  .box-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin-bottom: 1rem; }
-  .box-tabs button { font: inherit; background: none; border: 0; border-bottom: 2px solid transparent; padding: 0.3rem 0; color: var(--muted); cursor: pointer; }
-  .box-tabs button[aria-selected='true'] { color: var(--ink); border-bottom-color: var(--ochre-fill); }
-  .box-body h2 { font-size: 1.5rem; }
-  .box-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem 2rem; }
-  .box-cols h3 { font-family: var(--sans); font-weight: 500; font-size: 0.95rem; color: var(--muted); margin-bottom: 0.4rem; }
-  .eq { font-family: var(--mono); font-size: 0.78rem; background: var(--surface); border: 1px solid var(--line); padding: 0.6rem 0.75rem; border-radius: 4px; }
+  .pm .bar { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.9rem; }
+  .pm .btn { min-height: 2.9rem; padding-inline: 1.15rem; font-size: 1rem; }
+  .pm .btn.quiet { background: none; color: var(--ink); box-shadow: inset 0 0 0 1px var(--muted); }
+  .pm .btn.quiet:hover { box-shadow: inset 0 0 0 1px var(--ink); filter: none; }
 
-  .results { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
-  .charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
-  .charts figure { margin: 0; }
-  figcaption { font-size: 0.9rem; margin-bottom: 0.4rem; display: flex; justify-content: space-between; gap: 1rem; }
-  .chart { width: 100%; height: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
-  #c-plant polyline { fill: none; stroke: var(--leaf, #4c8a3a); stroke-width: 2; }
-  #c-soil polyline { fill: none; stroke: var(--ochre-fill); stroke-width: 2; }
-  .table-wrap { overflow-x: auto; margin-top: 1.5rem; }
-  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
-  .table-wrap :global(th), .table-wrap :global(td) { text-align: right; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); }
-  .table-wrap :global(th:first-child), .table-wrap :global(td:first-child) { text-align: left; }
-  th { font-weight: 500; color: var(--muted); }
-  .units { font-size: 0.82rem; color: var(--muted); margin-top: 0.5rem; }
-  .about-model { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
+  .pm .reads { display: grid; grid-template-columns: repeat(auto-fit, minmax(6.2rem, 1fr)); gap: 0.4rem; margin-top: 0.9rem; }
+  .pm .reads p { margin: 0; padding: 0.45rem 0.55rem; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); }
+  .pm .reads b { display: block; font-family: var(--serif); font-weight: 400; font-size: 1.4rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .pm .reads span { font-size: 0.78rem; color: var(--muted); line-height: 1.25; display: block; }
+  .pm .reads i { font-style: normal; display: block; opacity: 0.8; }
 
-  @media (max-width: 900px) {
-    .layout { grid-template-columns: 1fr; }
-    .box-cols, .charts { grid-template-columns: 1fr; }
-    .hot { font-size: 0.68rem; padding: 0.25rem 0.4rem; }
+  .pm .bet { border: 0; padding: 0; margin: 0 0 0.6rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .pm .bet legend { padding: 0; margin-bottom: 0.7rem; font-weight: 500; }
+  .pm .stage { margin-top: 1rem; }
+  .pm .after { margin-top: 1.2rem; border-top: 1px solid var(--line); padding-top: 0.4rem; }
+
+  .pm .qcards { display: grid; gap: 0.4rem; margin-bottom: 1.2rem; }
+  .pm .qcard { font-size: 1rem; font-weight: 500; }
+  .pm .bench { border-top: 1px solid var(--line); margin-top: 0.8rem; padding-top: 0.6rem; }
+  .pm .need { font-weight: 500; margin: 0.4rem 0; }
+  .pm .pickers { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.6rem; }
+  .pm .pickers label { font-size: 0.86rem; color: var(--muted); display: grid; gap: 0.2rem; }
+  .pm .pickers select { font: inherit; font-size: 1rem; color: var(--ink); background: var(--surface); border: 1px solid var(--muted); border-radius: 3px; min-height: 2.75rem; padding: 0 0.5rem; }
+  .pm .warn { color: var(--c4); font-size: 0.93rem; margin: 0.7rem 0 0; min-height: 1.4em; }
+  .pm .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1.2rem; margin-top: 1.2rem; }
+  .pm .res .place { margin: 0; font-weight: 600; }
+  .pm .res .big { margin: 0.2rem 0 0; font-family: var(--serif); font-size: clamp(2.6rem, 11vw, 3.6rem); line-height: 1; }
+  .pm .res .bigl { margin: 0.2rem 0 0.6rem; font-size: 0.88rem; color: var(--muted); }
+  .pm table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .pm th, .pm td { text-align: left; padding: 0.35rem 0.5rem 0.35rem 0; font-weight: 400; vertical-align: top; }
+  .pm thead th { font-size: 0.8rem; color: var(--muted); }
+  .pm tbody tr { border-top: 1px solid var(--line); }
+  .pm td { font-variant-numeric: tabular-nums; white-space: nowrap; } .pm td.chg { font-weight: 600; }
+  .pm .cmp td { white-space: normal; } .pm .cmp th[scope='row'] { color: var(--muted); width: 30%; }
+  .pm .tablewrap { overflow-x: auto; }
+  .pm .verdict { font-size: 1.05rem; margin-top: 1rem; min-height: 1.5em; }
+  .pm .hint { border-left: 3px solid var(--c3); padding-left: 1rem; margin-top: 0.9rem; }
+  .pm .hint p { font-size: 0.97rem; margin: 0 0 0.6rem; }
+
+  .pm .take { padding-left: 1.3rem; } .pm .take li { margin-bottom: 0.7rem; }
+  .pm .more { border-top: 1px solid var(--line); padding-block: 0.8rem; }
+  .pm .more:last-of-type { border-bottom: 1px solid var(--line); }
+  .pm .more > div { padding-top: 0.6rem; } .pm .more p, .pm .src li { font-size: 0.95rem; }
+  .pm .src { padding-left: 1.1rem; } .pm .src li { margin-bottom: 0.45rem; }
+  .pm .credit { color: var(--muted); font-size: 0.95rem; margin-top: 1.5rem; }
+
+  @media (max-width: 560px) {
+    .pm svg text { font-size: 13px; }
+    .pm .bet .choice { flex: 1 1 100%; }
+    .pm .tm { flex-basis: 40%; max-width: none; }
   }
 </style>
-
-<script>
-  import { initialState, step, rng, seasonOf, type Settings, type State, type Fluxes } from '../../lib/patch-model';
-
-  const $ = <T extends Element = HTMLElement>(id: string) => document.getElementById(id) as unknown as T;
-  const NS = 'http://www.w3.org/2000/svg';
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-  // ---------- settings and controls ----------
-  const inputs = {
-    temp: $<HTMLInputElement>('i-temp'), rain: $<HTMLInputElement>('i-rain'),
-    co2: $<HTMLInputElement>('i-co2'), soil: $<HTMLInputElement>('i-soil'),
-  };
-  const settings = (): Settings => ({
-    tempMean: +inputs.temp.value, rain: +inputs.rain.value, co2: +inputs.co2.value, soilCap: +inputs.soil.value,
-  });
-  const soilName = (cap: number) => (cap < 90 ? 'Sand' : cap < 130 ? 'Sandy loam' : cap < 180 ? 'Loam' : 'Clay');
-  function showSettings() {
-    const s = settings();
-    $('o-temp').textContent = `${s.tempMean} °C`;
-    $('o-rain').textContent = `${s.rain} mm`;
-    $('o-co2').textContent = `${s.co2} ppm`;
-    $('o-soil').textContent = soilName(s.soilCap);
-  }
-
-  let S: Settings = settings();
-  let st: State = initialState(S);
-  let rand = rng(1);
-  let f: Fluxes = step({ ...st }, S, rng(2));
-  const history: { plant: number; soil: number }[] = [];
-  const years: { year: number; gpp: number; npp: number; transp: number; runoff: number; soilC: number }[] = [];
-  let acc = { gpp: 0, npp: 0, transp: 0, runoff: 0 };
-
-  Object.values(inputs).forEach((el) => el.addEventListener('input', () => {
-    S = settings(); showSettings(); clearPreset();
-  }));
-
-  // ---------- presets ----------
-  const PRESETS: Record<string, { s: Partial<Settings>; note: string }> = {
-    today: { s: { tempMean: 10, rain: 700, co2: 420, soilCap: 150 }, note: 'A cool temperate grassland under today’s CO₂. Growth stops in winter, peaks in early summer, and is often held back by water in July.' },
-    preind: { s: { tempMean: 9, co2: 280 }, note: 'The same place before industry: a little cooler, with a third less CO₂. Plants capture less carbon each year, and the soil slowly loses some of its store.' },
-    ice: { s: { tempMean: 2, rain: 450, co2: 180 }, note: 'An Ice Age world: cold, dry and starved of CO₂. The season is short and growth crawls. Farming took off only after the Ice Age ended and CO₂ rose.' },
-    double: { s: { co2: 840 }, note: 'Double today’s CO₂. Growth rises, but nowhere near double: light, water and temperature still set limits. In the real world, nutrients cap the gain even more.' },
-    drought: { s: { rain: 250 }, note: 'A dry climate. Watch the soil water run out by early summer and the grass turn to straw while it is still warm enough to grow.' },
-    hot: { s: { tempMean: 18 }, note: 'Eight degrees warmer. The season is longer, but hot summers dry the soil and plants burn more of their sugar just to stay alive.' },
-  };
-  const presetBtns = document.querySelectorAll<HTMLButtonElement>('[data-preset]');
-  function clearPreset() { presetBtns.forEach((b) => b.setAttribute('aria-pressed', 'false')); }
-  presetBtns.forEach((b) => b.addEventListener('click', () => {
-    const p = PRESETS[b.dataset.preset!];
-    const base = b.dataset.preset === 'today' ? p.s : { ...PRESETS.today.s, ...p.s };
-    for (const [k, v] of Object.entries(base)) {
-      const el = { tempMean: inputs.temp, rain: inputs.rain, co2: inputs.co2, soilCap: inputs.soil }[k as keyof Settings];
-      el.value = String(v);
-    }
-    S = settings(); showSettings();
-    clearPreset(); b.setAttribute('aria-pressed', 'true');
-    $('preset-note').textContent = p.note;
-    if (!playing) togglePlay();
-  }));
-
-  // ---------- scene ----------
-  const svg = $<SVGSVGElement>('scene');
-  const css = () => getComputedStyle(document.querySelector('.patch-page')!);
-  let C = readColours();
-  function readColours() {
-    const c = css();
-    const g = (n: string) => c.getPropertyValue(n).trim();
-    return { leaf: g('--leaf'), straw: g('--straw'), root: g('--root'), co2: g('--co2'), vapour: g('--vapour'), flower: g('--flower'), litter: g('--litter'), snow: g('--snow') };
-  }
-  document.addEventListener('themechange', () => { C = readColours(); drawStars(); });
-
-  function mix(a: string, b: string, t: number) {
-    const p = (h: string) => h.startsWith('#') ? [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)) : [128, 128, 128];
-    const [x, y] = [p(a), p(b)];
-    return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * t)).join(',')})`;
-  }
-
-  const GROUND = 262;
-  const r0 = rng(99);
-  const tufts = Array.from({ length: 26 }, (_, i) => ({
-    x: 24 + i * 29.5 + (r0() - 0.5) * 14,
-    scale: 0.75 + r0() * 0.5,
-    blades: 4 + Math.floor(r0() * 3),
-    lean: (r0() - 0.5) * 0.6,
-    flower: r0() < 0.35,
-  }));
-  const plantsG = $('plants'), rootsG = $('roots');
-  const tuftEls = tufts.map((t) => {
-    const g = document.createElementNS(NS, 'g');
-    const blades = Array.from({ length: t.blades }, () => {
-      const p = document.createElementNS(NS, 'path');
-      p.setAttribute('fill', 'none'); p.setAttribute('stroke-width', '3'); p.setAttribute('stroke-linecap', 'round');
-      g.appendChild(p); return p;
-    });
-    const fl = document.createElementNS(NS, 'circle'); fl.setAttribute('r', '4'); g.appendChild(fl);
-    plantsG.appendChild(g);
-    const rg = document.createElementNS(NS, 'path');
-    rg.setAttribute('fill', 'none'); rg.setAttribute('stroke-width', '1.4'); rg.setAttribute('opacity', '0.8');
-    rootsG.appendChild(rg);
-    return { blades, fl, rg };
-  });
-
-  function drawPlants(growingNow: boolean) {
-    const plant = st.leaf + st.stem;
-    const h = Math.min(205, 8 + plant * 0.6);
-    const stress = growingNow ? 1 - Math.min(1, f.fW * 1.25) : 1;
-    const colour = mix(C.leaf, C.straw, stress);
-    const rootLen = Math.min(175, 18 + st.root * 0.28);
-    const sway = reduce ? 0 : Math.sin(performance.now() / 900);
-    const summer = seasonOf(st.day);
-    tufts.forEach((t, i) => {
-      const el = tuftEls[i];
-      el.blades.forEach((b, k) => {
-        const spread = (k - (t.blades - 1) / 2) * 7;
-        const bh = h * t.scale * (0.75 + 0.25 * Math.cos(k * 1.7));
-        const tipX = t.x + spread * 1.8 + (t.lean + sway * 0.08) * bh * 0.5;
-        b.setAttribute('d', `M${t.x + spread * 0.3},${GROUND} Q${t.x + spread},${GROUND - bh * 0.55} ${tipX},${GROUND - bh}`);
-        b.setAttribute('stroke', colour);
-      });
-      const show = t.flower && growingNow && summer > 0.35 && f.fW > 0.45 && h > 50;
-      el.fl.setAttribute('cx', String(t.x + t.lean * h * t.scale * 0.5));
-      el.fl.setAttribute('cy', String(GROUND - h * t.scale - 3));
-      el.fl.setAttribute('fill', C.flower);
-      el.fl.setAttribute('opacity', show ? '1' : '0');
-      const rl = rootLen * t.scale;
-      el.rg.setAttribute('d', `M${t.x},${GROUND + 2} q-6,${rl * 0.5} -2,${rl} M${t.x},${GROUND + 2} q10,${rl * 0.35} 14,${rl * 0.7} M${t.x},${GROUND + 2} q-14,${rl * 0.3} -18,${rl * 0.55}`);
-      el.rg.setAttribute('stroke', C.root);
-    });
-  }
-
-  function drawStars() {
-    const g = $('stars'); g.innerHTML = '';
-    if (document.documentElement.dataset.theme !== 'night') return;
-    const r = rng(5);
-    for (let i = 0; i < 40; i++) {
-      const c = document.createElementNS(NS, 'circle');
-      c.setAttribute('cx', String(r() * 800)); c.setAttribute('cy', String(r() * 200));
-      c.setAttribute('r', String(0.6 + r())); c.setAttribute('fill', '#e6ece4'); c.setAttribute('opacity', String(0.3 + r() * 0.5));
-      g.appendChild(c);
-    }
-  }
-  drawStars();
-
-  // particles: CO2 drawn into leaves, water vapour out, CO2 from microbes, rain or snow
-  type P = { el: SVGElement; x: number; y: number; vx: number; vy: number; life: number };
-  const pools: Record<string, P[]> = { co2: [], vapour: [], decomp: [], rain: [] };
-  function spawn(kind: 'co2' | 'vapour' | 'decomp' | 'rain', snowing = false) {
-    if (reduce || pools[kind].length > (kind === 'co2' ? 22 : 45)) return;
-    const g = $(kind);
-    let el: SVGElement, x = 0, y = 0, vx = 0, vy = 0;
-    if (kind === 'rain') {
-      el = document.createElementNS(NS, snowing ? 'circle' : 'line');
-      x = Math.random() * 800; y = -10; vx = snowing ? (Math.random() - 0.5) * 0.6 : -0.6; vy = snowing ? 1.4 : 7;
-      if (snowing) { el.setAttribute('r', '2.2'); el.setAttribute('fill', C.snow); }
-      else { el.setAttribute('stroke', C.vapour); el.setAttribute('stroke-width', '1.5'); el.setAttribute('opacity', '0.7'); }
-    } else if (kind === 'co2') {
-      el = document.createElementNS(NS, 'text');
-      el.textContent = 'CO₂'; el.setAttribute('font-size', '11'); el.setAttribute('fill', C.co2); (el as SVGElement).style.fontFamily = 'var(--mono)';
-      x = 40 + Math.random() * 720; y = 30 + Math.random() * 60; vx = (Math.random() - 0.5) * 0.4; vy = 0.9 + Math.random() * 0.5;
-    } else if (kind === 'vapour') {
-      el = document.createElementNS(NS, 'circle'); el.setAttribute('r', '2.5'); el.setAttribute('fill', C.vapour); el.setAttribute('opacity', '0.6');
-      const t = tufts[Math.floor(Math.random() * tufts.length)];
-      x = t.x; y = GROUND - Math.min(205, 8 + (st.leaf + st.stem) * 0.6) * 0.8; vx = (Math.random() - 0.5) * 0.5; vy = -1.1;
-    } else {
-      el = document.createElementNS(NS, 'circle'); el.setAttribute('r', '2'); el.setAttribute('fill', C.co2); el.setAttribute('opacity', '0.55');
-      x = Math.random() * 800; y = GROUND - 2; vx = (Math.random() - 0.5) * 0.3; vy = -0.7;
-    }
-    g.appendChild(el);
-    pools[kind].push({ el, x, y, vx, vy, life: kind === 'rain' ? 80 : 110 });
-  }
-  function moveParticles() {
-    for (const kind of Object.keys(pools)) {
-      const list = pools[kind];
-      for (let i = list.length - 1; i >= 0; i--) {
-        const p = list[i];
-        p.x += p.vx; p.y += p.vy; p.life -= 1;
-        const canopyTop = GROUND - Math.min(205, 8 + (st.leaf + st.stem) * 0.6);
-        const dead = p.life <= 0 || (kind === 'co2' && p.y > canopyTop + 10) || (kind === 'rain' && p.y > GROUND) || p.y < -10;
-        if (dead) { p.el.remove(); list.splice(i, 1); continue; }
-        if (p.el.tagName === 'line') { p.el.setAttribute('x1', String(p.x)); p.el.setAttribute('y1', String(p.y)); p.el.setAttribute('x2', String(p.x - 2)); p.el.setAttribute('y2', String(p.y + 12)); }
-        else if (p.el.tagName === 'text') { p.el.setAttribute('x', String(p.x)); p.el.setAttribute('y', String(p.y)); p.el.setAttribute('opacity', String(Math.min(1, p.life / 40))); }
-        else { p.el.setAttribute('cx', String(p.x)); p.el.setAttribute('cy', String(p.y)); }
-      }
-    }
-  }
-
-  let snowDepth = 0;
-  function drawScene() {
-    const season = seasonOf(st.day);
-    const sun = $('sun');
-    sun.setAttribute('cy', String(150 - season * 80));
-    sun.setAttribute('r', String(18 + f.light * 1.6));
-    const cap = S.soilCap;
-    const soilTop = 268, soilH = 192;
-    const wFrac = Math.min(1, st.water / cap);
-    const bucketH = (cap / 230) * soilH;
-    const wH = wFrac * bucketH;
-    const w = $('water'); w.setAttribute('y', String(460 - wH)); w.setAttribute('height', String(wH));
-    $('bucket-line').setAttribute('y1', String(460 - bucketH)); $('bucket-line').setAttribute('y2', String(460 - bucketH));
-    const cH = Math.min(80, (st.soilC / 12000) * 70 + 4);
-    $('soilc').setAttribute('height', String(cH)); $('soilc').setAttribute('y', String(soilTop));
-    const lH = Math.min(10, 2 + st.litter / 60);
-    $('litter').setAttribute('y', String(GROUND - lH + 3)); $('litter').setAttribute('height', String(lH));
-    if (f.temp < 0 && f.raining) snowDepth = Math.min(14, snowDepth + 1.5);
-    if (f.temp > 0) snowDepth = Math.max(0, snowDepth - 0.6);
-    $('snow').setAttribute('y', String(GROUND - snowDepth)); $('snow').setAttribute('height', String(snowDepth));
-    drawPlants(f.growing);
-    void soilH;
-  }
-
-  // ---------- readouts ----------
-  const pct = (x: number) => `${Math.round(Math.max(0, Math.min(1, x)) * 100)}%`;
-  function readouts() {
-    $('t-date').textContent = `Year ${st.year}, ${MONTHS[Math.min(11, Math.floor(st.day / 30.42))]}`;
-    $('t-temp').textContent = `${Math.round(f.temp)} °C`;
-    ($('m-light') as HTMLElement).style.width = pct(f.light / 13);
-    ($('m-water') as HTMLElement).style.width = pct(f.fW);
-    ($('m-temp') as HTMLElement).style.width = pct(f.fT);
-    const msg: Record<Fluxes['limit'], string> = {
-      cold: 'Too cold to grow. The grass is dormant.',
-      water: 'Water is the main limit right now.',
-      temperature: 'Temperature is the main limit right now.',
-      light: 'Light is the main limit right now.',
-      none: 'Nothing is holding growth back. Peak conditions.',
-    };
-    $('v-limit').textContent = msg[f.limit];
-    const boost = Math.round((f.fCO2 - 1) * 100);
-    $('v-co2').textContent = boost === 0 ? '' : `CO₂ is ${boost > 0 ? 'boosting' : 'cutting'} photosynthesis by ${Math.abs(boost)}% compared with before industry.`;
-  }
-
-  function line(id: string, values: number[], min: number, max: number) {
-    const pl = document.querySelector(`#${id} polyline`)!;
-    if (values.length < 2) { pl.setAttribute('points', ''); return; }
-    const n = values.length;
-    const pts = values.map((v, i) => `${((i / (n - 1)) * 396 + 2).toFixed(1)},${(116 - ((v - min) / (max - min || 1)) * 108).toFixed(1)}`);
-    pl.setAttribute('points', pts.join(' '));
-  }
-  function charts() {
-    const recent = history.slice(-1095);
-    const plant = recent.map((h) => h.plant);
-    line('c-plant', plant, 0, Math.max(150, ...plant) * 1.05);
-    const soil = history.map((h) => h.soil);
-    const lo = Math.min(...soil), hi = Math.max(...soil);
-    const pad = Math.max(200, (hi - lo) * 0.2);
-    line('c-soil', soil.filter((_, i) => i % 5 === 0), lo - pad, hi + pad);
-    $('c-plant-v').textContent = `${Math.round(st.leaf + st.stem)} g/m²`;
-    $('c-soil-v').textContent = `${(st.soilC / 1000).toFixed(2)} kg/m²`;
-  }
-  function table() {
-    const rows = years.slice(-5).reverse().map((y) => `<tr><td>${y.year}</td><td>${Math.round(y.gpp)}</td><td>${Math.round(y.npp)}</td><td>${Math.round(y.transp)}</td><td>${Math.round(y.runoff)}</td><td>${(y.soilC / 1000).toFixed(2)}</td></tr>`);
-    $('years').innerHTML = rows.join('') || '<tr><td colspan="6">Results appear after the first year.</td></tr>';
-  }
-
-  // ---------- simulation loop ----------
-  let playing = !reduce;
-  let daysPerSec = 10;
-  let carry = 0, last = performance.now(), sinceChart = 0;
-
-  function simDay() {
-    const yearBefore = st.year;
-    f = step(st, S, rand);
-    acc.gpp += f.gpp; acc.npp += f.npp; acc.transp += f.transp; acc.runoff += f.runoff;
-    history.push({ plant: st.leaf + st.stem, soil: st.soilC });
-    if (history.length > 365 * 40) history.shift();
-    if (st.year !== yearBefore) {
-      years.push({ year: yearBefore, ...acc, soilC: st.soilC });
-      acc = { gpp: 0, npp: 0, transp: 0, runoff: 0 };
-      table();
-    }
-    // particles proportional to what is flowing today
-    if (f.raining) for (let i = 0; i < Math.min(6, 1 + f.rainToday); i++) spawn('rain', f.temp < 0);
-    if (Math.random() < f.gpp / 6) spawn('co2');
-    if (Math.random() < f.transp / 2.5) spawn('vapour');
-    if (Math.random() < f.respSoil / 3) spawn('decomp');
-  }
-
-  function frame(now: number) {
-    const dt = Math.min(0.1, (now - last) / 1000); last = now;
-    if (playing) {
-      carry += dt * daysPerSec;
-      while (carry >= 1) { simDay(); carry -= 1; sinceChart += 1; }
-      if (sinceChart >= 5) { charts(); sinceChart = 0; }
-    }
-    moveParticles();
-    drawScene();
-    readouts();
-    requestAnimationFrame(frame);
-  }
-
-  const playBtn = $<HTMLButtonElement>('play');
-  function togglePlay() { playing = !playing; playBtn.textContent = playing ? 'Pause' : 'Play'; }
-  playBtn.textContent = playing ? 'Pause' : 'Play';
-  playBtn.addEventListener('click', togglePlay);
-  document.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((b) => b.addEventListener('click', () => {
-    daysPerSec = +b.dataset.speed!;
-    document.querySelectorAll('[data-speed]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-  }));
-  $('reset').addEventListener('click', () => {
-    S = settings(); st = initialState(S); rand = rng(1);
-    history.length = 0; years.length = 0; acc = { gpp: 0, npp: 0, transp: 0, runoff: 0 };
-    f = step({ ...st }, S, rng(2)); table(); charts();
-  });
-
-  // ---------- open the box ----------
-  const BOX: Record<string, { title: string; plain: string; toy: string; eq: string; model: string }> = {
-    photosynthesis: {
-      title: 'Photosynthesis',
-      plain: 'Leaves catch sunlight and use it to turn CO₂ from the air and water from the soil into sugar. More leaves catch more light, but only if it is warm enough, there is water to spare and there is CO₂ to use.',
-      toy: 'Patch works out how much light the leaves absorb, multiplies it by a fixed efficiency, then scales it down by whatever is in short supply today: temperature, water or CO₂. The meters under the scene show these factors live.',
-      eq: 'carbon captured = efficiency × light absorbed × f(temperature) × f(water) × f(CO₂)',
-      model: 'LPJmL calculates photosynthesis from the biochemistry of the leaf (the Farquhar model), separately for different plant types, with light, temperature, CO₂ and the opening of leaf pores all interacting. It runs on a grid covering the whole land surface, every day.',
-    },
-    water: {
-      title: 'Soil water',
-      plain: 'Soil works like a bucket. Rain fills it, plants drink from it, the sun dries it, and once it is full the extra water drains away. Sandy soil is a small bucket; clay is a big one.',
-      toy: 'The blue layer is the water in the soil and the dashed line is the bucket’s size. Each day plants ask for water depending on heat, light and leaf area, and get what the roots can pull out. If supply falls short, photosynthesis slows and leaves start to brown.',
-      eq: 'water stress = min(1, what roots can supply ÷ what leaves demand)',
-      model: 'LPJmL splits the soil into several layers with their own water, temperature and even frozen ground. Roots reach different depths for different plants, and water flows down, runs off and evaporates between layers.',
-    },
-    growth: {
-      title: 'Growth',
-      plain: 'Plants spend part of their sugar just staying alive, more when it is hot. What is left builds new leaves, roots and stems. Leaves grow in spring, peak in summer and die back in autumn.',
-      toy: 'About half of the carbon captured goes to respiration, more on hot days. The rest is split between leaves, roots and stems. Leaves sprout when it gets warmer than 5 °C and are shed faster in cold, drought and extreme heat.',
-      eq: 'growth = carbon captured − respiration;  split: 45% leaves, 30% roots, 25% stems',
-      model: 'LPJmL tracks many plant types, from grasses to trees and crops, each with its own rules for when to grow, how to divide carbon and how tall to get. Crops are sown and harvested on schedules, and plant types compete for light and water.',
-    },
-    decomposition: {
-      title: 'Decomposition',
-      plain: 'Dead leaves and roots become litter. Fungi, bacteria and soil animals break it down, breathing out CO₂ as they go. They work fastest when it is warm and moist, and almost stop when it is cold or dry.',
-      toy: 'The tan layer on the surface is litter. Each day a small share decays; the speed doubles with every 10 °C of warming and falls in dry soil. Most of it returns to the air as CO₂; about a third becomes long-lived soil carbon.',
-      eq: 'decay rate = base rate × 2^((temperature − 10) ÷ 10) × moisture',
-      model: 'LPJmL uses the same idea, with separate pools that decay at different speeds and decomposition that depends on the temperature and moisture of each soil layer.',
-    },
-    soilcarbon: {
-      title: 'Soil carbon',
-      plain: 'Soils hold more carbon than all plants and the atmosphere combined. It builds up slowly from dead plant matter and leaks out slowly as microbes eat it. That is why the soil reacts over decades, while plants react within a season.',
-      toy: 'The dark band at the top of the soil is its carbon store. It takes about 30 years at 10 °C for half of it to turn over, so after you change the climate, watch the soil chart: plants adjust in a year, the soil keeps drifting for decades. Patch starts by running 300 hidden years so the soil begins in balance, just like the spin-up of a real model.',
-      eq: 'change in soil carbon = 0.3 × litter decayed − soil carbon × slow rate × f(temperature, moisture)',
-      model: 'Full models spin up for thousands of simulated years before an experiment, so soils start in balance with the climate. LPJmL tracks fast and slow soil pools in each soil layer.',
-    },
-  };
-  const tabs = document.querySelectorAll<HTMLButtonElement>('.box-tabs [data-box]');
-  function openBox(key: string, scroll = false) {
-    const b = BOX[key];
-    $('b-title').textContent = b.title; $('b-plain').textContent = b.plain; $('b-toy').textContent = b.toy;
-    $('b-eq').textContent = b.eq; $('b-model').textContent = b.model;
-    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.box === key)));
-    document.querySelectorAll('.hot').forEach((h) => h.setAttribute('aria-current', String((h as HTMLElement).dataset.box === key)));
-    if (scroll) document.querySelector('.box')!.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-  }
-  tabs.forEach((t) => t.addEventListener('click', () => openBox(t.dataset.box!)));
-  document.querySelectorAll<HTMLButtonElement>('.hot').forEach((h) => h.addEventListener('click', () => openBox(h.dataset.box!, true)));
-  openBox('photosynthesis');
-
-  showSettings(); table(); charts();
-  requestAnimationFrame((t) => { last = t; frame(t); });
-</script>
