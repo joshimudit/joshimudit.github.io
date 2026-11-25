@@ -1,0 +1,60 @@
+---
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/500.css';
+import '@fontsource/ibm-plex-sans/600.css';
+import '@fontsource/ibm-plex-sans-condensed/500.css';
+import '@fontsource/ibm-plex-sans-condensed/600.css';
+import '../styles/patch.css';
+
+interface Props { step: 1 | 2 | 3 | 4; title: string; description: string }
+const { step, title, description } = Astro.props;
+const steps = [
+  { href: '/lab/patch/', label: 'What is Patch?' },
+  { href: '/lab/patch/inside/', label: 'Look inside Patch' },
+  { href: '/lab/patch/experiment/', label: 'Experiment' },
+  { href: '/lab/patch/beyond/', label: 'Beyond Patch' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Patch</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:title" content={`${title} | Patch`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL('/patch/og.png', Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="pt">
+    <a class="pt-skip" href="#main">Skip to content</a>
+    <header class="pt-top">
+      <div class="pt-wrap pt-toprow">
+        <a class="pt-name" href="/lab/patch/">Patch</a>
+        <nav aria-label="Steps">
+          <ol class="pt-steps">
+            {steps.map((s, i) => (
+              <li><a href={s.href} aria-current={i + 1 === step ? 'step' : undefined}><span>{i + 1}</span>{s.label}</a></li>
+            ))}
+          </ol>
+        </nav>
+        <a class="pt-agri" href="https://agri-dry.org"><img src="/patch/agri-dry.png" alt="AGRI-DRY" width="318" height="347" /></a>
+      </div>
+    </header>
+    <main id="main" class="pt-wrap"><slot /></main>
+    <footer class="pt-foot">
+      <div class="pt-wrap">
+        <p class="pt-foot-lead">Patch is outreach material from the <a href="https://agri-dry.org">AGRI-DRY</a> doctoral network, made by <a href="/">Mudit Joshi</a>. It is a teaching model and is not used in research.</p>
+        <div class="pt-funders">
+          <a class="pt-flogo agri" href="https://agri-dry.org"><img src="/patch/agri-dry.png" alt="AGRI-DRY" width="318" height="347" /></a>
+          <div class="pt-fund"><img src="/patch/eu-funded.png" alt="Funded by the European Union" width="488" height="115" /><p>This project has received funding from the European Union’s Horizon Europe research and innovation programme under the Marie Skłodowska-Curie Grant Agreement No 101120560.</p></div>
+          <div class="pt-fund"><img src="/patch/ukri-epsrc.png" alt="UKRI Engineering and Physical Sciences Research Council" width="451" height="124" /><p>This work was supported by the Engineering and Physical Sciences Research Council [grant number EP/Y03290X/1].</p></div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

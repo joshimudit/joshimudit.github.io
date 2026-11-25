@@ -1,0 +1,99 @@
+---
+import PatchLayout from '../../../layouts/PatchLayout.astro';
+---
+<PatchLayout step={4} title="Beyond Patch" description="From Patch to the models used in research: kinds of models and what they are for, how a model earns trust, and LPJmL.">
+  <h1 style="margin-top: 1.6rem">From Patch to the models used in research</h1>
+  <p class="lead" style="margin-top: 0.5rem">Patch is a teaching model. Its processes are real and its equations come from the scientific literature, but it is kept small enough to understand in one sitting. The models used in research work on the same principle, at a very different scale.</p>
+
+  <section class="sec">
+    <h2>Different models for different purposes</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Kind of model</th><th>What it represents</th><th>Used for</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Dynamic global vegetation model (DGVM)</th><td>Vegetation, carbon and water on all land, as climate changes</td><td>Global carbon and water cycles, shifts in vegetation</td><td>LPJmL, LPJ-GUESS, ORCHIDEE, JULES</td></tr>
+        <tr><th scope="row">Crop model</th><td>One crop in one field, with detailed management</td><td>Yield, sowing dates, irrigation, fertiliser</td><td>DSSAT, APSIM, WOFOST</td></tr>
+        <tr><th scope="row">Earth system model</th><td>Atmosphere, ocean, ice and land together</td><td>Climate projections</td><td>CESM, UKESM, MPI-ESM</td></tr>
+        <tr><th scope="row">Data-driven model</th><td>Patterns found in observations</td><td>Mapping, filling gaps, short-term forecasts</td><td>Regression, random forests, neural networks</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note" style="margin-top: 0.6rem">Patch belongs to the first family, with a simple crop added, reduced to one block of land. Some research models, LPJmL among them, simulate natural vegetation and crops together.</p>
+  </section>
+
+  <section class="sec">
+    <h2>How a model earns trust</h2>
+    <ol class="trust">
+      <li><b>1  Input data</b><p>Weather records, soil maps, CO₂ measurements, land-use maps. A model can only be as good as these.</p></li>
+      <li><b>2  Calibration</b><p>Some values in the equations are uncertain. They are adjusted until the model matches a set of measurements.</p></li>
+      <li><b>3  Evaluation</b><p>The model is then compared with measurements it was not adjusted to: satellite data, flux towers, river discharge, harvest statistics.</p></li>
+      <li><b>4  Model intercomparison</b><p>Several models, built by different teams, run the same experiment. Where they agree, confidence is higher (Warszawski and others 2014).</p></li>
+    </ol>
+    <div class="calib" id="calib">
+      <div>
+        <h3>Try calibration yourself</h3>
+        <p style="margin-top: 0.4rem">One value in Patch’s photosynthesis equation scales a single leaf up to a whole canopy. It is not known exactly. Turn it until the model line runs through the measured points.</p>
+        <div class="knob" style="margin-top: 0.8rem"><label for="alpha"><span>The uncertain value</span><output></output></label><input id="alpha" type="range" min="0.3" max="0.8" step="0.01" value="0.5" /></div>
+        <p class="say" aria-live="polite" style="margin-top: 0.4rem"></p>
+        <p class="note" style="margin-top: 0.6rem">The points are invented for this demonstration. Real ones come from flux towers, which measure the CO₂ moving between vegetation and the air.</p>
+      </div>
+      <svg viewBox="0 0 400 172" role="img" aria-label="Monthly photosynthesis: a model line and twelve measured points"></svg>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Questions these models are used to answer</h2>
+    <dl class="terms">
+      <dt>Past</dt><dd>How much rain did the Sahara need to be green, as it was 6,000 years ago? Three vegetation models were run to find out (Hopcroft and others 2017).</dd>
+      <dt>Present</dt><dd>How much of the CO₂ that people emit is taken up by the land each year? The yearly Global Carbon Budget estimates this with a group of dynamic global vegetation models (Friedlingstein and others 2025).</dd>
+      <dt>Future</dt><dd>How will harvests change as the world warms? A set of crop models run with many climate projections found that maize yields could fall by about a quarter by the end of the century if emissions stay high (Jägermeyr and others 2021).</dd>
+    </dl>
+  </section>
+
+  <section class="sec">
+    <h2>LPJmL</h2>
+    <p>LPJmL (Lund-Potsdam-Jena managed Land) is a dynamic global vegetation, agriculture and water balance model developed at the Potsdam Institute for Climate Impact Research. It simulates natural vegetation, crops and the water cycle for all land on Earth, in grid cells about 50 km across, with fire, rivers, irrigation, frozen ground and nitrogen. Its code is open.</p>
+    <p style="margin-top: 0.7rem"><a href="https://www.pik-potsdam.de/en/institute/departments/activities/biosphere-water-modelling/lpjml">LPJmL at the Potsdam Institute</a> · <a href="https://github.com/PIK-LPJmL/LPJmL">Model code</a> · Described and evaluated in Schaphoff and others (2018) and von Bloh and others (2018).</p>
+    <p style="margin-top: 1.2rem; max-width: 46rem"><strong>In AGRI-DRY.</strong> Mudit Joshi, who made Patch, uses LPJmL in his doctoral research in the AGRI-DRY network, on crop productivity over the Holocene. <a href="https://agri-dry.org/team/dc/mudit-joshi/">His AGRI-DRY profile</a> · <a href="/work">His work</a></p>
+  </section>
+
+  <section class="sec">
+    <h2>What Patch leaves out</h2>
+    <p>Nutrients, fire, grazing animals, frost damage, snow, frozen ground, different soils, trees of different ages, pests and people’s choices. It knows only two kinds of tree and two kinds of grass, and picks them by how cold the coldest month is. It has one soil everywhere and makes up day-to-day weather from monthly averages. It is written from scratch from published equations and shares no code with LPJmL or any other model.</p>
+    <p style="margin-top: 0.7rem; max-width: 46rem">It also reacts too sharply. Its trees give way faster than real ones, and its crops lose about 9% to 12% of their yield for each degree of warming, where measurements and research models point to about 6% to 7% for maize and wheat (Zhao and others 2017). That is why its numbers are illustrations, and why the steps above matter.</p>
+    <details class="more"><summary>All sources</summary>
+      <ul class="refs">
+        <li>Allen, R. G. and others (1998). <em>Crop evapotranspiration</em>. FAO Irrigation and Drainage Paper 56. (Sunshine and day length from latitude.)</li>
+        <li>Atkin, O. K. and Tjoelker, M. G. (2003). Thermal acclimation and the dynamic response of plant respiration to temperature. <em>Trends in Plant Science</em> 8: 343–351.</li>
+        <li>Bernacchi, C. J. and others (2001). Improved temperature response functions for models of Rubisco-limited photosynthesis. <em>Plant, Cell and Environment</em> 24: 253–259.</li>
+        <li>von Bloh, W. and others (2018). Implementing the nitrogen cycle into the dynamic global vegetation, hydrology, and crop growth model LPJmL (version 5.0). <em>Geoscientific Model Development</em> 11: 2789–2812.</li>
+        <li>Bondeau, A. and others (2007). Modelling the role of agriculture for the 20th century global terrestrial carbon balance. <em>Global Change Biology</em> 13: 679–706.</li>
+        <li>Collatz, G. J., Ribas-Carbo, M. and Berry, J. A. (1992). Coupled photosynthesis-stomatal conductance model for leaves of C4 plants. <em>Australian Journal of Plant Physiology</em> 19: 519–538.</li>
+        <li>Farquhar, G. D., von Caemmerer, S. and Berry, J. A. (1980). A biochemical model of photosynthetic CO₂ assimilation in leaves of C3 species. <em>Planta</em> 149: 78–90.</li>
+        <li>Friedlingstein, P. and others (2025). Global Carbon Budget 2024. <em>Earth System Science Data</em> 17: 965–1039.</li>
+        <li>Haxeltine, A. and Prentice, I. C. (1996). BIOME3: an equilibrium terrestrial biosphere model. <em>Global Biogeochemical Cycles</em> 10: 693–709.</li>
+        <li>Hopcroft, P. O. and others (2017). Multi vegetation model evaluation of the Green Sahara climate regime. <em>Geophysical Research Letters</em> 44: 6804–6813.</li>
+        <li>Jägermeyr, J. and others (2021). Climate impacts on global agriculture emerge earlier in new generation of climate and crop models. <em>Nature Food</em> 2: 873–885.</li>
+        <li>Jarvis, P. G. and McNaughton, K. G. (1986). Stomatal control of transpiration: scaling up from leaf to region. <em>Advances in Ecological Research</em> 15: 1–49.</li>
+        <li>Lloyd, J. and Taylor, J. A. (1994). On the temperature dependence of soil respiration. <em>Functional Ecology</em> 8: 315–323.</li>
+        <li>Manabe, S. (1969). Climate and the ocean circulation: I. The atmospheric circulation and the hydrology of the Earth’s surface. <em>Monthly Weather Review</em> 97: 739–774.</li>
+        <li>Monsi, M. and Saeki, T. (1953). Über den Lichtfaktor in den Pflanzengesellschaften und seine Bedeutung für die Stoffproduktion. <em>Japanese Journal of Botany</em> 14: 22–52.</li>
+        <li>Prentice, I. C. and others (1993). A simulation model for the transient effects of climate change on forest landscapes. <em>Ecological Modelling</em> 65: 51–70. (Net radiation.)</li>
+        <li>Priestley, C. H. B. and Taylor, R. J. (1972). On the assessment of surface heat flux and evaporation using large-scale parameters. <em>Monthly Weather Review</em> 100: 81–92.</li>
+        <li>Ryan, M. G. (1991). Effects of climate change on plant respiration. <em>Ecological Applications</em> 1: 157–167.</li>
+        <li>Schaphoff, S. and others (2018). LPJmL4, a dynamic global vegetation model with managed land. Part 1: Model description. <em>Geoscientific Model Development</em> 11: 1343–1375. Part 2: Model evaluation. 11: 1377–1403.</li>
+        <li>Sitch, S. and others (2003). Evaluation of ecosystem dynamics, plant geography and terrestrial carbon cycling in the LPJ dynamic global vegetation model. <em>Global Change Biology</em> 9: 161–185.</li>
+        <li>Walter, H. (1971). <em>Ecology of Tropical and Subtropical Vegetation</em>. Oliver and Boyd, Edinburgh.</li>
+        <li>Warszawski, L. and others (2014). The Inter-Sectoral Impact Model Intercomparison Project (ISI-MIP): project framework. <em>PNAS</em> 111: 3228–3232.</li>
+        <li>Zhao, C. and others (2017). Temperature increase reduces global yields of major crops in four independent estimates. <em>PNAS</em> 114: 9326–9331.</li>
+        <li>Climate: monthly normals from the climate tables on the Wikipedia pages of Niamey, Alice Springs, Hyderabad, Seville, Aarhus and Manaus, which give data from national weather services, NOAA, the World Meteorological Organization and the Tokyo Climate Center.</li>
+        <li>The drawing of a block of land with natural vegetation and cropland follows the idea of the LPJmL overview figure of the Potsdam Institute for Climate Impact Research. The page layout takes cues from the En-ROADS climate simulator.</li>
+      </ul>
+    </details>
+  </section>
+
+  <div class="next"><a class="btn ghost" href="/lab/patch/experiment/">Back: run an experiment</a><a class="btn" href="/lab/patch/">Start again</a></div>
+</PatchLayout>
+
+<script>
+  import { calibration } from '../../../lib/patch/beyond';
+  calibration();
+</script>
