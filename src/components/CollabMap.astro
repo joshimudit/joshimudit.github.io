@@ -1,7 +1,8 @@
 ---
 // Map of current and past collaborations, drawn at build time.
 // Main map: Europe to southern Africa and India. Europe is crowded, so it gets its own inset
-// in the empty Indian Ocean corner. Below the map, logo tiles link to each institution.
+// in the empty Indian Ocean corner. Beside the map, a short list links to each institution;
+// on phones only the list shows, with the map behind a button.
 import { geoNaturalEarth1, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import land110 from 'world-atlas/land-110m.json';
@@ -60,10 +61,6 @@ const ILABEL: Record<string, [number, number, string]> = {
 
 const agridry = pins.filter((c) => c.group === 'agridry');
 const past = pins.filter((c) => c.group === 'past');
-const LOGO: Record<string, string> = {
-  Aarhus: 'aarhus', Glasgow: 'glasgow', UPF: 'upf', Salento: 'salento', Botswana: 'botswana', Wits: 'wits',
-  ETH: 'eth', Kiel: 'kiel', AMU: 'amu', Pantnagar: 'pantnagar', INHERE: 'inhere',
-};
 
 const pin = (p: typeof pins[number], x: number, y: number, small = false) =>
   p.group === 'agridry'
@@ -71,7 +68,7 @@ const pin = (p: typeof pins[number], x: number, y: number, small = false) =>
     : `<rect x="${x - (small ? 4 : 6)}" y="${y - (small ? 4 : 6)}" width="${small ? 8 : 12}" height="${small ? 8 : 12}" transform="rotate(45 ${x} ${y})" class="pin past" />`;
 ---
 <div class="collab">
-  <figure class="map">
+  <figure class="map" id="collab-map">
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="map-title">
       <title id="map-title">Map of current and past collaborations across Europe, Africa and India, with a close-up of Europe</title>
       <defs><clipPath id="inset-clip"><rect x={I.x} y={I.y} width={I.w} height={I.h} rx="6" /></clipPath></defs>
@@ -105,33 +102,28 @@ const pin = (p: typeof pins[number], x: number, y: number, small = false) =>
         })}
       </g>
     </svg>
-    <figcaption>
-      <span class="key"><span class="k agridry"></span>AGRI-DRY network, linked to my host university</span>
-      <span class="key"><span class="k past"></span>Earlier studies and work</span>
-    </figcaption>
   </figure>
 
-  {[['AGRI-DRY network', agridry, 'agridry'], ['Earlier studies and work', past, 'past']].map(([title, list, group]) => (
-    <div class={`group ${group}`}>
-      <h3>{title as string}</h3>
-      <ul class="logos">
-        {(list as typeof pins).map((c) => (
-          <li>
-            <a href={c.href} data-id={c.id} class="tile">
-              <img src={`/logos/${LOGO[c.short]}.webp`} alt={c.name} width="200" height="80" loading="lazy" decoding="async" />
-              <span class="role">{c.role}</span>
-              <span class="where">{c.place}, {c.country}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  ))}
+  <div class="lists">
+    {[['Now: the AGRI-DRY network', agridry, 'agridry'], ['Before: studies and work', past, 'past']].map(([title, list, group]) => (
+      <div class={`group ${group}`}>
+        <h3><span class={`k ${group}`}></span>{title as string}</h3>
+        <ul>
+          {(list as typeof pins).map((c) => (
+            <li><a href={c.href} data-id={c.id}>{c.name}</a><span>{c.role}, {c.country}</span></li>
+          ))}
+        </ul>
+      </div>
+    ))}
+    <button type="button" class="showmap" aria-controls="collab-map" aria-expanded="false">Show map</button>
+  </div>
 </div>
 
 <script>
   // hovering a logo lights up its place on the map, and the other way round
   const root = document.querySelector('.collab');
+  const btn = root?.querySelector<HTMLButtonElement>('.showmap');
+  btn?.addEventListener('click', () => { const on = root!.classList.toggle('mapon'); btn.setAttribute('aria-expanded', String(on)); btn.textContent = on ? 'Hide map' : 'Show map'; });
   if (root) {
     const set = (id: string | null) => {
       root.querySelectorAll<HTMLElement | SVGElement>('[data-id], [data-for]').forEach((el) => {
@@ -151,7 +143,7 @@ const pin = (p: typeof pins[number], x: number, y: number, small = false) =>
 </script>
 
 <style>
-  .collab { display: grid; gap: 2rem; }
+  .collab { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.5rem 2.5rem; align-items: start; }
   .map { margin: 0; }
   .map svg { width: 100%; height: auto; display: block; }
   .land { fill: var(--blue-soft); stroke: color-mix(in srgb, var(--blue) 25%, var(--line)); stroke-width: 0.7; }
@@ -180,17 +172,20 @@ const pin = (p: typeof pins[number], x: number, y: number, small = false) =>
   .k.agridry { background: var(--blue); }
   .k.past { background: var(--ochre-fill); border-radius: 1px; transform: rotate(45deg) scale(0.85); }
 
-  .group h3 { font-family: var(--sans); font-weight: 500; font-size: 1rem; color: var(--muted); margin: 0 0 0.8rem; }
-  .logos { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr)); gap: 1rem; }
-  .tile { display: flex; flex-direction: column; gap: 0.15rem; text-decoration: none; color: var(--ink); }
-  .tile img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 2; border-radius: 6px; border: 1px solid var(--line); margin-bottom: 0.45rem; transition: border-color 0.15s, transform 0.15s; }
-  .group.agridry .tile:hover img, .group.agridry .tile:focus-visible img, .group.agridry .tile.lit img { border-color: var(--blue); }
-  .group.past .tile:hover img, .group.past .tile:focus-visible img, .group.past .tile.lit img { border-color: var(--ochre-fill); }
-  .tile:hover img, .tile:focus-visible img, .tile.lit img { transform: translateY(-2px); }
-  .tile:focus-visible { outline: none; }
-  .role { font-size: 0.9rem; font-weight: 500; }
-  .where { font-size: 0.82rem; color: var(--muted); }
-  :global([data-theme='night']) .tile img { filter: brightness(0.92); }
-  @media (prefers-reduced-motion: reduce) { .tile img, .map :global(.pin), .arc { transition: none; } }
-  @media (max-width: 560px) { .logos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem; } .lbl { font-size: 24px; } .inset-title { font-size: 22px; } }
+  .lists { display: grid; gap: 1.4rem; align-content: start; }
+  .group h3 { display: flex; align-items: center; gap: 0.5rem; font-family: var(--sans); font-weight: 500; font-size: 0.95rem; color: var(--muted); margin: 0 0 0.45rem; }
+  .group ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.3rem; }
+  .group li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.6rem; font-size: 0.95rem; line-height: 1.35; }
+  .group li a { color: var(--ink); text-decoration-color: var(--line); text-underline-offset: 3px; }
+  .group li a:hover, .group li a:focus-visible, .group li a.lit { text-decoration-color: currentColor; }
+  .group li span { color: var(--muted); font-size: 0.85rem; }
+  .showmap { display: none; justify-self: start; }
+  @media (prefers-reduced-motion: reduce) { .map :global(.pin), .arc { transition: none; } }
+  @media (max-width: 760px) {
+    .collab { grid-template-columns: minmax(0, 1fr); }
+    .map { display: none; order: 2; }
+    .collab.mapon .map { display: block; }
+    .showmap { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0.3rem 0.9rem; border: 1px solid var(--line); border-radius: 4px; background: none; color: var(--ink); font: 500 0.92rem var(--sans); cursor: pointer; }
+    .lbl { font-size: 24px; } .inset-title { font-size: 22px; }
+  }
 </style>

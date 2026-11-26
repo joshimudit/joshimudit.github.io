@@ -9,11 +9,14 @@ export const profile = {
   photo: '/img/mudit-alps.webp',
   photoAlt: 'Mudit Joshi on a mountain ridge in the Alps',
   lede:
-    'I use models and systems thinking to connect climate, food systems and natural ecosystems, and I look to the deep past to understand where they are heading.',
+    'My research sits where climate, food systems and natural ecosystems meet: how they shape each other, how they have changed, and where they are heading. I study them together with models and systems thinking, and I keep pace with machine learning, AI agents and data workflows, with an eye on fair access to data and tools.',
+  // the line under the lede on Home (HTML)
+  roots:
+    'I grew up in the hills of Uttarakhand, in the Indian Himalaya. Today I’m a PhD researcher at Aarhus University, in the Marie Skłodowska-Curie doctoral network <a href="https://agri-dry.org">AGRI-DRY</a>.',
+  // About on Home (HTML)
   about: [
-    'My PhD treats the last 10,000 years as a natural experiment in how climate decides where plants, wild and farmed, can thrive, especially as farming spread into the drylands of Africa. I combine palaeoclimate reconstructions, crop suitability modelling and LPJmL, a model that simulates natural vegetation and crops side by side.',
-    'Before that I went much further back. For my master’s thesis at ETH Zurich I simulated how plant biodiversity evolved with climate over 400 million years, long before anyone farmed.',
-    'What ties it together is systems thinking. Food systems and natural ecosystems run on the same climate and the same land, so I study them together, using models to turn uncertain, messy environmental data into insight people can reason with. Lately that includes AI agents, used carefully and evaluated in the open.',
+    'My PhD treats the last 12,000 years as a natural experiment in how climate decides where wild plants and crops can grow, as farming spread through the drylands of Africa and Mediterranean Europe. I combine palaeoclimate reconstructions, crop suitability models and dynamic global vegetation models (DGVMs). I’m supervised by <a href="https://bio.au.dk/en/about-biology/contact/show/person/alejandro.ordonez@bio.au.dk">Alejandro Ordonez</a>, with <a href="https://www.gla.ac.uk/schools/humanities/staff/nickiwhitehouse/">Nicki Whitehouse</a> and <a href="https://icrea.cat/Web/ScientificStaff/Marco-Madella-330">Marco Madella</a> as co-supervisors, and I’m also part of the <a href="https://bio.au.dk/en/research/research-centres/econovo">ECONOVO</a>, <a href="https://bio.au.dk/en/research/research-centres/sustainscapes">SustainScapes</a> and <a href="https://iclimate.au.dk/">iClimate</a> research centres at Aarhus.',
+    'I got here in three steps: agricultural sciences for my BSc in India, environmental management for my MSc at <a href="https://www.uni-kiel.de/en/">Kiel University</a>, and mathematical modelling for my master’s thesis in the <a href="https://ele.ethz.ch/">Ecosystems and Landscape Evolution group</a> at ETH Zurich, simulating how plant diversity evolved with climate over 400 million years.',
   ],
 };
 

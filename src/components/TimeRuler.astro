@@ -8,7 +8,7 @@ const X = (yearsAgo: number) => ((L - Math.log10(yearsAgo)) / L) * 85;
 
 const eras = [
   { id: 'deep', name: 'Deep time', span: 'From 400 million years ago', x: 0.6 },
-  { id: 'holocene', name: 'The Holocene', span: 'The last 10,000 years', x: X(1e4) },
+  { id: 'holocene', name: 'The Holocene', span: 'The last 12,000 years', x: X(1.2e4) },
   { id: 'now', name: 'Today', span: 'Farming now', x: 85 },
   { id: 'next', name: 'What comes next', span: 'After 2030', x: 94 },
 ];
@@ -19,7 +19,7 @@ const ticks = [1e8, 1e7, 1e6, 1e5, 1e4, 1e3, 1e2, 1e1].map(X);
 <div class="ruler">
   <div class="track" aria-hidden="true">
     <svg viewBox="0 0 100 14" preserveAspectRatio="none" class="axis">
-      <rect x={X(1e4)} y="5" width={85 - X(1e4)} height="4" class="holo" />
+      <rect x={X(1.2e4)} y="5" width={85 - X(1.2e4)} height="4" class="holo" />
       <line x1="0" y1="7" x2="85" y2="7" class="line" />
       <line x1="85" y1="7" x2="100" y2="7" class="line future" />
       {ticks.map((t) => <line x1={t} x2={t} y1="4.5" y2="9.5" class="tick" />)}

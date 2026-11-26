@@ -11,7 +11,7 @@ export const education = [
     when: '2023 – 2024',
     what: 'Master’s thesis, ETH Zurich',
     where: 'Switzerland',
-    detail: 'Simulating the eco-evolution of plant biodiversity with climate over the last 400 million years. Supervised by Prof. Loïc Pellissier, working with Wilhelmine Bach and Julian Rogger.',
+    detail: 'Simulating the eco-evolution of plant biodiversity with climate over the last 400 million years, in the Ecosystems and Landscape Evolution group. Supervised by Prof. Loïc Pellissier and Prof. Tim Diekötter (Kiel University), working with Wilhelmine Bach and Julian Rogger.',
     link: { label: 'Read the thesis (PDF)', href: '/files/Mudit-Joshi-MSc-thesis-2024.pdf' },
   },
   {

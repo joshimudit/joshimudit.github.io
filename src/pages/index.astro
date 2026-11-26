@@ -23,7 +23,7 @@ const latest = sortedLog.slice(0, 5);
       <p class="hello">Hello, I’m</p>
       <h1>{profile.name}</h1>
       <p class="lede">{profile.lede}</p>
-      <p class="pos">PhD researcher at Aarhus University, part of the {profile.network}.</p>
+      <p class="pos" set:html={profile.roots} />
       <div class="actions">
         <a class="btn" href="#contact">Get in touch</a>
         <ul class="links">
@@ -47,7 +47,7 @@ const latest = sortedLog.slice(0, 5);
   <section class="section wrap two" aria-labelledby="about-h">
     <h2 id="about-h">About</h2>
     <div>
-      {profile.about.map((p) => <p>{p}</p>)}
+      {profile.about.map((p) => <p set:html={p} />)}
       <p><a href="/cv">Read my CV</a> or <a href="/work">see the projects</a>.</p>
     </div>
   </section>
@@ -86,7 +86,7 @@ const latest = sortedLog.slice(0, 5);
   .hero { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: end; padding-block: clamp(2.5rem, 7vw, 6rem) clamp(2.5rem, 5vw, 4rem); }
   .hello { font-family: var(--serif); font-size: 1.35rem; color: var(--ochre); margin: 0 0 0.25rem; }
   h1 { margin-bottom: 0.35em; font-size: clamp(2.25rem, 5.5vw, 3.9rem); }
-  .lede { font-size: clamp(1.2rem, 2.2vw, 1.5rem); line-height: 1.45; max-width: 34ch; }
+  .lede { font-size: clamp(1.15rem, 1.9vw, 1.35rem); line-height: 1.5; max-width: 44ch; }
   .pos { color: var(--muted); max-width: 52ch; }
   .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: 1.75rem; }
   .links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
