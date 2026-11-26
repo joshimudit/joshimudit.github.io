@@ -31,16 +31,6 @@ if (kind === 'niches') {
   }
 }
 
-// context: the range of conditions over 12,000 years as a band, with today marked at the end
-const band: string[] = [];
-let mid = '';
-if (kind === 'context') {
-  const xs = Array.from({ length: 61 }, (_, i) => 40 + i * 5.4);
-  const c = (i: number) => 112 + 10 * Math.sin(i / 6) + 6 * Math.sin(i / 2.3 + 1) - (i > 52 ? (i - 52) * 2.2 : 0);
-  const w = (i: number) => 26 + 6 * Math.sin(i / 4 + 2);
-  band.push(`M${xs.map((x, i) => `${f(x)},${f(c(i) - w(i))}`).join('L')}L${[...xs].reverse().map((x, j) => `${f(x)},${f(c(60 - j) + w(60 - j))}`).join('L')}Z`);
-  mid = `M${xs.map((x, i) => `${f(x)},${f(c(i))}`).join('L')}`;
-}
 ---
 <svg class={`art ${kind}`} viewBox={`0 0 ${W} ${H}`} role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
   <rect width={W} height={H} class="bg" />
@@ -103,16 +93,26 @@ if (kind === 'context') {
 
   {kind === 'context' && (
     <g>
-      <path d="M40 196H364" class="ax" />
-      {[0, 1, 2, 3].map((i) => <path d={`M${40 + i * 108} 192V200`} class="ax" />)}
-      <path d={band[0]} class="env" />
-      <path d={mid} class="mline" />
-      <path d="M364 40V196" class="now" />
-      <circle cx="364" cy="112" r="6" class="dot" />
-      <text x="40" y="218" class="lbl">12,000 years ago</text>
-      <text x="364" y="218" class="lbl" text-anchor="end">today</text>
-      <text x="40" y="40" class="lbl">conditions farming has met</text>
-      {[0, 1, 2, 3, 4].map((i) => <path d={`M${280 + i * 14} 30v-14l-4 -5M${280 + i * 14} 22l4 -5`} class="sprout" />)}
+      <text x="24" y="36" class="lbl">dated crop records</text>
+      <path d="M24 92H120" class="ax" />
+      {[30, 44, 52, 63, 71, 78, 86, 95, 101, 108, 114].map((x, i) => <circle cx={x} cy={92 - 8 - (i % 3) * 9} r="3.6" class={i % 4 === 0 ? 'rec alt' : 'rec'} />)}
+      <text x="24" y="110" class="lbl">past</text>
+      <path d="M128 92H148" class="link" marker-end="url(#ah3)" />
+
+      <text x="156" y="36" class="lbl">crops grown today</text>
+      {[[0, 34, 'a'], [34, 22, 'b'], [56, 18, 'c'], [74, 14, 'd']].map(([x0, w, c]) => <rect x={156 + (x0 as number)} y="70" width={w} height="22" class={`share ${c}`} />)}
+      <text x="156" y="110" class="lbl">present</text>
+      <path d="M252 82C268 82 270 60 284 58" class="link dash" marker-end="url(#ah3)" />
+      <path d="M252 82C268 82 270 104 284 106" class="link dash" marker-end="url(#ah3)" />
+
+      <text x="292" y="36" class="lbl">climate and policy</text>
+      {[[0, 40, 'a'], [40, 22, 'b'], [62, 14, 'c'], [76, 12, 'd']].map(([x0, w, c]) => <rect x={292 + (x0 as number)} y="48" width={w} height="16" class={`share ${c}`} />)}
+      {[[0, 14, 'a'], [14, 14, 'b'], [28, 26, 'c'], [54, 34, 'd']].map(([x0, w, c]) => <rect x={292 + (x0 as number)} y="98" width={w} height="16" class={`share ${c}`} />)}
+      <text x="292" y="132" class="lbl">possible futures</text>
+
+      {[0, 1, 2, 3, 4, 5].map((i) => <path d={`M${60 + i * 56} 220v-40M${60 + i * 56} 196l-7 -8M${60 + i * 56} 188l7 -8M${60 + i * 56} 204l-7 -7`} class="sprout" />)}
+      <path d="M20 220H380" class="ax" />
+      <defs><marker id="ah3" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" class="tip" /></marker></defs>
     </g>
   )}
 
@@ -159,10 +159,10 @@ if (kind === 'context') {
   .flow { fill: none; stroke-width: 1.6; stroke: var(--muted); stroke-dasharray: 4 3; }
   .flow.water { stroke: var(--blue); }
 
-  .env { fill: var(--blue-soft); }
-  .mline { fill: none; stroke: var(--blue); stroke-width: 2; }
-  .now { stroke: var(--ochre); stroke-width: 1.5; stroke-dasharray: 4 4; }
-  .dot { fill: var(--ochre-fill); stroke: var(--surface); stroke-width: 2; }
+  .rec { fill: var(--ochre-fill); } .rec.alt { fill: var(--blue); }
+  .link { fill: none; stroke: var(--muted); stroke-width: 1.4; } .link.dash { stroke-dasharray: 4 3; }
+  .share { stroke: var(--surface); stroke-width: 1.5; }
+  .share.a { fill: var(--ochre-fill); } .share.b { fill: var(--ochre-soft); } .share.c { fill: var(--blue); } .share.d { fill: var(--blue-soft); }
   .sprout { stroke: var(--moss); stroke-width: 1.6; fill: none; stroke-linecap: round; }
 
   .layer { stroke: var(--surface); stroke-width: 2; }
