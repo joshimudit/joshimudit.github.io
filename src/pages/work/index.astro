@@ -24,7 +24,7 @@ const groups = [
                 {'src' in p.art ? <img src={p.art.src} alt="" loading="lazy" /> : <ProjectArt kind={p.art.kind} />}
               </div>
               <div class="txt">
-                <p class="meta"><span class={`role-tag ${p.role === 'Lead author' ? 'lead' : 'co'}`}>{p.role}</span><span>{p.output}</span></p>
+                <p class="meta"><span class={`role-tag ${p.role === 'Lead author' ? 'lead' : 'co'}`}>{p.role}</span>{p.lead && <span>Lead author: {p.lead.name}</span>}<span>{p.output}</span></p>
                 <h3>{p.title}</h3>
                 <p class="sum">{p.summary}</p>
                 <ul class="methods" aria-label="Methods">{p.methods.slice(0, 3).map((m) => <li>{m}</li>)}</ul>
