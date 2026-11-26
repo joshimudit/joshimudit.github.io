@@ -195,7 +195,7 @@ export const projects: Project[] = [
     ],
     team: [
       { name: 'Loïc Pellissier', href: 'https://ethz.ch/en/the-eth-zurich/organisation/who-is-who/usys/details.html?persid=216059', role: 'supervisor' },
-      { name: 'Julian Rogger', href: 'https://www.bristol.ac.uk/people/person/Julian-Rogger-f58cc67c-cc59-49d1-9970-0c1aaa581aa0/' },
+      { name: 'Julian Rogger', href: 'https://orcid.org/0000-0002-8833-1861' },
       { name: 'Wilhelmine Bach', href: 'https://scholar.google.com/citations?user=ALDcBQUAAAAJ' },
       { name: 'Tim Diekötter', href: 'https://www.uni-kiel.de/de/person/diekoetter-tim-5728', role: 'second supervisor' },
     ],
