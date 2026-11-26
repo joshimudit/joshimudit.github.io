@@ -1,76 +1,133 @@
 ---
-// Quiet, drawn concept graphics for projects without figures yet.
-// Deterministic (seeded) so they never change between builds; coloured by theme variables.
+// Drawn graphics for studies without published figures. Each one shows what the study is about,
+// never its results. Coloured by theme variables, so they follow day and night.
+import { geoEquirectangular, geoPath, geoContains } from 'd3-geo';
+import { feature } from 'topojson-client';
+import land110 from 'world-atlas/land-110m.json';
+
 interface Props { kind: 'niches' | 'productivity' | 'context' | 'strata' }
 const { kind } = Astro.props;
-
-let seed = { niches: 7, productivity: 11, context: 23, strata: 31 }[kind];
-const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
 const W = 400, H = 240;
 const f = (n: number) => n.toFixed(1);
 
-// niches: nested, wobbly contours around two centres, like a suitability surface
-const contours: { d: string; hi: boolean }[] = [];
+// niches: Africa and the Mediterranean as a grid of cells, with a time axis beside it
+const cells: { x: number; y: number; t: number }[] = [];
+let landD = '', cs = 0;
 if (kind === 'niches') {
-  const centres = [[150, 125], [275, 105]];
-  centres.forEach(([cx, cy], ci) => {
-    const ph = rnd() * 6;
-    for (let k = 1; k <= 6; k++) {
-      const r = 14 + k * 17 + ci * 4;
-      const pts = Array.from({ length: 49 }, (_, i) => {
-        const a = (i / 48) * Math.PI * 2;
-        const wob = 1 + 0.12 * Math.sin(3 * a + ph) + 0.07 * Math.sin(5 * a + k);
-        return `${f(cx + Math.cos(a) * r * wob * 1.25)},${f(cy + Math.sin(a) * r * wob * 0.8)}`;
-      });
-      contours.push({ d: `M${pts.join('L')}Z`, hi: k <= 2 });
+  const landF = feature(land110 as any, (land110 as any).objects.land) as any;
+  const box = { type: 'Feature', geometry: { type: 'MultiPoint', coordinates: [[-19, 44], [53, 44], [-19, -36], [53, -36]] } } as any;
+  const proj = geoEquirectangular().fitExtent([[16, 14], [216, 226]], box);
+  landD = geoPath(proj)(landF) ?? '';
+  const step = 3.2, a = proj([0, 0])!, b = proj([step, 0])!;
+  cs = (b[0] - a[0]) * 0.8;
+  // a smooth, made-up field: a few bands read as 'suitable'. Illustration only, not a result.
+  for (let lat = 42; lat >= -35; lat -= step) {
+    for (let lon = -17; lon <= 52; lon += step) {
+      if (!geoContains(landF, [lon, lat])) continue;
+      const pt = proj([lon, lat]); if (!pt) continue;
+      const t = Math.max(Math.exp(-(((lat - 36) / 4.5) ** 2)), Math.exp(-(((lat - 12) / 4) ** 2)), 0.9 * Math.exp(-(((lat + 24) / 5) ** 2)), Math.exp(-(((lon - 37) / 4) ** 2) - ((lat - 2) / 10) ** 2));
+      cells.push({ x: pt[0], y: pt[1], t });
     }
-  });
-}
-
-// productivity: ridgeline of smooth series through time
-const ridges: { area: string; line: string }[] = [];
-if (kind === 'productivity') {
-  for (let r = 0; r < 7; r++) {
-    const base = 60 + r * 24, ph = rnd() * 6, amp = 10 + rnd() * 14;
-    const pts = Array.from({ length: 41 }, (_, i) => {
-      const x = 20 + i * 9;
-      const y = base - amp * Math.exp(-(((i - 20 - r * 1.5) / 9) ** 2)) - 4 * Math.sin(i / 3 + ph);
-      return `${f(x)},${f(y)}`;
-    });
-    ridges.push({ area: `M${pts.join('L')}L380,${base + 30}L20,${base + 30}Z`, line: `M${pts.join('L')}` });
   }
 }
 
-// context: a broad cloud of past conditions and a smaller present-day cloud drifting off its edge
-const past: [number, number][] = [], present: [number, number][] = [];
+// context: the range of conditions over 12,000 years as a band, with today marked at the end
+const band: string[] = [];
+let mid = '';
 if (kind === 'context') {
-  const g = () => (rnd() + rnd() + rnd() - 1.5) * 1.4;
-  for (let i = 0; i < 170; i++) past.push([170 + g() * 70, 125 + g() * 42]);
-  for (let i = 0; i < 40; i++) present.push([285 + g() * 26, 82 + g() * 18]);
-}
-
-// strata: layered bands of time with a line drawn up through them into a dashed future
-const layers: string[] = [];
-if (kind === 'strata') {
-  for (let l = 0; l < 6; l++) {
-    const y0 = 210 - l * 30, ph = rnd() * 6;
-    const top = Array.from({ length: 41 }, (_, i) => `${f(i * 10)},${f(y0 - 22 - 5 * Math.sin(i / 5 + ph))}`);
-    layers.push(`M0,${y0}L${top.join('L')}L400,${y0}Z`);
-  }
+  const xs = Array.from({ length: 61 }, (_, i) => 40 + i * 5.4);
+  const c = (i: number) => 112 + 10 * Math.sin(i / 6) + 6 * Math.sin(i / 2.3 + 1) - (i > 52 ? (i - 52) * 2.2 : 0);
+  const w = (i: number) => 26 + 6 * Math.sin(i / 4 + 2);
+  band.push(`M${xs.map((x, i) => `${f(x)},${f(c(i) - w(i))}`).join('L')}L${[...xs].reverse().map((x, j) => `${f(x)},${f(c(60 - j) + w(60 - j))}`).join('L')}Z`);
+  mid = `M${xs.map((x, i) => `${f(x)},${f(c(i))}`).join('L')}`;
 }
 ---
-<svg class={`art ${kind}`} viewBox={`0 0 ${W} ${H}`} aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+<svg class={`art ${kind}`} viewBox={`0 0 ${W} ${H}`} role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
   <rect width={W} height={H} class="bg" />
-  {contours.map((c) => <path d={c.d} class={c.hi ? 'c hi' : 'c'} />)}
-  {ridges.map((r, i) => <g class={i === 3 ? 'ridge hi' : 'ridge'}><path d={r.area} class="area" /><path d={r.line} class="ln" /></g>)}
-  {past.map(([x, y]) => <circle cx={f(x)} cy={f(y)} r="2.4" class="p" />)}
-  {present.map(([x, y]) => <circle cx={f(x)} cy={f(y)} r="2.8" class="q" />)}
-  {layers.map((d, i) => <path d={d} class={`layer l${i}`} />)}
+
+  {kind === 'niches' && (
+    <g>
+      <defs><clipPath id="nclip"><rect x="16" y="14" width="200" height="212" /></clipPath></defs>
+      <path d={landD} class="land" clip-path="url(#nclip)" />
+      {cells.map((c) => <rect x={f(c.x - cs / 2)} y={f(c.y - cs / 2)} width={f(cs)} height={f(cs)} rx="1" class={c.t > 0.55 ? 'cell hi' : c.t > 0.25 ? 'cell part' : 'cell'} />)}
+      <g transform="translate(262 40)">
+        <path d="M14 96V8" class="stem" />
+        {[0, 1, 2, 3, 4, 5].map((i) => <ellipse cx={i % 2 ? 19 : 9} cy={14 + i * 9} rx="5.2" ry="3.2" transform={`rotate(${i % 2 ? 28 : -28} ${i % 2 ? 19 : 9} ${14 + i * 9})`} class="grain" />)}
+        <path d="M58 96V20" class="stem" />
+        <ellipse cx="58" cy="30" rx="9" ry="16" class="grain dense" />
+        <path d="M102 96V14" class="stem" />
+        <rect x="97" y="14" width="10" height="44" rx="5" class="grain" />
+      </g>
+      <g transform="translate(250 164)">
+        <rect x="0" y="-9" width="10" height="10" rx="1.5" class="cell hi" /><text x="16" y="0" class="lbl">suitable climate</text>
+      </g>
+      <g transform="translate(244 200)">
+        <path d="M0 0H144M0 -4V4M48 -3V3M96 -3V3M144 -4V4" class="ax" />
+        <text x="0" y="20" class="lbl">12,000 years ago</text>
+        <text x="144" y="20" class="lbl" text-anchor="end">today</text>
+      </g>
+    </g>
+  )}
+
+  {kind === 'productivity' && (
+    <g>
+      <g class="gridln">{[0, 1, 2, 3, 4, 5, 6].map((i) => <path d={`M${f(40 + i * 53.3)} 40V196`} />)}</g>
+      <path d="M20 170H380" class="ground" />
+      <rect x="20" y="170" width="360" height="26" class="soil1" />
+      <rect x="20" y="196" width="360" height="26" class="soil2" />
+      {[[62, 1], [92, 0.8], [128, 1.1], [160, 0.75]].map(([x, s]) => (
+        <g transform={`translate(${x} 170) scale(${s})`}>
+          <path d="M0 0V-34" class="trunk" />
+          <circle cx="0" cy="-48" r="17" class="crown" />
+        </g>
+      ))}
+      {[48, 76, 110, 144, 176].map((x) => <path d={`M${x} 170l-3 -9M${x} 170l0 -11M${x} 170l3 -9`} class="grass" />)}
+      {Array.from({ length: 9 }, (_, i) => (
+        <g transform={`translate(${222 + i * 17} 170)`}>
+          <path d="M0 0V-30" class="crop" />
+          <ellipse cx="0" cy="-34" rx="3.2" ry="6" class="head" />
+          <path d="M0 -12l-6 -6M0 -18l6 -6" class="crop" />
+        </g>
+      ))}
+      <circle cx="350" cy="36" r="13" class="sun" />
+      <path d="M332 48L296 92" class="flow light" marker-end="url(#ah)" />
+      <path d="M116 62V94" class="flow co2" marker-end="url(#ah)" />
+      <text x="122" y="58" class="lbl">CO₂</text>
+      <path d="M70 178V202" class="flow water" marker-end="url(#ah)" />
+      <path d="M250 196V178" class="flow water" marker-end="url(#ah)" />
+      <text x="40" y="34" class="lbl">natural vegetation</text>
+      <text x="222" y="34" class="lbl">cropland</text>
+      <defs><marker id="ah" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" class="tip" /></marker></defs>
+    </g>
+  )}
+
+  {kind === 'context' && (
+    <g>
+      <path d="M40 196H364" class="ax" />
+      {[0, 1, 2, 3].map((i) => <path d={`M${40 + i * 108} 192V200`} class="ax" />)}
+      <path d={band[0]} class="env" />
+      <path d={mid} class="mline" />
+      <path d="M364 40V196" class="now" />
+      <circle cx="364" cy="112" r="6" class="dot" />
+      <text x="40" y="218" class="lbl">12,000 years ago</text>
+      <text x="364" y="218" class="lbl" text-anchor="end">today</text>
+      <text x="40" y="40" class="lbl">conditions farming has met</text>
+      {[0, 1, 2, 3, 4].map((i) => <path d={`M${280 + i * 14} 30v-14l-4 -5M${280 + i * 14} 22l4 -5`} class="sprout" />)}
+    </g>
+  )}
+
   {kind === 'strata' && (
-    <g class="thread">
-      <path d="M200,232 L200,60" />
-      <path d="M200,60 L200,14" class="future" />
-      <circle cx="200" cy="60" r="5" />
+    <g>
+      {[0, 1, 2, 3].map((l) => <path d={`M0 ${236 - l * 40}L0 ${200 - l * 40}Q100 ${192 - l * 40} 200 ${200 - l * 40}T400 ${198 - l * 40}L400 ${236 - l * 40}Z`} class={`layer l${l}`} />)}
+      <g transform="translate(58 214)" class="icon"><path d="M-22 6h44M-14 6v-8h28v8M-8 -2v-7h16v7" /></g>
+      <g transform="translate(300 176)" class="icon"><path d="M-10 8c-2-8 0-14 10-14s12 6 10 14ZM-6 -6v-4h12v4" /></g>
+      <g transform="translate(110 134)" class="icon"><path d="M-14 4h22c4 0 6-3 6-6s-3-5-6-5h-16c-4 0-6 3-6 6ZM-10 4v6M4 4v6M14 -5l4 -4" /></g>
+      <g transform="translate(250 96)" class="icon"><path d="M-16 0c8-6 8 6 16 0s8 6 16 0M-16 8c8-6 8 6 16 0s8 6 16 0" /></g>
+      <path d="M58 200C120 170 260 190 300 160S160 120 250 84" class="thread" />
+      <path d="M250 84C300 60 330 44 360 26" class="thread future" marker-end="url(#ah2)" />
+      <text x="296" y="40" class="lbl" text-anchor="end">after 2030</text>
+      <text x="12" y="18" class="lbl">evidence from the past</text>
+      <defs><marker id="ah2" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" class="tip" /></marker></defs>
     </g>
   )}
 </svg>
@@ -78,17 +135,40 @@ if (kind === 'strata') {
 <style>
   .art { display: block; width: 100%; height: 100%; }
   .bg { fill: var(--surface); }
-  .c { fill: none; stroke: var(--muted); stroke-width: 1; opacity: 0.45; }
-  .c.hi { stroke: var(--blue); stroke-width: 1.6; opacity: 1; }
-  .ridge .area { fill: var(--surface); }
-  .ridge .ln { fill: none; stroke: var(--muted); stroke-width: 1.2; }
-  .ridge.hi .ln { stroke: var(--ochre); stroke-width: 2; }
-  .p { fill: var(--muted); opacity: 0.35; }
-  .q { fill: var(--ochre-fill); }
-  .layer { stroke: var(--surface); stroke-width: 1.5; }
-  .l0 { fill: var(--line); } .l1 { fill: var(--blue-soft); } .l2 { fill: var(--line); }
-  .l3 { fill: var(--blue-soft); } .l4 { fill: var(--line); } .l5 { fill: var(--blue-soft); }
-  .thread path { stroke: var(--ochre); stroke-width: 2.5; fill: none; }
-  .thread .future { stroke-dasharray: 5 5; }
-  .thread circle { fill: var(--ochre-fill); }
+  .lbl { font: 500 11.5px var(--sans); fill: var(--muted); }
+  .ax { stroke: var(--muted); stroke-width: 1.2; fill: none; }
+  .tip { fill: var(--muted); }
+
+  .land { fill: none; stroke: var(--line); stroke-width: 1; }
+  .cell { fill: var(--line); }
+  .cell.part { fill: var(--ochre-soft); }
+  .cell.hi { fill: var(--ochre-fill); }
+  .stem { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+  .grain { fill: var(--ochre-fill); }
+  .grain.dense { fill: var(--ochre); }
+
+  .gridln path { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 4; }
+  .ground { stroke: var(--muted); stroke-width: 1.2; }
+  .soil1 { fill: var(--ochre-soft); } .soil2 { fill: color-mix(in srgb, var(--ochre-soft) 60%, var(--line)); }
+  .trunk { stroke: var(--muted); stroke-width: 3; }
+  .crown { fill: var(--blue); opacity: 0.85; }
+  .grass { stroke: var(--blue); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+  .crop { stroke: var(--moss); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+  .head { fill: var(--ochre-fill); }
+  .sun { fill: var(--ochre-fill); }
+  .flow { fill: none; stroke-width: 1.6; stroke: var(--muted); stroke-dasharray: 4 3; }
+  .flow.water { stroke: var(--blue); }
+
+  .env { fill: var(--blue-soft); }
+  .mline { fill: none; stroke: var(--blue); stroke-width: 2; }
+  .now { stroke: var(--ochre); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .dot { fill: var(--ochre-fill); stroke: var(--surface); stroke-width: 2; }
+  .sprout { stroke: var(--moss); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+
+  .layer { stroke: var(--surface); stroke-width: 2; }
+  .l0 { fill: color-mix(in srgb, var(--ochre-soft) 70%, var(--line)); } .l1 { fill: var(--ochre-soft); }
+  .l2 { fill: color-mix(in srgb, var(--blue-soft) 60%, var(--line)); } .l3 { fill: var(--blue-soft); }
+  .icon path { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; opacity: 0.75; }
+  .thread { fill: none; stroke: var(--ochre); stroke-width: 2.2; }
+  .thread.future { stroke-dasharray: 5 5; }
 </style>

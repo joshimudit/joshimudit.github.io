@@ -4,6 +4,7 @@ import '@fontsource-variable/geologica';
 import '@fontsource/martian-mono/400.css';
 import '../styles/global.css';
 import { profile, links } from '../data/profile';
+import { icons } from '../data/icons';
 
 interface Props { title?: string; description?: string }
 const { title, description = `${profile.name}, ${profile.role.toLowerCase()}. ${profile.lede}` } = Astro.props;
@@ -54,10 +55,9 @@ const nav = [
             ))}
           </ul>
         </nav>
-        <button class="theme" type="button" aria-label="Switch between day and night theme">
+        <button class="theme" type="button" aria-label="Switch to night theme">
           <svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg>
           <svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-          <span class="theme-label"></span>
         </button>
       </div>
     </header>
@@ -68,9 +68,10 @@ const nav = [
       <div class="wrap foot-row">
         <p class="sig">© {new Date().getFullYear()} {profile.name}</p>
         <p class="credit">Built with AI agents and a sceptical human in the loop.</p>
-        <ul>
-          {links.map((l) => <li><a href={l.href} rel="me">{l.label}</a></li>)}
-          <li><a href="https://github.com/joshimudit/joshimudit.github.io">Source</a></li>
+        <ul class="social">
+          {[...links.map((l) => ({ ...l, rel: 'me' })), { label: 'Source', href: 'https://github.com/joshimudit/joshimudit.github.io', rel: undefined }].map((l) => (
+            <li><a href={l.href} rel={l.rel} aria-label={l.label === 'Source' ? 'Source code of this website' : l.label} title={l.label === 'Source' ? 'Source code of this website' : l.label}><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d={icons[l.label]} fill="currentColor" /></svg></a></li>
+          ))}
         </ul>
       </div>
     </footer>
@@ -90,17 +91,17 @@ const nav = [
       });
 
       const btn = document.querySelector('.theme') as HTMLButtonElement;
-      const label = btn.querySelector('.theme-label') as HTMLSpanElement;
       const sync = () => {
         const night = document.documentElement.dataset.theme === 'night';
-        label.textContent = night ? 'Night' : 'Day';
-        btn.setAttribute('aria-pressed', String(night));
+        btn.setAttribute('aria-label', night ? 'Switch to day theme' : 'Switch to night theme');
+        btn.title = night ? 'Day theme' : 'Night theme';
       };
       sync();
       btn.addEventListener('click', () => {
         const next = document.documentElement.dataset.theme === 'night' ? 'day' : 'night';
         document.documentElement.dataset.theme = next;
         try { localStorage.setItem('theme', next); } catch (e) {}
+        btn.classList.remove('turn'); void btn.offsetWidth; btn.classList.add('turn');
         sync();
         document.dispatchEvent(new Event('themechange'));
       });
@@ -119,10 +120,15 @@ const nav = [
   nav ul { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; white-space: nowrap; }
   nav a { color: var(--ink); text-decoration: none; font-size: 0.95rem; padding-block: 0.4rem; border-bottom: 2px solid transparent; }
   nav a:hover { border-bottom-color: var(--line); }
-  nav a[aria-current='page'] { border-bottom-color: var(--ochre); }
+  nav a[aria-current='page'] { font-weight: 600; border-bottom-color: var(--ochre); }
 
-  .theme { display: inline-flex; align-items: center; gap: 0.4rem; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 3px; padding: 0.35rem 0.7rem; font: inherit; font-size: 0.85rem; cursor: pointer; }
-  .theme:hover { border-color: var(--ink); }
+  .theme { display: inline-grid; place-items: center; width: 2.4rem; height: 2.4rem; padding: 0; background: none; border: 0; border-radius: 50%; color: var(--ink); cursor: pointer; }
+  .theme:hover { background: var(--line); }
+  .theme svg { transition: transform 0.5s cubic-bezier(0.3, 0.7, 0.3, 1); }
+  .theme:hover svg { transform: rotate(25deg); }
+  .theme.turn svg { animation: turn 0.55s cubic-bezier(0.3, 0.7, 0.3, 1); }
+  @keyframes turn { from { transform: rotate(-120deg) scale(0.6); opacity: 0.3; } to { transform: rotate(0) scale(1); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .theme svg, .theme.turn svg { transition: none; animation: none; } }
   :global([data-theme='day']) .moon, :global([data-theme='night']) .sun { display: none; }
 
   @media (max-width: 760px) {
@@ -130,14 +136,15 @@ const nav = [
     nav { order: 3; width: 100%; margin-left: 0; }
     nav ul { flex-wrap: wrap; gap: 0.2rem 1rem; }
     .theme { margin-left: auto; }
-    .theme-label { display: none; }
   }
 
   .site-foot { border-top: 1px solid var(--line); padding-block: 2.5rem 3rem; margin-top: 2rem; }
-  .foot-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1.5rem; }
+  .foot-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; }
   .foot-row p { margin: 0; }
   .sig { font-family: var(--serif); font-size: 1.05rem; }
   .credit { color: var(--muted); font-size: 0.92rem; }
-  .foot-row ul { display: flex; flex-wrap: wrap; gap: 1.25rem; list-style: none; margin: 0 0 0 auto; padding: 0; font-size: 0.92rem; }
+  .foot-row ul { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; margin: 0 0 0 auto; padding: 0; }
+  .social a { display: inline-grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; color: var(--muted); transition: color 0.15s, background-color 0.15s; }
+  .social a:hover, .social a:focus-visible { color: var(--blue); background: var(--line); }
   @media (max-width: 760px) { .foot-row ul { margin-left: 0; width: 100%; } }
 </style>
