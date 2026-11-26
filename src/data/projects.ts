@@ -92,7 +92,9 @@ export const projects: Project[] = [
     ],
     team: [P.ordonez, P.madella, P.whitehouse, P.schoeman],
     funding: MSCA,
-    links: [{ label: 'About LPJmL (Potsdam Institute for Climate Impact Research)', href: 'https://www.pik-potsdam.de/en/institute/departments/activities/biosphere-water-modelling/lpjml' }],
+    links: [{ label: 'About LPJmL (Potsdam Institute for Climate Impact Research)', href: 'https://www.pik-potsdam.de/en/institute/departments/activities/biosphere-water-modelling/lpjml' },
+      { label: 'Patch, a teaching aid for understanding how a DGVM like LPJmL works', href: '/studio/patch' },
+    ],
   },
   {
     slug: 'farming-in-context',
