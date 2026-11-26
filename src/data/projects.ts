@@ -12,6 +12,8 @@ export type Project = {
   output: string;
   outputLink?: string;
   role: 'Lead author' | 'Co-author';
+  // for co-authored work: who leads it (shown as 'Lead author: <name>')
+  lead?: { name: string; href?: string };
   note?: string;
   era: 'deep' | 'holocene' | 'now' | 'next';
   summary: string;
@@ -22,21 +24,24 @@ export type Project = {
   where: string;
   aims: string[];
   approach: string[];
-  myPart?: string;
   results?: string[];
   figures?: { src: string; alt: string; caption: string; width: number; height: number; in: 'approach' | 'results' }[];
   links?: { label: string; href: string }[];
   funding?: string;
 };
 
-const SUP = [
-  { name: 'Alejandro Ordonez', href: 'https://bio.au.dk/en/about-biology/contact/show/person/alejandro.ordonez@bio.au.dk', role: 'main supervisor' },
-  { name: 'Nicki Whitehouse', href: 'https://www.gla.ac.uk/schools/humanities/staff/nickiwhitehouse/', role: 'co-supervisor' },
-  { name: 'Marco Madella', href: 'https://icrea.cat/Web/ScientificStaff/Marco-Madella-330', role: 'co-supervisor' },
-];
+const AD = 'https://agri-dry.org';
+const P = {
+  ordonez: { name: 'Alejandro Ordonez', href: `${AD}/our-team/pis-and-supervisors/alejandro-ordonez-gloria/` },
+  whitehouse: { name: 'Nicki Whitehouse', href: `${AD}/our-team/pis-and-supervisors/nicki-whitehouse/` },
+  madella: { name: 'Marco Madella', href: `${AD}/our-team/pis-and-supervisors/marco-madella/` },
+  schoeman: { name: 'Alex Schoeman', href: `${AD}/our-team/pis-and-supervisors/alex-schoeman/` },
+  chingono: { name: 'Paidamoyo Chingono', href: `${AD}/our-team/doctoral-candidates/paidamoyo-hazel-chingono/` },
+  scaglia: { name: 'Sara Scaglia', href: `${AD}/our-team/doctoral-candidates/sara-scaglia/` },
+  mukuya: { name: 'Thamary Mukuya', href: `${AD}/our-team/doctoral-candidates/thamary-mukuya/` },
+};
 const MSCA = 'Funded by the European Union’s Horizon Europe research and innovation programme under the Marie Skłodowska-Curie Grant Agreement No 101120560 (AGRI-DRY).';
 
-const AD = 'https://agri-dry.org';
 
 export const projects: Project[] = [
   {
@@ -49,7 +54,7 @@ export const projects: Project[] = [
     period: 'PhD chapter 1',
     where: 'Aarhus University, AGRI-DRY',
     summary: 'How climate shaped where early farmers could grow their crops as farming spread into the drylands of Africa and the Mediterranean.',
-    methods: ['Crop suitability modelling', 'Palaeoclimate data', 'R'],
+    methods: ['Crop suitability modelling', 'Palaeoclimate data', 'Archaeobotanical data', 'R'],
     art: { kind: 'niches' },
     aims: [
       'Map where key dryland crops could grow at different points of the last 12,000 years.',
@@ -59,93 +64,94 @@ export const projects: Project[] = [
     approach: [
       'Palaeoclimate reconstructions give the conditions at each place and time. A crop suitability model, EcoCrop, turns those conditions into a measure of how well each crop could grow there, based on the temperature and rainfall it tolerates.',
       'Repeating this through the Holocene gives a moving map of where each crop was possible, which is then set against the timing and routes of farming’s spread.',
+      'The models are evaluated against the archaeobotanical database for southern Africa that <a href="https://agri-dry.org/our-team/doctoral-candidates/paidamoyo-hazel-chingono/">Paidamoyo Chingono</a> is putting together within AGRI-DRY.',
     ],
-    team: SUP,
+    team: [P.ordonez, P.whitehouse, P.madella, P.schoeman, P.chingono, P.scaglia],
     funding: MSCA,
   },
   {
     slug: 'simulating-early-farming',
-    title: 'Simulating early farming',
+    title: 'Why the first fields came so late',
     status: 'ongoing',
     output: 'In preparation',
     role: 'Lead author',
     era: 'holocene',
     period: 'PhD chapter 2',
     where: 'Aarhus University, AGRI-DRY',
-    summary: 'Following crops and natural vegetation together through the last 12,000 years with a process-based model.',
-    methods: ['LPJmL', 'Vegetation modelling', 'High-performance computing'],
+    summary: 'People gathered wild cereals for thousands of years before they farmed them. A process-based vegetation and crop model tests, in numbers, what held the first harvests back in Southwest Asia and the Green Sahara.',
+    methods: ['LPJmL', 'Palaeoclimate', 'Model experiments', 'High-performance computing'],
     art: { kind: 'productivity' },
     aims: [
-      'Simulate how the productivity of crops and natural vegetation changed across the Holocene in the drylands of Africa and the Mediterranean.',
-      'Compare how crops and natural ecosystems respond to the same changes in climate and CO₂.',
-      'Give the first study a mechanistic counterpart: not only where crops could grow, but how well.',
+      'Southwest Asia, at the end of the last ice age: as CO₂ in the air rose, did wild wheat and barley start to give harvests large and reliable enough to farm?',
+      'The Green Sahara: why did herding come long before crops? Was it the risk of failing rains, plenty of wild food, or something else that limited a rainfed harvest?',
+      'Turn explanations that archaeologists have argued about for decades into tests: none of them has yet been worked out as an actual harvest.',
     ],
     approach: [
-      'I use LPJmL, a dynamic global vegetation model that also simulates crops. It represents photosynthesis, respiration and the water and carbon cycles mechanistically, so natural vegetation and cropland can be followed side by side on the same grid.',
-      'The model is driven with palaeoclimate and atmospheric CO₂ for the last 12,000 years. The runs are made on high-performance computing.',
+      'I use LPJmL, a dynamic global vegetation model that also simulates crops. It represents photosynthesis and the water, carbon and nitrogen cycles mechanistically, so wild vegetation and fields of wheat, barley, sorghum and millet can be followed side by side on the same grid.',
+      'The model is calibrated on the present only, then run from 15,000 years ago to today with reconstructed climate, rainfall and CO₂. It is tested against past records it never saw, such as pollen and dated archaeological sites. Experiments then hold single factors fixed, such as CO₂, climate or rainfall variability, to see which one mattered for the harvest.',
     ],
-    team: SUP,
+    team: [P.ordonez, P.madella, P.whitehouse, P.schoeman],
     funding: MSCA,
     links: [{ label: 'About LPJmL (Potsdam Institute for Climate Impact Research)', href: 'https://www.pik-potsdam.de/en/institute/departments/activities/biosphere-water-modelling/lpjml' }],
   },
   {
     slug: 'farming-in-context',
-    title: 'Today’s farming in a 12,000-year context',
+    title: 'What farming’s past can tell us about the crops we grow next',
     status: 'ongoing',
     output: 'In preparation',
     role: 'Lead author',
     era: 'now',
     period: 'PhD chapter 3',
     where: 'Aarhus University, AGRI-DRY',
-    summary: 'Setting the conditions farming faces today against its long history, to inform resilient, biodiversity-positive food systems.',
-    methods: ['Climate data', 'Systems analysis', 'Python'],
+    summary: 'Linking the long history of crops in Africa and the Mediterranean with today’s choices, from opportunity crops to climate projections, to ask which changes in what we grow fit a place.',
+    methods: ['AGRI-DRY crop database', 'Crop statistics', 'Climate projections'],
     art: { kind: 'context' },
     aims: [
-      'Place the climate and ecological conditions of today’s farming within the range farming has met since it began.',
-      'Ask what that long view adds to planning climate-resilient, biodiversity-positive food systems in drylands and beyond.',
+      'Find which cereals and pulses have a long documented history in each place across Africa and the Mediterranean.',
+      'Set that history beside today’s debates: the crops that policy now promotes, such as opportunity and forgotten crops, and the changes that climate projections imply.',
+      'Ask what such changes would mean for what food systems provide: nutrition, reliable harvests, livelihoods and the environment.',
     ],
     approach: [
-      'This study builds on the first two. It compares present-day conditions of cropland with conditions reconstructed for the past 12,000 years, using climate data and a systems view of how crops, ecosystems and people interact.',
+      'Three debates that are usually kept apart are brought together. The past comes from dated crop records in the AGRI-DRY crop database, built within the network by <a href="https://agri-dry.org/our-team/doctoral-candidates/thamary-mukuya/">Thamary Mukuya</a>. The present comes from crop statistics and maps. The future comes from mid-century projections of crop yields and suitability, and from current crop recommendations.',
     ],
-    team: SUP,
+    team: [P.ordonez, P.whitehouse, P.madella, P.schoeman, P.mukuya],
     funding: MSCA,
   },
   {
     slug: 'learning-from-adaptation',
-    title: 'Learning from long-term adaptation',
+    title: 'What past societies can teach climate adaptation after 2030',
     status: 'completed',
     output: 'Under review',
     role: 'Lead author',
     era: 'next',
     period: 'AGRI-DRY network paper',
     where: 'AGRI-DRY network',
-    summary: 'A framework for turning long-term evidence of how people adapted to climate into options for the decades after 2030.',
-    methods: ['Framework design', 'Evidence synthesis', 'Mapping'],
+    summary: 'TRACE, a framework for turning archaeological and historical evidence of how people adapted to climate into options for sustainable adaptation after 2030.',
+    methods: ['TRACE framework', 'Evidence synthesis', 'Mapping'],
     art: { kind: 'strata' },
     aims: [
       'Show how archaeological and historical records of adaptation can inform climate adaptation beyond 2030.',
       'Give a structured way to judge which past practices can transfer to today’s conditions, and which cannot.',
     ],
     approach: [
-      'Together with archaeologists, ecologists and modellers across the AGRI-DRY network, we synthesised documented cases of long-term adaptation and grouped them by the mechanism behind them.',
-      'We then built a step-by-step framework for checking the evidence, the environmental constraints and the transferability of each practice before it is used in planning.',
+      'Together with archaeologists, ecologists and modellers across the AGRI-DRY network, we gathered documented cases of long-term adaptation and grouped them into seven families of mechanisms: mobility and resource tracking, diversification and risk spreading, storage and buffering, soil and water engineering, biodiversity and regeneration, knowledge and governance, and reorganisation and transformation.',
+      'TRACE turns such cases into usable options in five steps: <b>T</b>ranslate documented practices, <b>R</b>econstruct the adaptive mechanisms behind them, <b>A</b>ssess the evidence and the environmental constraints, <b>C</b>heck whether they can transfer to today, and <b>E</b>nable their responsible use.',
     ],
-    myPart: 'I designed the framework, wrote most of the first draft, made the figures and maps, and lead the paper as first and corresponding author.',
     team: [
-      { name: 'Sara Scaglia', href: `${AD}/our-team/doctoral-candidates/sara-scaglia/` },
+      P.scaglia,
       { name: 'Sara Krubeck', href: `${AD}/our-team/doctoral-candidates/sara-krubeck/` },
       { name: 'Mncedisi Taala', href: `${AD}/our-team/doctoral-candidates/mncedisi-taala/` },
       { name: 'Wudu Abiye', href: `${AD}/our-team/doctoral-candidates/wudu-abiye/` },
-      { name: 'Thamary Mukuya', href: `${AD}/our-team/doctoral-candidates/thamary-mukuya/` },
-      { name: 'Paidamoyo Chingono', href: `${AD}/our-team/doctoral-candidates/paidamoyo-hazel-chingono/` },
+      P.mukuya,
+      P.chingono,
       { name: 'Tawanda Mushweshwe', href: `${AD}/our-team/doctoral-candidates/tawanda-mushweshwe/` },
       { name: 'Kayla Mac Conachie', href: `${AD}/our-team/doctoral-candidates/kayla-storm-mac-conachie/` },
       { name: 'Alexandra Vasilyeva', href: `${AD}/our-team/doctoral-candidates/alexandra-vasilyeva/` },
-      { name: 'Alex Schoeman', href: `${AD}/our-team/pis-and-supervisors/alex-schoeman/` },
-      { name: 'Nicki Whitehouse', href: `${AD}/our-team/pis-and-supervisors/nicki-whitehouse/` },
-      { name: 'Marco Madella', href: `${AD}/our-team/pis-and-supervisors/marco-madella/` },
+      P.schoeman,
+      P.whitehouse,
+      P.madella,
       { name: 'Stefano Biagetti', href: `${AD}/team/pi/stefano-biagetti/` },
-      { name: 'Alejandro Ordonez', href: `${AD}/our-team/pis-and-supervisors/alejandro-ordonez-gloria/` },
+      P.ordonez,
     ],
     funding: MSCA,
   },
@@ -188,10 +194,10 @@ export const projects: Project[] = [
       { label: 'Code on GitHub', href: 'https://github.com/joshimudit/Masters-thesis-gen3sis' },
     ],
     team: [
-      { name: 'Loïc Pellissier', href: 'https://ele.ethz.ch/', role: 'supervisor, ETH Zurich' },
-      { name: 'Tim Diekötter', href: 'https://www.uni-kiel.de/de/person/diekoetter-tim-5728', role: 'second supervisor, Kiel University' },
-      { name: 'Wilhelmine Bach', href: 'https://ele.ethz.ch/', role: 'ETH Zurich' },
-      { name: 'Julian Rogger', href: 'https://ele.ethz.ch/', role: 'ETH Zurich' },
+      { name: 'Loïc Pellissier', href: 'https://ethz.ch/en/the-eth-zurich/organisation/who-is-who/usys/details.html?persid=216059', role: 'supervisor' },
+      { name: 'Julian Rogger', href: 'https://www.bristol.ac.uk/people/person/Julian-Rogger-f58cc67c-cc59-49d1-9970-0c1aaa581aa0/' },
+      { name: 'Wilhelmine Bach', href: 'https://scholar.google.com/citations?user=ALDcBQUAAAAJ' },
+      { name: 'Tim Diekötter', href: 'https://www.uni-kiel.de/de/person/diekoetter-tim-5728', role: 'second supervisor' },
     ],
   },
 ];
