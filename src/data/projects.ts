@@ -32,7 +32,7 @@ export type Project = {
 
 const AD = 'https://agri-dry.org';
 const P = {
-  ordonez: { name: 'Alejandro Ordonez', href: `${AD}/our-team/pis-and-supervisors/alejandro-ordonez-gloria/`, role: 'supervisor' },
+  ordonez: { name: 'Alejandro Ordonez', href: `${AD}/our-team/pis-and-supervisors/alejandro-ordonez-gloria/` },
   whitehouse: { name: 'Nicki Whitehouse', href: `${AD}/our-team/pis-and-supervisors/nicki-whitehouse/` },
   madella: { name: 'Marco Madella', href: `${AD}/our-team/pis-and-supervisors/marco-madella/` },
   schoeman: { name: 'Alex Schoeman', href: `${AD}/our-team/pis-and-supervisors/alex-schoeman/` },
