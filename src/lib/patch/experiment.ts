@@ -389,7 +389,8 @@ export function experimentPage() {
     }
     if (mode === 'mechanism') {
       const m = mechText(), names = M.off.map((k) => PROCS.find((p) => p.id === k)!.name), env = changes(M.ui, B.crop);
-      return { ...base, kind: 'Understanding mechanisms', where, heading: 'Question', claim: `What does ${names.join(' and ').toLowerCase().replace('co₂', 'CO₂')} do in a ${B.site.biome.toLowerCase()}?`, did: `Switched off: ${names.join(', ')}${env.length ? ', with ' + env.join(', ') : ''}. Ran 10 years and compared with the full model.`, found: m.found, why: m.why, conclusion: '' };
+      const low = names.map((n) => n.replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase())), list = low.length > 1 ? low.slice(0, -1).join(', ') + ' and ' + low[low.length - 1] : low[0];
+      return { ...base, kind: 'Understanding mechanisms', where, heading: 'Question', claim: `What happens in a ${B.site.biome.toLowerCase()} without ${list}?`, did: `Switched off ${list}${env.length ? ', with ' + env.join(' and ') : ''}. Ran 10 years and compared with the full model.`, found: m.found, why: m.why, conclusion: '' };
     }
     const ch = changes(S.ui, S.crop);
     return { ...base, kind: 'Scenario analysis', where, heading: 'Question', claim: `What happens to a ${S.site.biome.toLowerCase()} in 10 years with ${ch.slice(0, 3).join(', ')}${ch.length > 3 ? ' and more' : ''}?`, did: `Changed: ${ch.join('; ')}. Ran 10 years and compared with today’s climate.`, ...(() => { const t = explain(A, B, S.ui).split(/(?<=\.) /); return { found: t[0], why: t.slice(1).join(' ') }; })(), conclusion: '' };
