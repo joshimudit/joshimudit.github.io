@@ -24,7 +24,6 @@ ${work}
 - [Publications](${u('/publications/')})
 - [This Week](${u('/this-week/')}): a weekly digest of climate, food and ecosystems research
 - [Studio](${u('/studio/')}): tools and outreach material, including Patch, a teaching aid for how a DGVM like LPJmL works
-- [Blog](${u('/blog/')})
 
 ## Profiles
 ${links.map((l) => `- ${l.label}: ${l.href}`).join('\n')}

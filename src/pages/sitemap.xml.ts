@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro';
 import { projects } from '../data/projects';
 
 const pages = [
-  '/', '/work/', '/publications/', '/this-week/', '/studio/', '/blog/',
+  '/', '/work/', '/publications/', '/this-week/', '/studio/',
   '/studio/patch/', '/studio/patch/experiment/', '/studio/patch/inside/', '/studio/patch/beyond/',
   ...projects.map((p) => `/work/${p.slug}/`),
 ];
