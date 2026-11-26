@@ -10,6 +10,26 @@ interface Props { title?: string; description?: string }
 const { title, description = `${profile.name}, ${profile.role.toLowerCase()}. ${profile.lede}` } = Astro.props;
 const fullTitle = title ? `${title} | ${profile.name}` : `${profile.name}, ${profile.role.toLowerCase()}`;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+// Structured data on Home: tells search engines and AI tools who this site is about.
+const person = path === '/' ? JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  url: Astro.site?.toString(),
+  image: new URL(profile.photo, Astro.site).toString(),
+  email: `mailto:${profile.email}`,
+  jobTitle: 'PhD fellow',
+  affiliation: { '@type': 'CollegeOrUniversity', name: 'Aarhus University', url: 'https://international.au.dk' },
+  memberOf: { '@type': 'Organization', name: 'AGRI-DRY, Marie Skłodowska-Curie doctoral network', url: 'https://agri-dry.org' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'ETH Zurich' },
+    { '@type': 'CollegeOrUniversity', name: 'Kiel University' },
+    { '@type': 'CollegeOrUniversity', name: 'G.B. Pant University of Agriculture and Technology' },
+  ],
+  knowsAbout: ['Dynamic global vegetation models', 'LPJmL', 'Crop suitability modelling', 'Palaeoclimate', 'Holocene', 'Drylands', 'Food systems', 'Systems thinking', 'Data science'],
+  sameAs: links.map((l) => l.href),
+}) : null;
+
 
 const nav = [
   { href: '/work', label: 'Work' },
@@ -34,6 +54,8 @@ const nav = [
     <meta property="og:image" content={new URL(profile.photo, Astro.site)} />
     <meta property="og:type" content="website" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    {person && <script type="application/ld+json" set:html={person} />}
     <script is:inline>
       (function () {
         try {
