@@ -9,7 +9,7 @@ export const profile = {
   photo: '/img/mudit-alps.webp',
   photoAlt: 'Mudit Joshi on a mountain ridge in the Alps',
   lede:
-    'I study how climate, food systems and natural ecosystems interact, how they have changed and where they are heading. My work combines process-based modelling and systems thinking with machine learning, AI agents and open data workflows, with attention to fair access to data and tools.',
+    'My research interests sit between data science, modelling and systems thinking, focused on climate, food systems and natural ecosystems. I like to explore mechanistic models, machine learning, AI agents and open data workflows, with attention to fair access to data and tools.',
   // the line under the lede on Home (HTML)
   roots: 'PhD fellow at Aarhus University in the Marie Skłodowska-Curie doctoral network <a href="https://agri-dry.org">AGRI-DRY</a>.',
   // About on Home (HTML)
