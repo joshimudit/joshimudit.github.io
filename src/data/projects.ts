@@ -46,14 +46,14 @@ const MSCA = 'Funded by the European Union’s Horizon Europe research and innov
 export const projects: Project[] = [
   {
     slug: 'crops-and-climate',
-    title: 'Crops and climate across the Holocene',
+    title: 'Crop climatic niches across the Holocene',
     status: 'ongoing',
     output: 'In preparation',
     role: 'Lead author',
     era: 'holocene',
     period: 'PhD chapter 1',
     where: 'Aarhus University, AGRI-DRY',
-    summary: 'How climate shaped where early farmers could grow their crops as farming spread into the drylands of Africa and the Mediterranean.',
+    summary: 'How the climatic niches of key crops shaped where early farmers could grow them as farming spread into the drylands of Africa and the Mediterranean.',
     methods: ['Crop suitability modelling', 'Palaeoclimate data', 'Archaeobotanical data', 'R'],
     art: { kind: 'niches' },
     aims: [
@@ -62,7 +62,7 @@ export const projects: Project[] = [
       'Separate what climate allowed from what early farmers chose to do.',
     ],
     approach: [
-      'Palaeoclimate reconstructions give the conditions at each place and time. A crop suitability model, EcoCrop, turns those conditions into a measure of how well each crop could grow there, based on the temperature and rainfall it tolerates.',
+      'Palaeoclimate reconstructions give the conditions at each place and time. A crop suitability model, EcoCrop, turns those conditions into a measure of how well each crop could grow there, based on its climatic niche: the range of temperature and rainfall it tolerates.',
       'Repeating this through the Holocene gives a moving map of where each crop was possible, which is then set against the timing and routes of farming’s spread.',
       'The models are evaluated against the archaeobotanical database for southern Africa that <a href="https://agri-dry.org/our-team/doctoral-candidates/paidamoyo-hazel-chingono/">Paidamoyo Chingono</a> is putting together within AGRI-DRY.',
     ],
