@@ -91,7 +91,7 @@ export const projects: Project[] = [
     role: 'Lead author',
     note: 'ETH Zurich and Kiel University, 2024',
     era: 'deep',
-    summary: 'I simulated how plant diversity arose since the Devonian with the eco-evolutionary model gen3sis, driven by reconstructed palaeogeography, CO₂ and climate under three scenarios, and tracked 36 biodiversity metrics through time.',
+    summary: 'I simulated how plant diversity emerged and changed since the Devonian with the eco-evolutionary model gen3sis, driven by reconstructed palaeogeography, CO₂ and climate under three scenarios, and tracked 36 biodiversity metrics through time.',
     methods: ['gen3sis', 'R', 'Eco-evolutionary modelling', 'Palaeogeography, CO₂ and climate', 'Biodiversity metrics'],
     art: { src: '/img/thesis-richness.webp', alt: 'Simulated plant species richness on today’s continents, from my master’s thesis' },
     team: [
