@@ -14,7 +14,8 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const nav = [
   { href: '/work', label: 'Work' },
   { href: '/publications', label: 'Publications' },
-  { href: '/cv', label: 'CV' },
+  // CV hidden for now; to bring it back, rename src/pages/_cv.astro to cv.astro and restore this line
+  // { href: '/cv', label: 'CV' },
   { href: '/this-week', label: 'This Week' },
   { href: '/studio', label: 'Studio' },
   { href: '/blog', label: 'Blog' },
