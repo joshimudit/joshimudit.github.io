@@ -68,7 +68,7 @@ const nav = [
     <footer class="site-foot">
       <div class="wrap foot-row">
         <p class="sig">© {new Date().getFullYear()} {profile.name}</p>
-        <p class="credit">Built with AI agents and a sceptical human in the loop.</p>
+        <p class="credit">Built with agentic AI and a sceptical human in the loop.</p>
         <ul class="social">
           {[...links.map((l) => ({ ...l, rel: 'me' })), { label: 'Source', href: 'https://github.com/joshimudit/joshimudit.github.io', rel: undefined }].map((l) => (
             <li><a href={l.href} rel={l.rel} aria-label={l.label === 'Source' ? 'Source code of this website' : l.label} title={l.label === 'Source' ? 'Source code of this website' : l.label}><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d={icons[l.label]} fill="currentColor" /></svg></a></li>
