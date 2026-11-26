@@ -23,19 +23,12 @@ const patchArt = blockSvg({ style: 'niamey', land: 'both', tree: 0.36, tree0: 0.
       </div>
     </article>
 
-    <section class="workshop" aria-labelledby="ws-h">
-      <h2 id="ws-h">In the workshop</h2>
-      <ul>
-        <li><strong>Overshoot</strong><span>A one-button game about harvesting faster than nature regrows.</span></li>
-        <li><strong>Tipping Point</strong><span>A lake that flips from clear to green, and the long way back.</span></li>
-        <li><strong>A live agent experiment</strong><span>AI agents carrying out a real study, with every run logged here.</span></li>
-      </ul>
-    </section>
   </div>
 </Base>
 
 <style>
-  .feature { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2rem 2.5rem; align-items: center; padding-bottom: 3rem; border-bottom: 1px solid var(--line); }
+  .feature { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2rem 2.5rem; align-items: center; padding-bottom: 3rem; }
+  .feature + .feature { border-top: 1px solid var(--line); }
   .preview { display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
   .preview svg { display: block; width: 100%; height: auto; }
   .patch-art { background: #fff; }
@@ -73,14 +66,7 @@ const patchArt = blockSvg({ style: 'niamey', land: 'both', tree: 0.36, tree0: 0.
   .txt h2 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.4em; }
   .txt h2 a { color: inherit; text-decoration: none; }
   .for { color: var(--muted); font-size: 0.95rem; }
-  .workshop { padding-top: 2.5rem; }
-  .workshop h2 { font-size: 1.4rem; }
-  .workshop ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
-  .workshop li { display: grid; grid-template-columns: 14rem 1fr; gap: 0.5rem 2rem; padding: 0.85rem 0; border-bottom: 1px dotted var(--line); }
-  .workshop strong { font-weight: 500; }
-  .workshop span { color: var(--muted); }
   @media (max-width: 800px) {
     .feature { grid-template-columns: 1fr; }
-    .workshop li { grid-template-columns: 1fr; gap: 0.1rem; }
   }
 </style>
