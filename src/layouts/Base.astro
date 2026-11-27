@@ -8,7 +8,7 @@ import { icons } from '../data/icons';
 
 interface Props { title?: string; description?: string }
 const { title, description = `${profile.name}, ${profile.role.toLowerCase()}. ${profile.lede}` } = Astro.props;
-const fullTitle = title ? `${title} | ${profile.name}` : `${profile.name}, ${profile.role.toLowerCase()}`;
+const fullTitle = title ? `${title} | ${profile.name}` : profile.name;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 // Structured data on Home: tells search engines and AI tools who this site is about.
 const person = path === '/' ? JSON.stringify({
